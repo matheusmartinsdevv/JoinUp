@@ -1,0 +1,13 @@
+# Pastas de dependências (se usar Composer ou NPM no futuro)
+node_modules/
+vendor/
+
+# Arquivos do Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Configurações do VS Code
+.vscode/
+
+# Se você salvou alguma senha em arquivo local de teste
+config_local.php
