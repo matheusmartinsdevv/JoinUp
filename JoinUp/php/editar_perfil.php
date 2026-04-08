@@ -2,13 +2,7 @@
 session_start();
 if (!isset($_SESSION['usuario_cpf'])) { die("Acesso negado"); }
 
-$host = "localhost";
-$usuario = "root";
-$senha_db = "";
-$nome_banco = "joinup";
-$port = "3307";
-
-$conn = new mysqli($host, $usuario, $senha_db, $nome_banco, $port);
+include 'conexao.php';
 
 $novo_nome = $_POST['nome'] ?? '';
 $novo_email = $_POST['email'] ?? '';

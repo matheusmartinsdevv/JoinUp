@@ -1,16 +1,6 @@
 <?php
 
-$host = "localhost";
-$usuario = "root";
-$senha_db = "";
-$nome_banco = "joinup"; 
-$port = "3307";
-
-$conn = new mysqli($host, $usuario, $senha_db, $nome_banco, $port);
-
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
-}
+include 'conexao.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Pegando os dados do formulário

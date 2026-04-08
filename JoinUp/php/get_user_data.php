@@ -7,13 +7,7 @@ if (!isset($_SESSION['usuario_cpf'])) {
     exit;
 }
 
-$host = "localhost";
-$usuario = "root";
-$senha_db = "";
-$nome_banco = "joinup";
-$port = "3307";
-
-$conn = new mysqli($host, $usuario, $senha_db, $nome_banco, $port);
+include 'conexao.php';
 
 $cpf = $_SESSION['usuario_cpf'];
 $sql = "SELECT nome, email, cpf FROM participantes WHERE cpf = ?";
