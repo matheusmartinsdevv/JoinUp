@@ -496,11 +496,11 @@
         <h2 class="cta__title">Pronto pra entrar<br /><span class="text-gradient">no rolê?</span></h2>
         <p class="cta__subtitle">Crie sua conta agora e encontre sua galera no próximo evento.</p>
         <form class="cta__form glass" id="ctaForm">
-          <input type="text" name="cpf" placeholder="000.000.000-00" class="cta__input" required />
-          <input type="text" name="nome" placeholder="Seu nome" class="cta__input" required />
-          <input type="email" name="email" placeholder="Seu melhor e-mail" class="cta__input" required />
+          <input type="text" name="cpf" maxlength="11" placeholder="CPF (Apenas números)" class="cta__input" required />
+          <input type="text" name="nome" maxlength="60" placeholder="Seu nome" class="cta__input" required />
+          <input type="email" name="email" maxlength="45" placeholder="Seu melhor e-mail" class="cta__input" required />
           <input type="date" name="data_nascimento" class="cta__input" required />
-          <input type="password" name="senha" placeholder="Crie sua senha" class="cta__input" required />
+          <input type="password" name="senha" maxlength="45" placeholder="Crie sua senha" class="cta__input" required />
           <button type="submit" class="btn btn--primary btn--glow btn--lg cta__submit">
             Criar conta grátis →
           </button>
