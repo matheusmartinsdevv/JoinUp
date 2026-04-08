@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JoinUp — Onde o Ingresso é Só o Começo do Rolê</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="../Css/styles.css" />
 </head>
+
 <body>
 
   <!-- ░░ HEADER ░░ -->
@@ -22,7 +25,7 @@
       <nav class="nav" id="nav">
         <a href="#eventos" class="nav__link">Eventos</a>
         <a href="#como-funciona" class="nav__link">Como funciona</a>
-        <a href="#organizadores" class="nav__link">Organizadores</a>
+        <!-- <a href="#organizadores" class="nav__link">Organizadores</a> -->
         <a href="#seguranca" class="nav__link">Segurança</a>
         <a href="login.html" class="nav__link">Login</a>
       </nav>
@@ -83,13 +86,15 @@
         <div class="search-bar__inner">
           <div class="search-field">
             <svg class="search-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
             </svg>
             <input type="text" placeholder="Buscar eventos, artistas ou cidades..." class="search-field__input" />
           </div>
           <div class="search-field search-field--location">
             <svg class="search-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
             </svg>
             <input type="text" placeholder="São Paulo, SP" class="search-field__input" />
           </div>
@@ -107,7 +112,8 @@
 
     <!-- Live notification -->
     <div class="live-notif glass" id="liveNotif">
-      <img src="assets/images/avatar-1.jpg" alt="Bruna" class="live-notif__avatar" onerror="this.style.background='linear-gradient(135deg,#7c3aed,#a855f7)';this.removeAttribute('src')" />
+      <img src="assets/images/avatar-1.jpg" alt="Bruna" class="live-notif__avatar"
+        onerror="this.style.background='linear-gradient(135deg,#7c3aed,#a855f7)';this.removeAttribute('src')" />
       <div class="live-notif__text">
         <strong>Bruna M.</strong> acabou de postar no <span class="text-accent">Festival Neon SP</span>
       </div>
@@ -185,7 +191,8 @@
             <span class="feed-card__time">agora</span>
           </div>
           <div class="feed-card__img feed-card__img--1"></div>
-          <p class="feed-card__caption">Que energia incrível!! Quem mais está aqui? <span class="tag-user">@joinup</span> <span class="tag-user">#FestivalNeon</span></p>
+          <p class="feed-card__caption">Que energia incrível!! Quem mais está aqui? <span
+              class="tag-user">@joinup</span> <span class="tag-user">#FestivalNeon</span></p>
           <div class="feed-card__actions">
             <button class="feed-action">❤️ 248</button>
             <button class="feed-action">💬 32</button>
@@ -408,7 +415,8 @@
             <div class="step__num">04</div>
             <div class="step__icon">🔁</div>
             <h3 class="step__title">Retenha sua galera</h3>
-            <p class="step__desc">O público do seu evento vira sua comunidade permanente. Próximo rolê já tem audiência.</p>
+            <p class="step__desc">O público do seu evento vira sua comunidade permanente. Próximo rolê já tem audiência.
+            </p>
           </div>
         </div>
       </div>
@@ -488,12 +496,18 @@
         <h2 class="cta__title">Pronto pra entrar<br /><span class="text-gradient">no rolê?</span></h2>
         <p class="cta__subtitle">Crie sua conta agora e encontre sua galera no próximo evento.</p>
         <form class="cta__form glass" id="ctaForm">
-          <input type="text" placeholder="Seu nome" class="cta__input" required />
-          <input type="email" placeholder="Seu melhor e-mail" class="cta__input" required />
+          <input type="text" name="cpf" placeholder="000.000.000-00" class="cta__input" required />
+          <input type="text" name="nome" placeholder="Seu nome" class="cta__input" required />
+          <input type="email" name="email" placeholder="Seu melhor e-mail" class="cta__input" required />
+          <input type="date" name="data_nascimento" class="cta__input" required />
+          <input type="password" name="senha" placeholder="Crie sua senha" class="cta__input" required />
           <button type="submit" class="btn btn--primary btn--glow btn--lg cta__submit">
             Criar conta grátis →
           </button>
         </form>
+        <a href="login.html">
+          <button type="button" class="btn btn--primary">Fazer login</button>
+        </a>
         <p class="cta__terms">Sem spam. Cancelamento a qualquer hora. Ingresso de presente pra quem entrar agora. 🎟</p>
       </div>
     </div>
@@ -548,5 +562,7 @@
   </footer>
 
   <script src="../js/script.js"></script>
+  <script src="../js/cadastro.js"></script>
 </body>
+
 </html>
