@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../Css/login.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <title>Dashboard Organizador | JoinUp</title>
+</head>
+
+<body>
+    <div class="login-page">
+        <div class="cta__orbs">
+            <div class="orb orb--1"></div>
+            <div class="orb orb--2"></div>
+        </div>
+
+        <div class="container">
+            <div class="cta__inner fade-in">
+                <h2 class="cta__title">Bem-vindo, <span class="text-gradient" id="user-name">Carregando...</span>!</h2>
+                <p class="cta__subtitle">Painel do Organizador - JoinUp</p>
+
+                <div class="profile-card glass">
+                    <div class="user-info">
+                        <label>Nome da Organização</label>
+                        <p id="info-nome">...</p>
+                    </div>
+                    <div class="user-info">
+                        <label>E-mail</label>
+                        <p id="info-email">...</p>
+                    </div>
+                    <div class="user-info">
+                        <label>CNPJ</label>
+                        <p id="info-cnpj">...</p>
+                    </div>
+
+                    <div class="actions">
+                        <button onclick="window.location.href='criar-evento.html'" class="btn btn--primary btn--lg"
+                            style="flex: 1; margin-bottom: 0.5rem;">
+                            Criar Novo Evento
+                        </button>
+                        <button onclick="window.location.href='editarOrganizador.html'" class="btn btn--primary btn--lg"
+                            style="flex: 1; margin-bottom: 0.5rem;">
+                            Editar Perfil
+                        </button>
+                        <button id="btnExcluir" class="btn btn--danger btn--lg" style="flex: 1;">
+                            Excluir Conta
+                        </button>
+                    </div>
+                </div>
+
+                <a href="../php/logout.php"
+                    style="display: block; margin-top: 2rem; color: #aaa; text-decoration: none;">Sair da conta</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/dashboardOrganizador.js"></script>
+</body>
+
+</html>

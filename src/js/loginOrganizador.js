@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Verifica a resposta do servidor
                 if (result.trim() === "sucesso") {
-                    // Se deu certo, vai para a Dashboard do Participante
-                    window.location.href = 'dashboard.html';
+                    // Se deu certo, vai para a Dashboard do Organizador
+                    window.location.href = 'dashboardOrganizador.html';
                 } else {
                     // Se deu erro (senha errada, etc), mostra o motivo
                     alert(result);

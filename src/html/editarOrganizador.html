@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../Css/login.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <title>Editar Perfil | JoinUp</title>
+</head>
+
+<body>
+    <div class="login-page">
+        <div class="container">
+            <div class="cta__inner fade-in">
+                <h2 class="cta__title">Atualizar <span class="text-gradient">Perfil</span></h2>
+                <p class="cta__subtitle">Mantenha os dados da organização em dia.</p>
+
+                <form class="cta__form glass" id="editForm">
+                    <div class="user-info">
+                        <label style="color: #aaa; font-size: 0.8rem;">NOME DA ORGANIZAÇÃO</label>
+                        <input type="text" name="nome" id="edit-nome" class="cta__input" required />
+                    </div>
+
+                    <div class="user-info">
+                        <label style="color: #aaa; font-size: 0.8rem;">E-MAIL</label>
+                        <input type="email" name="email" id="edit-email" class="cta__input" required />
+                    </div>
+                    <div class="user-info">
+                        <label style="color: #aaa; font-size: 0.8rem;">NOVA SENHA (DEIXE VAZIO PARA MANTER A
+                            ATUAL)</label>
+                        <input type="password" name="nova_senha" id="edit-senha" class="cta__input"
+                            placeholder="••••••••" />
+                    </div>
+
+                    <p style="font-size: 0.7rem; color: #888; margin-bottom: 1rem;">Nota: O CNPJ não pode ser alterado
+                        por segurança.</p>
+
+                    <button type="submit" class="btn btn--primary btn--lg cta__submit">
+                        Salvar Alterações
+                    </button>
+                    <a href="dashboardOrganizador.html"
+                        style="display: block; margin-top: 1rem; color: white; text-decoration: none; font-size: 0.9rem;">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../js/editarOrganizador.js"></script>
+</body>
+
+</html>
