@@ -16,6 +16,10 @@ body {
     overflow-x: hidden;
 }
 
+.cta {
+    margin: 5vh 0vh;
+}
+
 /* Orbs de fundo (As esferas de luz neon) */
 .cta__orbs {
     position: fixed; /* Fica fixo atrás de tudo */

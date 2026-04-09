@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // verifica a resposta do PHP
                 if (result.trim() === "sucesso") {
                     alert("Cadastro realizado com sucesso! Redirecionando...");
-                    window.location.href = 'loginPartipante.html';
+                    window.location.href = 'loginParticipante.html';
                 } else {
                     alert("Erro no cadastro: " + result);
                 }
