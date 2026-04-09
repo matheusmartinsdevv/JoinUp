@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // envia para o PHP
-                const response = await fetch('../php/cadastroParticipante.php', {
+                const response = await fetch('../php/cadastroOrganizador.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // verifica a resposta do PHP
                 if (result.trim() === "sucesso") {
                     alert("Cadastro realizado com sucesso! Redirecionando...");
-                    window.location.href = 'loginPartipante.html';
+                    window.location.href = 'loginOrganizador.html';
                 } else {
                     alert("Erro no cadastro: " + result);
                 }

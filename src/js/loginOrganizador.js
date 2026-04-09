@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // Envia os dados para o PHP de login
-                const response = await fetch('../php/loginParticipante.php', {
+                const response = await fetch('../php/loginOrganizador.php', {
                     method: 'POST',
                     body: formData
                 });
