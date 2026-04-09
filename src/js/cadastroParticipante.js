@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Erro na requisição:", error);
                 alert("Erro ao conectar com o servidor. Verifique se o XAMPP está ligado.");
             }
+        
         });
     }
+
 });
+
+    
+    

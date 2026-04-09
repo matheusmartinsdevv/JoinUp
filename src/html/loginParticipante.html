@@ -21,14 +21,14 @@
                 <h2 class="cta__title">Bem-vindo de <br /><span class="text-gradient">volta!</span></h2>
                 <p class="cta__subtitle">Entre para conferir os próximos rolês.</p>
 
-                    <a href="loginParticipante.html">
-                        <button type="submit" class="btn--primary">Fazer login Participante</button>
-                    </a>
+                <form class="cta__form glass" id="loginForm">
+                    <input type="email" name="email" placeholder="Seu e-mail" class="cta__input" required />
+                    <input type="password" name="senha" placeholder="Sua senha" class="cta__input" required />
 
-                    <a href="loginOrganizador.html">
-                        <button type="submit" class="btn--primary">Fazer login Organizador</button>
-                    </a>
-
+                    <button type="submit" class="btn btn--primary btn--glow btn--lg cta__submit">
+                        Entrar no rolê →
+                    </button>
+                </form>
 
                 <p class="cta__terms">Ainda não tem conta? <a href="cadastro.html"
                         style="color: var(--primary-purple); text-decoration: none; font-weight: 600;">Cadastre-se

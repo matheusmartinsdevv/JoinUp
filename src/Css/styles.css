@@ -134,6 +134,7 @@ img { display: block; max-width: 100%; }
 .btn--primary {
   background: linear-gradient(135deg, var(--purple-400), var(--neon-soft));
   color: var(--white);
+
 }
 .btn--primary:hover {
   transform: translateY(-2px);
