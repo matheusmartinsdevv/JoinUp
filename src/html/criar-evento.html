@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../Css/login.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <title>Dashboard Organizador | JoinUp</title>
+</head>
+
+
+
+<body> 
+
+
+    <div style="height: 500px; width: 500px; background-color: #A78BFA
+" size="large" class="login-page" text-align="center"> 
+       <form id="formEvento" action="../php/criar-evento.php" method="POST" class="form-evento">
+            
+            <label for="nome">Nome do Evento:</label>
+            <input type="text" id="nome" name="nome" ><br><br>
+            <label for="data">Data do Evento:</label><br>
+            <input type="date" id="data" name="data" ><br><br>
+            <label for="descricao">Descrição do Evento:</label><br>
+            <input type="text" id="descricao" name="descricao" ><br><br>
+            <label for="local">Local do Evento:</label><br>
+            <input type="text" id="local" name="local"><br><br>
+            <br> 
+            <select label="selecione">
+                <option value="disabled">Selecione a Categoria</option>
+                <option value="Sertanejo">Sertanejo</option>
+                <option value="Eletronica">Eletrônica</option>
+                <option value="Funk">Funk</option>
+                <option value="MPB">MPB</option>
+                <option value="Rock">Rock</option>
+                <option value="Pop">Pop</option>
+            </select>
+            <br><br>
+            <label>Imagem de Divulgação do Evento</label>
+                <input type="file" name="imagem_evento"><br><br>
+            <button type="submit" style="height: 80px; width: 200px; font-size: large; color: white; background-color: #240046">Criar Evento</button>
+
+        </form>
+
+    </div>
+
+
+        <script src="./../js/criarEvento.js" defer></script>
+</body>
+
+
+
+</html>
