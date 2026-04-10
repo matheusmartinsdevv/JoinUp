@@ -193,34 +193,23 @@ function showToast(message) {
   }, 3000);
 }
 
-/* ── Cursor glow effect (desktop only) ───────────────────── */
-if (window.matchMedia('(pointer: fine)').matches) {
-  const cursor = document.createElement('div');
-  cursor.style.cssText = `
-    position: fixed;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(168,85,247,0.06) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-    transform: translate(-50%, -50%);
-    transition: left 0.15s ease, top 0.15s ease;
-  `;
-  document.body.appendChild(cursor);
+/* ── Parallax orbs (desktop + throttled) ─────────────────── */
+const canUseParallax = window.matchMedia('(min-width: 1025px) and (prefers-reduced-motion: no-preference)').matches;
+if (canUseParallax) {
+  const orbs = document.querySelectorAll('.orb');
+  let rafId = null;
 
-  window.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top  = e.clientY + 'px';
+  const updateParallax = () => {
+    const scrollY = window.scrollY;
+    orbs.forEach((orb, i) => {
+      const speed = (i % 2 === 0) ? 0.05 : -0.03;
+      orb.style.transform = `translateY(${scrollY * speed}px)`;
+    });
+    rafId = null;
+  };
+
+  window.addEventListener('scroll', () => {
+    if (rafId !== null) return;
+    rafId = window.requestAnimationFrame(updateParallax);
   }, { passive: true });
 }
-
-/* ── Parallax orbs (subtle) ───────────────────────────────── */
-const orbs = document.querySelectorAll('.orb');
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
-  orbs.forEach((orb, i) => {
-    const speed = (i % 2 === 0) ? 0.08 : -0.05;
-    orb.style.transform = `translateY(${scrollY * speed}px)`;
-  });
-}, { passive: true });
