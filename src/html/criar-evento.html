@@ -7,49 +7,116 @@
     <link rel="stylesheet" href="../Css/login.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
         rel="stylesheet" />
-    <title>Dashboard Organizador | JoinUp</title>
+    <title>Criar Evento | JoinUp</title>
 </head>
 
-
-
-<body> 
-
-
-    <div style="height: 500px; width: 500px; background-color: #A78BFA
-" size="large" class="login-page" text-align="center"> 
-       <form id="formEvento" action="../php/criar-evento.php" method="POST" class="form-evento">
-            
-            <label for="nome">Nome do Evento:</label>
-            <input type="text" id="nome" name="nome" ><br><br>
-            <label for="data">Data do Evento:</label><br>
-            <input type="date" id="data" name="data" ><br><br>
-            <label for="descricao">Descrição do Evento:</label><br>
-            <input type="text" id="descricao" name="descricao" ><br><br>
-            <label for="local">Local do Evento:</label><br>
-            <input type="text" id="local" name="local"><br><br>
-            <br> 
-            <select label="selecione">
-                <option value="disabled">Selecione a Categoria</option>
-                <option value="Sertanejo">Sertanejo</option>
-                <option value="Eletronica">Eletrônica</option>
-                <option value="Funk">Funk</option>
-                <option value="MPB">MPB</option>
-                <option value="Rock">Rock</option>
-                <option value="Pop">Pop</option>
-            </select>
-            <br><br>
-            <label>Imagem de Divulgação do Evento</label>
-                <input type="file" name="imagem_evento"><br><br>
-            <button type="submit" style="height: 80px; width: 200px; font-size: large; color: white; background-color: #240046">Criar Evento</button>
-
-        </form>
-
+<body>
+    <!-- Orbs de fundo (efeito neon) -->
+    <div class="cta__orbs">
+        <div class="orb orb--4"></div>
+        <div class="orb orb--5"></div>
     </div>
 
+    <!-- Container principal -->
+    <div class="container">
+        <div class="cta__inner">
+            <h1 class="cta__title">Criar <span class="text-gradient">Evento</span></h1>
 
-        <script src="./../js/criarEvento.js" defer></script>
+            <div class="glass">
+                <form id="formEvento" action="../php/criar-evento.php" method="POST" class="cta__form">
+
+                    <div>
+                        <label for="nome"
+                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Nome do
+                            Evento:</label>
+                        <input type="text" id="nome" name="nome" placeholder="Digite o nome do evento"
+                            class="cta__input" required>
+                    </div>
+
+                    <div>
+                        <label for="data"
+                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Data e Hora
+                            do
+                            Evento:</label>
+                        <input type="datetime-local" id="data" name="data" class="cta__input" required>
+                    </div>
+
+                    <div>
+                        <label for="descricao"
+                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Descrição do
+                            Evento:</label>
+                        <input type="text" id="descricao" name="descricao" placeholder="Descreva seu evento"
+                            class="cta__input" required>
+                    </div>
+
+                    <div>
+                        <label for="local"
+                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Local do
+                            Evento:</label>
+                        <input type="text" id="local" name="local" placeholder="Endereço do evento" class="cta__input"
+                            required>
+                    </div>
+
+                    <div>
+                        <label for="genero"
+                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Selecione o
+                            Gênero:</label>
+                        <select id="genero" name="genero" class="cta__input" required>
+                            <option value="1">Carregando gêneros...</option>
+                        </select>
+                    </div>
+
+
+                    <button type="submit" class="btn--primary btn--glow">Criar Evento</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="./../js/criarEvento.js" defer></script>
+    <script>
+        // Carrega gêneros do banco
+        document.addEventListener('DOMContentLoaded', function () {
+            const select = document.getElementById('genero');
+
+            fetch('../php/get_generos.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data.length > 0) {
+                        select.innerHTML = '<option value="">Selecione o Gênero</option>';
+                        data.data.forEach(genero => {
+                            const option = document.createElement('option');
+                            option.value = genero.id;
+                            option.textContent = genero.nome;
+                            select.appendChild(option);
+                        });
+                    } else {
+                        select.innerHTML = '<option value="1">Gênero Padrão</option>';
+                    }
+                })
+                .catch(() => {
+                    select.innerHTML = '<option value="1">Gênero Padrão</option>';
+                });
+        });
+
+        // Validação antes do envio
+        document.getElementById('formEvento').addEventListener('submit', function (e) {
+            const dataInput = document.getElementById('data');
+            const generoSelect = document.getElementById('genero');
+
+            if (!dataInput.value) {
+                alert('Por favor, selecione a data e hora do evento.');
+                e.preventDefault();
+                return;
+            }
+
+            if (!generoSelect.value) {
+                alert('Por favor, selecione um gênero musical.');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
 </body>
-
-
 
 </html>
