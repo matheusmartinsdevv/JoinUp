@@ -64,16 +64,22 @@ tabs.forEach(tab => {
 });
 
 /* ── Search bar interactions ──────────────────────────────── */
+const searchForm = document.querySelector('.search-bar__inner');
 const searchBtn = document.querySelector('.search-bar__btn');
 const searchInput = document.querySelector('.search-field__input');
 
-searchBtn?.addEventListener('click', () => {
+searchBtn?.addEventListener('click', (event) => {
   const query = searchInput?.value.trim();
-  if (query) {
-    // Placeholder: would redirect to results page
-    showToast(`Buscando por "${query}"…`);
-  } else {
+  if (!query) {
+    event.preventDefault();
     searchInput?.focus();
+    showToast('Digite um termo para pesquisar eventos.');
+    return;
+  }
+
+  // Fallback para o caso da barra nao estar dentro de um formulario.
+  if (!(searchForm instanceof HTMLFormElement)) {
+    window.location.href = `../php/eventos.php?q=${encodeURIComponent(query)}`;
   }
 });
 

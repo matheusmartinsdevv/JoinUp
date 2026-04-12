@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cadastrar Evento | JoinUp</title>
+  <title>Criar Evento | JoinUp</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
@@ -36,140 +36,79 @@
       <span class="badge">Cadastro de evento</span>
       <h1 class="title">Publique um novo evento</h1>
       <p class="subtitle">
-        Tela visual para o organizador cadastrar evento. Nenhuma ação está integrada por enquanto.
+        Preencha os dados principais para criar o evento na plataforma.
       </p>
 
-      <form class="event-form">
+      <form id="formEvento" class="event-form" action="../php/criar-evento.php" method="POST">
         <div class="form-grid">
           <label class="field field--full">
             <span>Nome do evento</span>
-            <input type="text" placeholder="Ex: Festival JoinUp Sunset" />
+            <input type="text" id="nome" name="nome" placeholder="Ex: Festival JoinUp Sunset" required />
           </label>
 
           <label class="field">
-            <span>Categoria</span>
-            <select>
-              <option>Shows</option>
-              <option>Festas</option>
-              <option>Teatro</option>
-              <option>Esportes</option>
-              <option>Festival</option>
+            <span>Genero musical</span>
+            <select id="genero" name="genero" required>
+              <option value="">Carregando generos...</option>
             </select>
           </label>
 
           <label class="field">
-            <span>Faixa etária</span>
-            <select>
-              <option>Livre</option>
-              <option>16+</option>
-              <option>18+</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Data do evento</span>
-            <input type="date" />
-          </label>
-
-          <label class="field">
-            <span>Horário de início</span>
-            <input type="time" />
-          </label>
-
-          <label class="field">
-            <span>Horário de término</span>
-            <input type="time" />
+            <span>Data e hora do evento</span>
+            <input type="datetime-local" id="data" name="data" required />
           </label>
 
           <label class="field field--full">
             <span>Local</span>
-            <input type="text" placeholder="Ex: Espaço Vibra, São Paulo" />
-          </label>
-
-          <label class="field">
-            <span>Cidade</span>
-            <input type="text" placeholder="São Paulo" />
-          </label>
-
-          <label class="field">
-            <span>UF</span>
-            <input type="text" maxlength="2" placeholder="SP" />
-          </label>
-
-          <label class="field">
-            <span>Capacidade</span>
-            <input type="number" placeholder="5000" />
+            <input type="text" id="local" name="local" placeholder="Ex: Espaco Vibra, Sao Paulo" required />
           </label>
 
           <label class="field field--full">
-            <span>Descrição do evento</span>
-            <textarea rows="4"
-              placeholder="Conte sobre atrações, diferenciais, regras e tudo que o público precisa saber."></textarea>
+            <span>Descricao do evento</span>
+            <textarea id="descricao" name="descricao" rows="4"
+              placeholder="Conte sobre atracoes, diferenciais e informacoes importantes." required></textarea>
           </label>
         </div>
 
         <section class="block">
-          <h2 class="block__title">Lotes e ingressos</h2>
+          <h2 class="block__title">Lotes e ingressos (opcional)</h2>
           <div class="ticket-grid">
             <label class="field">
               <span>Nome do lote</span>
-              <input type="text" placeholder="1º Lote Promocional" />
+              <input type="text" placeholder="1o Lote Promocional" />
             </label>
             <label class="field">
               <span>Quantidade</span>
               <input type="number" placeholder="1000" />
             </label>
             <label class="field">
-              <span>Preço inteira (R$)</span>
+              <span>Preco inteira (R$)</span>
               <input type="number" placeholder="140" />
             </label>
             <label class="field">
-              <span>Preço meia (R$)</span>
+              <span>Preco meia (R$)</span>
               <input type="number" placeholder="70" />
             </label>
           </div>
         </section>
 
-        <section class="block">
-          <h2 class="block__title">Imagem de capa</h2>
-          <div class="upload-box">
-            <p>Arraste uma arte ou clique para selecionar</p>
-            <span>Formatos sugeridos: JPG/PNG - 1920x1080</span>
-          </div>
-        </section>
-
-        <section class="toggles">
-          <label class="check">
-            <input type="checkbox" />
-            <span>Ativar check-in digital por QR Code</span>
-          </label>
-          <label class="check">
-            <input type="checkbox" />
-            <span>Permitir revenda segura de ingressos</span>
-          </label>
-          <label class="check">
-            <input type="checkbox" />
-            <span>Exibir evento em destaque na landing page</span>
-          </label>
-        </section>
-
         <div class="actions">
           <button type="button" class="btn btn--ghost">Salvar rascunho</button>
-          <button type="button" class="btn btn--primary">Publicar evento</button>
+          <button type="submit" class="btn btn--primary">Publicar evento</button>
         </div>
       </form>
     </section>
 
     <aside class="card card--side">
-      <h2 class="block__title">Prévia rápida</h2>
+      <h2 class="block__title">Previa rapida</h2>
       <article class="preview">
         <div class="preview__cover">
           <span class="preview__tag">Festival</span>
         </div>
         <div class="preview__body">
           <h3>Festival JoinUp Sunset</h3>
-          <p>📅 12 Jul 2026 · 16h às 23h</p>
-          <p>📍 Espaço Vibra, São Paulo - SP</p>
+          <p>Data definida no formulario</p>
+          <p>Local informado pelo organizador</p>
           <p class="preview__price">Ingressos a partir de <strong>R$ 140</strong></p>
         </div>
       </article>
@@ -177,17 +116,40 @@
       <div class="checklist">
         <h3>Checklist do organizador</h3>
         <ul>
-          <li>Definir data, local e capacidade</li>
-          <li>Configurar ao menos 1 lote de ingresso</li>
-          <li>Subir capa oficial do evento</li>
-          <li>Revisar descrição e regras de acesso</li>
+          <li>Definir data e local do evento</li>
+          <li>Selecionar o genero musical correto</li>
+          <li>Adicionar descricao clara para o publico</li>
         </ul>
       </div>
-
-      <a href="index.html#feed" class="btn btn--primary btn--full">Abrir landing com feed</a>
-      <p class="hint">Interface estática para validação visual (sem persistência de dados).</p>
     </aside>
   </main>
+
+  <script src="../js/criarEvento.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const select = document.getElementById('genero');
+
+      fetch('../php/get_generos.php')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+            select.innerHTML = '<option value="">Selecione o genero</option>';
+            data.data.forEach(genero => {
+              const option = document.createElement('option');
+              option.value = genero.id;
+              option.textContent = genero.nome;
+              select.appendChild(option);
+            });
+            return;
+          }
+
+          select.innerHTML = '<option value="1">Genero padrao</option>';
+        })
+        .catch(() => {
+          select.innerHTML = '<option value="1">Genero padrao</option>';
+        });
+    });
+  </script>
 </body>
 
 </html>

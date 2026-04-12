@@ -22,6 +22,21 @@
                 <h2 class="cta__title">Bem-vindo, <span class="text-gradient" id="user-name">Carregando...</span>!</h2>
                 <p class="cta__subtitle">Painel do Organizador - JoinUp</p>
 
+                <!-- Mensagem de sucesso -->
+                <div id="success-message" class="success-message" style="display: none;">
+                    <div class="alert alert-success">
+                        ✅ Evento cadastrado com sucesso!
+                    </div>
+                </div>
+
+                <script>
+                    if (window.location.search.includes('success=1')) {
+                        document.getElementById('success-message').style.display = 'block';
+                        setTimeout(() => document.getElementById('success-message').style.display = 'none', 5000);
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                </script>
+
                 <div class="profile-card glass">
                     <div class="user-info">
                         <label>Nome da Organização</label>
