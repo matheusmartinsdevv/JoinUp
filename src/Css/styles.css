@@ -699,7 +699,7 @@ img { display: block; max-width: 100%; }
 
 .events__grid {
   display: grid;
-  grid-template-columns: 1fr 1.4fr 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   grid-template-rows: auto;
   gap: 20px;
   align-items: stretch;
