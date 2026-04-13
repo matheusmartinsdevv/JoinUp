@@ -1,14 +1,12 @@
-/* ============================================================
-   JoinUp — Script de interações
-   ============================================================ */
+/* Interacoes da landing page */
 
-/* ── Header scroll effect ─────────────────────────────────── */
+/* Atualiza o cabecalho apos rolagem */
 const header = document.getElementById('header');
 window.addEventListener('scroll', () => {
   header.classList.toggle('scrolled', window.scrollY > 40);
 }, { passive: true });
 
-/* ── Burger menu ──────────────────────────────────────────── */
+/* Controla o menu mobile */
 const burger = document.getElementById('burger');
 const nav    = document.getElementById('nav');
 
@@ -25,7 +23,7 @@ nav.querySelectorAll('.nav__link').forEach(link => {
   });
 });
 
-/* ── Fade-in on scroll (IntersectionObserver) ─────────────── */
+/* Ativa animacoes quando os elementos entram na tela */
 const fadeEls = document.querySelectorAll('.fade-in');
 const fadeObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -38,7 +36,7 @@ const fadeObserver = new IntersectionObserver((entries) => {
 
 fadeEls.forEach(el => fadeObserver.observe(el));
 
-/* ── How-it-works tabs ────────────────────────────────────── */
+/* Alterna as abas da secao como funciona (quando existirem) */
 const tabs  = document.querySelectorAll('.how__tab');
 const panels = document.querySelectorAll('.how__panel');
 
@@ -53,7 +51,7 @@ tabs.forEach(tab => {
       const isTarget = panel.id === `tab-${target}`;
       panel.classList.toggle('how__panel--hidden', !isTarget);
       if (isTarget) {
-        // Re-trigger fade-in for steps inside newly visible panel
+        // Reaplica a animacao nos itens da aba ativa.
         panel.querySelectorAll('.fade-in').forEach(el => {
           el.classList.remove('visible');
           setTimeout(() => el.classList.add('visible'), 50);
@@ -63,7 +61,7 @@ tabs.forEach(tab => {
   });
 });
 
-/* ── Search bar interactions ──────────────────────────────── */
+/* Valida e envia a busca de eventos */
 const searchForm = document.querySelector('.search-bar__inner');
 const searchBtn = document.querySelector('.search-bar__btn');
 const searchInput = document.querySelector('.search-field__input');
@@ -77,7 +75,7 @@ searchBtn?.addEventListener('click', (event) => {
     return;
   }
 
-  // Fallback para o caso da barra nao estar dentro de um formulario.
+  // Se nao houver formulario, redireciona manualmente com a busca.
   if (!(searchForm instanceof HTMLFormElement)) {
     window.location.href = `../php/eventos.php?q=${encodeURIComponent(query)}`;
   }
@@ -92,7 +90,7 @@ document.querySelectorAll('.search-bar__tags .tag').forEach(tag => {
   });
 });
 
-/* ── CTA Form ─────────────────────────────────────────────── */
+/* Exibe feedback visual no envio do CTA */
 document.getElementById('ctaForm')?.addEventListener('submit', (e) => {
   e.preventDefault();
   const btn = e.target.querySelector('.cta__submit');
@@ -102,14 +100,14 @@ document.getElementById('ctaForm')?.addEventListener('submit', (e) => {
   showToast('Bem-vindo(a) ao JoinUp! 💜');
 });
 
-/* ── Feed action buttons ──────────────────────────────────── */
+/* Trata interacoes dos botoes do feed */
 document.querySelectorAll('.feed-action').forEach(btn => {
   btn.addEventListener('click', function () {
     if (this.classList.contains('feed-action--cta')) {
       showToast('Redirecionando para compra segura… 🔒');
       return;
     }
-    // Like button animation
+    // Destaca visualmente o botao de curtida.
     if (this.textContent.startsWith('❤️')) {
       this.style.color = '#f43f5e';
       this.style.borderColor = 'rgba(244,63,94,0.4)';
@@ -117,7 +115,7 @@ document.querySelectorAll('.feed-action').forEach(btn => {
   });
 });
 
-/* ── Live notification dismiss ────────────────────────────── */
+/* Permite fechar o aviso ao vivo */
 const liveNotif = document.getElementById('liveNotif');
 liveNotif?.addEventListener('click', () => {
   liveNotif.style.opacity = '0';
@@ -125,7 +123,7 @@ liveNotif?.addEventListener('click', () => {
   setTimeout(() => liveNotif.remove(), 400);
 });
 
-// Rotate live notification messages
+// Alterna periodicamente as mensagens do aviso ao vivo.
 const liveMessages = [
   { name: 'Bruna M.', action: 'acabou de postar no', event: 'Festival Neon SP' },
   { name: 'Rafael C.', action: 'entrou no grupo do', event: 'Rock in Rio' },
@@ -144,7 +142,7 @@ setInterval(() => {
   }
 }, 5000);
 
-/* ── Smooth scroll for anchor links ──────────────────────── */
+/* Aplica rolagem suave para links internos */
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
     const href = this.getAttribute('href');
@@ -158,7 +156,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-/* ── Toast notification helper ────────────────────────────── */
+/* Funcao auxiliar para notificacoes toast */
 function showToast(message) {
   const existing = document.querySelector('.toast');
   existing?.remove();
@@ -202,7 +200,7 @@ function showToast(message) {
   }, 3000);
 }
 
-/* ── Parallax orbs (desktop + throttled) ─────────────────── */
+/* Aplica parallax das esferas no desktop */
 const canUseParallax = window.matchMedia('(min-width: 1025px) and (prefers-reduced-motion: no-preference)').matches;
 if (canUseParallax) {
   const orbs = document.querySelectorAll('.orb');

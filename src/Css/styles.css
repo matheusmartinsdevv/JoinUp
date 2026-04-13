@@ -1,9 +1,6 @@
-/* ============================================================
-   JoinUp — Rede Social de Eventos
-   CSS: Dark Mode + Deep Purple + Glassmorphism + Neon
-   ============================================================ */
+/* Estilos principais do JoinUp */
 
-/* ── Reset & Base ─────────────────────────────────────────── */
+/* Reset e estilos base */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -57,7 +54,7 @@ img { display: block; max-width: 100%; }
   padding: 0 24px;
 }
 
-/* ── Utilities ────────────────────────────────────────────── */
+/* Utilitarios */
 .text-gradient {
   background: linear-gradient(135deg, var(--purple-300), var(--accent), var(--neon));
   -webkit-background-clip: text;
@@ -110,7 +107,7 @@ img { display: block; max-width: 100%; }
 
 .mt-1 { margin-top: 12px; }
 
-/* ── Buttons ──────────────────────────────────────────────── */
+/* Botoes */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -160,7 +157,7 @@ img { display: block; max-width: 100%; }
   background: var(--white-08);
 }
 
-/* ── Fade-in scroll animation ─────────────────────────────── */
+/* Animacao de entrada no scroll */
 .fade-in {
   opacity: 0;
   transform: translateY(32px);
@@ -171,7 +168,7 @@ img { display: block; max-width: 100%; }
 .fade-in--delay-2 { transition-delay: 0.2s; }
 .fade-in--delay-3 { transition-delay: 0.3s; }
 
-/* ── Section Headers ──────────────────────────────────────── */
+/* Cabecalhos das secoes */
 .section-header { text-align: center; margin-bottom: 56px; }
 .section-title {
   font-size: clamp(2rem, 4vw, 3rem);
@@ -187,7 +184,7 @@ img { display: block; max-width: 100%; }
   margin-right: auto;
 }
 
-/* ── Header ───────────────────────────────────────────────── */
+/* Cabecalho */
 .header {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -290,7 +287,7 @@ img { display: block; max-width: 100%; }
   transition: var(--transition);
 }
 
-/* ── Hero ─────────────────────────────────────────────────── */
+/* Secao principal (hero) */
 .hero {
   position: relative;
   min-height: 100vh;
@@ -400,7 +397,7 @@ img { display: block; max-width: 100%; }
   background: var(--glass-border);
 }
 
-/* Search Bar */
+/* Barra de busca */
 .search-bar {
   width: 100%;
   max-width: 820px;
@@ -452,7 +449,7 @@ img { display: block; max-width: 100%; }
   flex-wrap: wrap;
 }
 
-/* Live notification */
+/* Notificacao ao vivo */
 .live-notif {
   position: fixed;
   bottom: 32px;
@@ -493,7 +490,7 @@ img { display: block; max-width: 100%; }
   50% { opacity: 0.5; }
 }
 
-/* ── Pain Section ─────────────────────────────────────────── */
+/* Secao de dores */
 .pain {
   padding: 100px 0;
   background: linear-gradient(180deg, var(--purple-900), var(--purple-800));
@@ -583,7 +580,7 @@ img { display: block; max-width: 100%; }
   background: linear-gradient(180deg, transparent, var(--glass-border), transparent);
 }
 
-/* ── Feed Section ─────────────────────────────────────────── */
+/* Secao de feed */
 .feed {
   padding: 100px 0;
   background: var(--purple-800);
@@ -691,7 +688,7 @@ img { display: block; max-width: 100%; }
 }
 .feed-action--cta:hover { opacity: 0.9; }
 
-/* ── Events Showcase ──────────────────────────────────────── */
+/* Vitrine de eventos */
 .events {
   padding: 100px 0;
   background: linear-gradient(180deg, var(--purple-800), var(--purple-900));
@@ -796,7 +793,7 @@ img { display: block; max-width: 100%; }
 .av--2 { background: linear-gradient(135deg, #2563eb, #7c3aed); }
 .av--3 { background: linear-gradient(135deg, #059669, #a855f7); }
 
-/* ── How it Works ─────────────────────────────────────────── */
+/* Secao como funciona */
 .how {
   padding: 100px 0;
   background: var(--purple-900);
@@ -876,7 +873,7 @@ img { display: block; max-width: 100%; }
 .step__title { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
 .step__desc { font-size: 0.82rem; color: var(--white-60); line-height: 1.5; }
 
-/* ── Trust ────────────────────────────────────────────────── */
+/* Secao de seguranca */
 .trust {
   padding: 100px 0;
   background: linear-gradient(180deg, var(--purple-900), var(--purple-800));
@@ -1028,7 +1025,7 @@ img { display: block; max-width: 100%; }
   border-radius: 99px;
 }
 
-/* ── CTA Section ──────────────────────────────────────────── */
+/* Secao de CTA */
 .cta {
   padding: 120px 0;
   position: relative;
@@ -1077,7 +1074,7 @@ img { display: block; max-width: 100%; }
   color: var(--white-60);
 }
 
-/* ── Footer ───────────────────────────────────────────────── */
+/* Rodape */
 .footer {
   background: #08000e;
   border-top: 1px solid var(--glass-border);
@@ -1152,7 +1149,7 @@ img { display: block; max-width: 100%; }
   color: var(--white-60);
 }
 
-/* ── Create Event Page ───────────────────────────────────── */
+/* Pagina de criacao de evento */
 .create-page {
   min-height: 100vh;
   background: linear-gradient(180deg, var(--purple-900), var(--purple-800));
@@ -1417,7 +1414,7 @@ img { display: block; max-width: 100%; }
   margin-top: 16px;
 }
 
-/* ── Search Results Page ──────────────────────────────────── */
+/* Pagina de resultados de busca */
 .results-page {
   position: relative;
   min-height: 100vh;
@@ -1747,7 +1744,7 @@ img { display: block; max-width: 100%; }
   transform: translateY(-2px);
 }
 
-/* ── Performance ──────────────────────────────────────────── */
+/* Ajustes de performance */
 .pain,
 .feed,
 .events,
@@ -1765,7 +1762,7 @@ img { display: block; max-width: 100%; }
   }
 }
 
-/* ── Responsive ───────────────────────────────────────────── */
+/* Regras responsivas */
 @media (max-width: 1024px) {
   .header-search { display: none; }
 
