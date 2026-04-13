@@ -1,16 +1,22 @@
 <?php
+// Reaproveita a conexao central com o banco.
 include __DIR__ . '/conexao.php';
 
+// Filtros recebidos pela URL (GET).
 $q = isset($_GET['q']) ? trim($_GET['q']) : '';
 $cidade = isset($_GET['cidade']) ? trim($_GET['cidade']) : '';
+
+// Estado da tela de resultados.
 $eventos = [];
 $erro_busca = '';
 
 if ($conn->connect_error) {
     $erro_busca = 'Nao foi possivel conectar ao banco de dados.';
 } else {
+    // Garante codificacao correta para acentos e simbolos.
     $conn->set_charset('utf8mb4');
 
+    // Consulta base dos eventos com dados de genero e organizador.
     $sql = "
         SELECT
             e.id_evento,
@@ -26,9 +32,11 @@ if ($conn->connect_error) {
         WHERE 1 = 1
     ";
 
+    // Arrays usados para montar o bind_param de forma dinamica.
     $types = '';
     $params = [];
 
+    // Filtro textual amplo (nome, descricao, local, genero e organizador).
     if ($q !== '') {
         $like_q = '%' . $q . '%';
         $sql .= " AND (e.nome LIKE ? OR e.descricao LIKE ? OR e.localizacao LIKE ? OR gm.nome LIKE ? OR o.nome LIKE ?)";
@@ -40,6 +48,7 @@ if ($conn->connect_error) {
         $params[] = $like_q;
     }
 
+    // Filtro especifico por cidade/local.
     if ($cidade !== '') {
         $like_cidade = '%' . $cidade . '%';
         $sql .= " AND e.localizacao LIKE ?";
@@ -47,6 +56,7 @@ if ($conn->connect_error) {
         $params[] = $like_cidade;
     }
 
+    // Ordena pelos eventos mais proximos e limita a listagem.
     $sql .= " ORDER BY e.data ASC LIMIT 50";
 
     $stmt = $conn->prepare($sql);
@@ -54,12 +64,15 @@ if ($conn->connect_error) {
     if (!$stmt) {
         $erro_busca = 'Nao foi possivel preparar a busca de eventos.';
     } else {
+        // Aplica parametros somente quando existe filtro ativo.
         if ($types !== '') {
             $stmt->bind_param($types, ...$params);
         }
 
         if ($stmt->execute()) {
             $resultado = $stmt->get_result();
+
+            // Transforma o resultado do banco em array para renderizar no HTML.
             while ($row = $resultado->fetch_assoc()) {
                 $eventos[] = $row;
             }
@@ -73,11 +86,13 @@ if ($conn->connect_error) {
     $conn->close();
 }
 
+// Escapa texto para evitar XSS na renderizacao.
 function e($texto)
 {
     return htmlspecialchars((string) $texto, ENT_QUOTES, 'UTF-8');
 }
 
+// Formata datas no padrao exibido na interface.
 function formatar_data($data)
 {
     if (empty($data)) {
@@ -92,6 +107,7 @@ function formatar_data($data)
     return date('d/m/Y H:i', $timestamp);
 }
 
+// Cria resumo curto para descricoes longas.
 function resumo($texto, $limite = 180)
 {
     $texto = trim((string) $texto);
