@@ -2,192 +2,120 @@
 <html lang="pt-BR">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cadastrar Evento | JoinUp</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="../Css/styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../Css/login.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <title>Criar Evento | JoinUp</title>
 </head>
 
-<body class="create-page">
-  <div class="bg-orbs">
-    <div class="orb orb--1"></div>
-    <div class="orb orb--2"></div>
-  </div>
-
-  <header class="topbar">
-    <div class="container topbar__inner">
-      <a href="index.html" class="brand">
-        <span class="brand__icon">◈</span>
-        <span>Join<span class="brand__accent">Up</span></span>
-      </a>
-      <nav class="topbar__actions">
-        <a href="dashboardOrganizador.html" class="topbar__link">Voltar ao painel</a>
-        <a href="index.html#feed" class="btn btn--ghost">Ver feed</a>
-      </nav>
+<body>
+    <!-- Orbs de fundo (efeito neon) -->
+    <div class="cta__orbs">
+        <div class="orb orb--4"></div>
+        <div class="orb orb--5"></div>
     </div>
-  </header>
 
-  <main class="container create-layout">
-    <section class="card">
-      <span class="badge">Cadastro de evento</span>
-      <h1 class="title">Publique um novo evento</h1>
-      <p class="subtitle">
-        Tela visual para o organizador cadastrar evento. Nenhuma ação está integrada por enquanto.
-      </p>
+    <!-- Container principal -->
+    <div class="container">
+        <div class="cta__inner">
+            <h1 class="cta__title">Criar <span class="text-gradient">Evento</span></h1>
 
-      <form class="event-form">
-        <div class="form-grid">
-          <label class="field field--full">
-            <span>Nome do evento</span>
-            <input type="text" placeholder="Ex: Festival JoinUp Sunset" />
-          </label>
+            <div class="glass">
+                <form id="formEvento" action="../php/criar-evento.php" method="POST" class="cta__form">
 
-          <label class="field">
-            <span>Categoria</span>
-            <select>
-              <option>Shows</option>
-              <option>Festas</option>
-              <option>Teatro</option>
-              <option>Esportes</option>
-              <option>Festival</option>
-            </select>
-          </label>
+                    <div>
+                        <label for="nome"
+                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Nome do
+                            Evento:</label>
+                        <input type="text" id="nome" name="nome" placeholder="Digite o nome do evento"
+                            class="cta__input" required>
+                    </div>
 
-          <label class="field">
-            <span>Faixa etária</span>
-            <select>
-              <option>Livre</option>
-              <option>16+</option>
-              <option>18+</option>
-            </select>
-          </label>
+                    <div>
+                        <label for="data"
+                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Data e Hora
+                            do
+                            Evento:</label>
+                        <input type="datetime-local" id="data" name="data" class="cta__input" required>
+                    </div>
 
-          <label class="field">
-            <span>Data do evento</span>
-            <input type="date" />
-          </label>
+                    <div>
+                        <label for="descricao"
+                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Descrição do
+                            Evento:</label>
+                        <input type="text" id="descricao" name="descricao" placeholder="Descreva seu evento"
+                            class="cta__input" required>
+                    </div>
 
-          <label class="field">
-            <span>Horário de início</span>
-            <input type="time" />
-          </label>
+                    <div>
+                        <label for="local"
+                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Local do
+                            Evento:</label>
+                        <input type="text" id="local" name="local" placeholder="Endereço do evento" class="cta__input"
+                            required>
+                    </div>
 
-          <label class="field">
-            <span>Horário de término</span>
-            <input type="time" />
-          </label>
+                    <div>
+                        <label for="genero"
+                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Selecione o
+                            Gênero:</label>
+                        <select id="genero" name="genero" class="cta__input" required>
+                            <option value="1">Carregando gêneros...</option>
+                        </select>
+                    </div>
 
-          <label class="field field--full">
-            <span>Local</span>
-            <input type="text" placeholder="Ex: Espaço Vibra, São Paulo" />
-          </label>
 
-          <label class="field">
-            <span>Cidade</span>
-            <input type="text" placeholder="São Paulo" />
-          </label>
-
-          <label class="field">
-            <span>UF</span>
-            <input type="text" maxlength="2" placeholder="SP" />
-          </label>
-
-          <label class="field">
-            <span>Capacidade</span>
-            <input type="number" placeholder="5000" />
-          </label>
-
-          <label class="field field--full">
-            <span>Descrição do evento</span>
-            <textarea rows="4"
-              placeholder="Conte sobre atrações, diferenciais, regras e tudo que o público precisa saber."></textarea>
-          </label>
+                    <button type="submit" class="btn--primary btn--glow">Criar Evento</button>
+                </form>
+            </div>
         </div>
+    </div>
+    <script src="./../js/criarEvento.js" defer></script>
+    <script>
+        // Carrega gêneros do banco
+        document.addEventListener('DOMContentLoaded', function () {
+            const select = document.getElementById('genero');
 
-        <section class="block">
-          <h2 class="block__title">Lotes e ingressos</h2>
-          <div class="ticket-grid">
-            <label class="field">
-              <span>Nome do lote</span>
-              <input type="text" placeholder="1º Lote Promocional" />
-            </label>
-            <label class="field">
-              <span>Quantidade</span>
-              <input type="number" placeholder="1000" />
-            </label>
-            <label class="field">
-              <span>Preço inteira (R$)</span>
-              <input type="number" placeholder="140" />
-            </label>
-            <label class="field">
-              <span>Preço meia (R$)</span>
-              <input type="number" placeholder="70" />
-            </label>
-          </div>
-        </section>
+            fetch('../php/get_generos.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data.length > 0) {
+                        select.innerHTML = '<option value="">Selecione o Gênero</option>';
+                        data.data.forEach(genero => {
+                            const option = document.createElement('option');
+                            option.value = genero.id;
+                            option.textContent = genero.nome;
+                            select.appendChild(option);
+                        });
+                    } else {
+                        select.innerHTML = '<option value="1">Gênero Padrão</option>';
+                    }
+                })
+                .catch(() => {
+                    select.innerHTML = '<option value="1">Gênero Padrão</option>';
+                });
+        });
 
-        <section class="block">
-          <h2 class="block__title">Imagem de capa</h2>
-          <div class="upload-box">
-            <p>Arraste uma arte ou clique para selecionar</p>
-            <span>Formatos sugeridos: JPG/PNG - 1920x1080</span>
-          </div>
-        </section>
+        // Validação antes do envio
+        document.getElementById('formEvento').addEventListener('submit', function (e) {
+            const dataInput = document.getElementById('data');
+            const generoSelect = document.getElementById('genero');
 
-        <section class="toggles">
-          <label class="check">
-            <input type="checkbox" />
-            <span>Ativar check-in digital por QR Code</span>
-          </label>
-          <label class="check">
-            <input type="checkbox" />
-            <span>Permitir revenda segura de ingressos</span>
-          </label>
-          <label class="check">
-            <input type="checkbox" />
-            <span>Exibir evento em destaque na landing page</span>
-          </label>
-        </section>
+            if (!dataInput.value) {
+                alert('Por favor, selecione a data e hora do evento.');
+                e.preventDefault();
+                return;
+            }
 
-        <div class="actions">
-          <button type="button" class="btn btn--ghost">Salvar rascunho</button>
-          <button type="button" class="btn btn--primary">Publicar evento</button>
-        </div>
-      </form>
-    </section>
-
-    <aside class="card card--side">
-      <h2 class="block__title">Prévia rápida</h2>
-      <article class="preview">
-        <div class="preview__cover">
-          <span class="preview__tag">Festival</span>
-        </div>
-        <div class="preview__body">
-          <h3>Festival JoinUp Sunset</h3>
-          <p>📅 12 Jul 2026 · 16h às 23h</p>
-          <p>📍 Espaço Vibra, São Paulo - SP</p>
-          <p class="preview__price">Ingressos a partir de <strong>R$ 140</strong></p>
-        </div>
-      </article>
-
-      <div class="checklist">
-        <h3>Checklist do organizador</h3>
-        <ul>
-          <li>Definir data, local e capacidade</li>
-          <li>Configurar ao menos 1 lote de ingresso</li>
-          <li>Subir capa oficial do evento</li>
-          <li>Revisar descrição e regras de acesso</li>
-        </ul>
-      </div>
-
-      <a href="index.html#feed" class="btn btn--primary btn--full">Abrir landing com feed</a>
-      <p class="hint">Interface estática para validação visual (sem persistência de dados).</p>
-    </aside>
-  </main>
+            if (!generoSelect.value) {
+                alert('Por favor, selecione um gênero musical.');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
 </body>
 
 </html>
