@@ -2,120 +2,154 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../Css/login.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
-        rel="stylesheet" />
-    <title>Criar Evento | JoinUp</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Criar Evento | JoinUp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../Css/styles.css" />
 </head>
 
-<body>
-    <!-- Orbs de fundo (efeito neon) -->
-    <div class="cta__orbs">
-        <div class="orb orb--4"></div>
-        <div class="orb orb--5"></div>
+<body class="create-page">
+  <div class="bg-orbs">
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a href="index.html" class="brand">
+        <span class="brand__icon">◈</span>
+        <span>Join<span class="brand__accent">Up</span></span>
+      </a>
+      <nav class="topbar__actions">
+        <a href="dashboardOrganizador.html" class="topbar__link">Voltar ao painel</a>
+        <a href="index.html#feed" class="btn btn--ghost">Ver feed</a>
+      </nav>
     </div>
+  </header>
 
-    <!-- Container principal -->
-    <div class="container">
-        <div class="cta__inner">
-            <h1 class="cta__title">Criar <span class="text-gradient">Evento</span></h1>
+  <main class="container create-layout">
+    <section class="card">
+      <span class="badge">Cadastro de evento</span>
+      <h1 class="title">Publique um novo evento</h1>
+      <p class="subtitle">
+        Preencha os dados principais para criar o evento na plataforma.
+      </p>
 
-            <div class="glass">
-                <form id="formEvento" action="../php/criar-evento.php" method="POST" class="cta__form">
+      <form id="formEvento" class="event-form" action="../php/criar-evento.php" method="POST">
+        <div class="form-grid">
+          <label class="field field--full">
+            <span>Nome do evento</span>
+            <input type="text" id="nome" name="nome" placeholder="Ex: Festival JoinUp Sunset" required />
+          </label>
 
-                    <div>
-                        <label for="nome"
-                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Nome do
-                            Evento:</label>
-                        <input type="text" id="nome" name="nome" placeholder="Digite o nome do evento"
-                            class="cta__input" required>
-                    </div>
+          <label class="field">
+            <span>Genero musical</span>
+            <select id="genero" name="genero" required>
+              <option value="">Carregando generos...</option>
+            </select>
+          </label>
 
-                    <div>
-                        <label for="data"
-                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Data e Hora
-                            do
-                            Evento:</label>
-                        <input type="datetime-local" id="data" name="data" class="cta__input" required>
-                    </div>
+          <label class="field">
+            <span>Data e hora do evento</span>
+            <input type="datetime-local" id="data" name="data" required />
+          </label>
 
-                    <div>
-                        <label for="descricao"
-                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Descrição do
-                            Evento:</label>
-                        <input type="text" id="descricao" name="descricao" placeholder="Descreva seu evento"
-                            class="cta__input" required>
-                    </div>
+          <label class="field field--full">
+            <span>Local</span>
+            <input type="text" id="local" name="local" placeholder="Ex: Espaco Vibra, Sao Paulo" required />
+          </label>
 
-                    <div>
-                        <label for="local"
-                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Local do
-                            Evento:</label>
-                        <input type="text" id="local" name="local" placeholder="Endereço do evento" class="cta__input"
-                            required>
-                    </div>
-
-                    <div>
-                        <label for="genero"
-                            style="display: block; margin-bottom: 8px; text-align: left; font-weight: 600;">Selecione o
-                            Gênero:</label>
-                        <select id="genero" name="genero" class="cta__input" required>
-                            <option value="1">Carregando gêneros...</option>
-                        </select>
-                    </div>
-
-
-                    <button type="submit" class="btn--primary btn--glow">Criar Evento</button>
-                </form>
-            </div>
+          <label class="field field--full">
+            <span>Descricao do evento</span>
+            <textarea id="descricao" name="descricao" rows="4"
+              placeholder="Conte sobre atracoes, diferenciais e informacoes importantes." required></textarea>
+          </label>
         </div>
-    </div>
-    <script src="./../js/criarEvento.js" defer></script>
-    <script>
-        // Carrega gêneros do banco
-        document.addEventListener('DOMContentLoaded', function () {
-            const select = document.getElementById('genero');
 
-            fetch('../php/get_generos.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.data.length > 0) {
-                        select.innerHTML = '<option value="">Selecione o Gênero</option>';
-                        data.data.forEach(genero => {
-                            const option = document.createElement('option');
-                            option.value = genero.id;
-                            option.textContent = genero.nome;
-                            select.appendChild(option);
-                        });
-                    } else {
-                        select.innerHTML = '<option value="1">Gênero Padrão</option>';
-                    }
-                })
-                .catch(() => {
-                    select.innerHTML = '<option value="1">Gênero Padrão</option>';
-                });
+        <!-- <section class="block">
+          <h2 class="block__title">Lotes e ingressos (opcional)</h2>
+          <div class="ticket-grid">
+            <label class="field">
+              <span>Nome do lote</span>
+              <input type="text" placeholder="1o Lote Promocional" />
+            </label>
+            <label class="field">
+              <span>Quantidade</span>
+              <input type="number" placeholder="1000" />
+            </label>
+            <label class="field">
+              <span>Preco inteira (R$)</span>
+              <input type="number" placeholder="140" />
+            </label>
+            <label class="field">
+              <span>Preco meia (R$)</span>
+              <input type="number" placeholder="70" />
+            </label>
+          </div>
+        </section> -->
+
+        <div class="actions">
+          <button type="button" class="btn btn--ghost">Salvar rascunho</button>
+          <button type="submit" class="btn btn--primary">Publicar evento</button>
+        </div>
+      </form>
+    </section>
+
+    <aside class="card card--side">
+      <h2 class="block__title">Previa rapida</h2>
+      <article class="preview">
+        <div class="preview__cover">
+          <span class="preview__tag">Festival</span>
+        </div>
+        <div class="preview__body">
+          <h3>Festival JoinUp Sunset</h3>
+          <p>Data definida no formulario</p>
+          <p>Local informado pelo organizador</p>
+          <p class="preview__price">Ingressos a partir de <strong>R$ 140</strong></p>
+        </div>
+      </article>
+
+      <div class="checklist">
+        <h3>Checklist do organizador</h3>
+        <ul>
+          <li>Definir data e local do evento</li>
+          <li>Selecionar o genero musical correto</li>
+          <li>Adicionar descricao clara para o publico</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <script src="../js/criarEvento.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const select = document.getElementById('genero');
+
+      fetch('../php/get_generos.php')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+            select.innerHTML = '<option value="">Selecione o genero</option>';
+            data.data.forEach(genero => {
+              const option = document.createElement('option');
+              option.value = genero.id;
+              option.textContent = genero.nome;
+              select.appendChild(option);
+            });
+            return;
+          }
+
+          select.innerHTML = '<option value="1">Genero padrao</option>';
+        })
+        .catch(() => {
+          select.innerHTML = '<option value="1">Genero padrao</option>';
         });
-
-        // Validação antes do envio
-        document.getElementById('formEvento').addEventListener('submit', function (e) {
-            const dataInput = document.getElementById('data');
-            const generoSelect = document.getElementById('genero');
-
-            if (!dataInput.value) {
-                alert('Por favor, selecione a data e hora do evento.');
-                e.preventDefault();
-                return;
-            }
-
-            if (!generoSelect.value) {
-                alert('Por favor, selecione um gênero musical.');
-                e.preventDefault();
-                return;
-            }
-        });
-    </script>
+    });
+  </script>
 </body>
 
 </html>
