@@ -20,6 +20,17 @@
         <span class="logo__text">Join<span class="logo__accent">Up</span></span>
       </a>
 
+      <form class="header-search" role="search" action="../php/eventos.php" method="get">
+        <input type="search"
+            name="q"
+            class="header-search__input"
+            placeholder="Pesquisar eventos..."
+            aria-label="Pesquisar eventos na landing" />
+        <button type="submit"
+            class="header-search__btn" 
+            aria-label="Buscar eventos">Buscar
+        </button>
+      </form>
       <nav class="nav" id="nav">
         <a href="#eventos" class="nav__link">Eventos</a>
         <a href="#como-funciona" class="nav__link">Como funciona</a>
@@ -287,6 +298,8 @@
   </footer>
 
   <script src="../js/script.js"></script>
+  <script src="../js/cadastroParticipante.js"></script>
+  <script src="../js/pesquisarEvento.js"></script>
 </body>
 
 </html>
