@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JoinUp — Central de Suporte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../Css/suporte.css" />
+</head>
+<body>
+
+  <!-- BG ORBS -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- SIDEBAR OVERLAY (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="shell">
+
+    <!-- ░░ SIDEBAR ░░ -->
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="sidebar__logo">
+        <span class="logo__icon">◈</span>
+        <span class="logo__text">Join<span class="logo__accent">Up</span></span>
+      </a>
+
+      <nav class="sidebar__nav">
+        <span class="nav-section">Suporte</span>
+        <button class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">📊</span> Dashboard
+        </button>
+        <button class="nav-item" data-page="tickets">
+          <span class="nav-icon">🎫</span> Tickets
+        </button>
+        <button class="nav-item" data-page="chat">
+          <span class="nav-icon">💬</span> Chat Ativo
+        </button>
+        <button class="nav-item" data-page="analytics">
+          <span class="nav-icon">📈</span> Analytics
+        </button>
+
+        <span class="nav-section">Ferramentas</span>
+        <button class="nav-item" data-page="kb">
+          <span class="nav-icon">📚</span> Base de Conhecimento
+        </button>
+        <button class="nav-item" data-page="reports">
+          <span class="nav-icon">📋</span> Relatórios
+        </button>
+        <button class="nav-item" data-page="settings">
+          <span class="nav-icon">⚙️</span> Configurações
+        </button>
+
+        <span class="nav-section">Conta</span>
+        <button class="nav-item" data-page="profile">
+          <span class="nav-icon">👤</span> Meu Perfil
+        </button>
+        <button class="nav-item" id="logoutBtn">
+          <span class="nav-icon">🚪</span> Sair
+        </button>
+      </nav>
+
+      <div class="sidebar__user" data-page="profile" id="sidebarUser">
+        <div class="user-avatar">SA</div>
+        <div class="user-info">
+          <div class="user-name">Suporte Admin</div>
+          <div class="user-tag">@suporte · JoinUp</div>
+        </div>
+        <span style="color:var(--text-muted);font-size:0.8rem;">⚙️</span>
+      </div>
+    </aside>
+
+    <!-- ░░ MAIN ░░ -->
+    <div class="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <button class="burger-btn" id="burgerBtn">☰</button>
+
+        <div class="topbar__search">
+          <span class="topbar__search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Buscar tickets, usuários..." autocomplete="off" />
+        </div>
+
+        <div class="topbar__actions">
+          <button class="icon-btn" onclick="showToast('🔔 Notificações em breve')">
+            🔔 <span class="dot"></span>
+          </button>
+          <button class="icon-btn" onclick="showToast('💬 Chat em breve')">
+            💬
+          </button>
+          <button class="icon-btn" onclick="goPage('profile')" title="Perfil">
+            👤
+          </button>
+        </div>
+      </header>
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: DASHBOARD          ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page active" id="page-dashboard">
+        <div class="section-title">Dashboard de <span class="text-gradient">Suporte</span></div>
+        <p class="section-sub">Visão geral dos tickets e atendimento ao cliente.</p>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card glass">
+            <div class="stat-card__icon">🎫</div>
+            <div class="stat-card__content">
+              <div class="stat-card__value">--</div>
+              <div class="stat-card__label">Tickets Abertos</div>
+            </div>
+          </div>
+
+          <div class="stat-card glass">
+            <div class="stat-card__icon">⏳</div>
+            <div class="stat-card__content">
+              <div class="stat-card__value">--</div>
+              <div class="stat-card__label">Em Andamento</div>
+            </div>
+          </div>
+
+          <div class="stat-card glass">
+            <div class="stat-card__icon">✅</div>
+            <div class="stat-card__content">
+              <div class="stat-card__value">--</div>
+              <div class="stat-card__label">Resolvidos Hoje</div>
+            </div>
+          </div>
+
+          <div class="stat-card glass">
+            <div class="stat-card__icon">⭐</div>
+            <div class="stat-card__content">
+              <div class="stat-card__value">--</div>
+              <div class="stat-card__label">Satisfação Média</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <button class="btn btn--primary btn--large" onclick="goPage('tickets')">
+            <span>🎫</span> Ver Todos os Tickets
+          </button>
+          <button class="btn btn--ghost btn--large" onclick="goPage('chat')">
+            <span>💬</span> Chat Ativo
+          </button>
+          <button class="btn btn--ghost btn--large" onclick="goPage('kb')">
+            <span>📚</span> Base de Conhecimento
+          </button>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+          <h3 class="section-title-small">Atividade <span class="text-gradient">Recente</span></h3>
+          <div class="activity-list">
+            <div class="activity-item glass">
+              <div class="activity-item__icon activity-item__icon--ticket">🎫</div>
+              <div class="activity-item__content">
+                <div class="activity-item__title">Aqui aparecerão os novos tickets</div>
+                <div class="activity-item__meta">Notificações de chamados abertos recentemente</div>
+              </div>
+              <div class="activity-item__status activity-item__status--urgent">Status</div>
+            </div>
+
+            <div class="activity-item glass">
+              <div class="activity-item__icon activity-item__icon--chat">💬</div>
+              <div class="activity-item__content">
+                <div class="activity-item__title">Conversas ativas aparecerão aqui</div>
+                <div class="activity-item__meta">Chats em andamento com usuários</div>
+              </div>
+              <div class="activity-item__status activity-item__status--active">Online</div>
+            </div>
+
+            <div class="activity-item glass">
+              <div class="activity-item__icon activity-item__icon--resolved">✅</div>
+              <div class="activity-item__content">
+                <div class="activity-item__title">Tickets resolvidos recentemente</div>
+                <div class="activity-item__meta">Histórico de soluções implementadas</div>
+              </div>
+              <div class="activity-item__status activity-item__status--resolved">Resolvido</div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-dashboard -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: TICKETS            ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-tickets">
+        <div class="section-title">Gerenciar <span class="text-gradient">Tickets</span></div>
+        <p class="section-sub">Todos os chamados de suporte em um lugar.</p>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+          <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterTickets('all')">Todos</button>
+            <button class="filter-tab" onclick="filterTickets('open')">Abertos</button>
+            <button class="filter-tab" onclick="filterTickets('progress')">Em Andamento</button>
+            <button class="filter-tab" onclick="filterTickets('closed')">Fechados</button>
+          </div>
+          <div class="filter-actions">
+            <select class="filter-select">
+              <option>Todos os tipos</option>
+              <option>Pagamento</option>
+              <option>Técnico</option>
+              <option>Conta</option>
+              <option>Evento</option>
+            </select>
+            <button class="btn btn--ghost" onclick="showToast('🔄 Atualizar')">Atualizar</button>
+          </div>
+        </div>
+
+        <!-- Tickets List -->
+        <div class="tickets-list">
+          <div class="ticket-card glass">
+            <div class="ticket-card__header">
+              <div class="ticket-card__info">
+                <div class="ticket-card__id">#XXXX</div>
+                <div class="ticket-card__title">Aqui aparecerão os títulos dos tickets</div>
+                <div class="ticket-card__user">Nome do usuário (Tipo)</div>
+              </div>
+              <div class="ticket-card__status ticket-card__status--urgent">Status</div>
+            </div>
+            <div class="ticket-card__content">
+              <p>Aqui aparecerá a descrição do problema relatado pelo usuário...</p>
+            </div>
+            <div class="ticket-card__footer">
+              <div class="ticket-card__meta">
+                <span>🏷️ Categoria</span> · <span>Data/Hora</span>
+              </div>
+              <div class="ticket-card__actions">
+                <button class="btn btn--sm">Responder</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-card glass">
+            <div class="ticket-card__header">
+              <div class="ticket-card__info">
+                <div class="ticket-card__id">#XXXX</div>
+                <div class="ticket-card__title">Exemplo de ticket de organizador</div>
+                <div class="ticket-card__user">Nome do organizador (Organizador)</div>
+              </div>
+              <div class="ticket-card__status ticket-card__status--high">Prioridade</div>
+            </div>
+            <div class="ticket-card__content">
+              <p>Descrição do problema técnico ou dúvida sobre funcionalidades...</p>
+            </div>
+            <div class="ticket-card__footer">
+              <div class="ticket-card__meta">
+                <span>⚙️ Técnica</span> · <span>Tempo decorrido</span>
+              </div>
+              <div class="ticket-card__actions">
+                <button class="btn btn--sm">Responder</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-card glass">
+            <div class="ticket-card__header">
+              <div class="ticket-card__info">
+                <div class="ticket-card__id">#XXXX</div>
+                <div class="ticket-card__title">Ticket de participante</div>
+                <div class="ticket-card__user">Nome do participante (Participante)</div>
+              </div>
+              <div class="ticket-card__status ticket-card__status--normal">Normal</div>
+            </div>
+            <div class="ticket-card__content">
+              <p>Questões sobre ingressos, eventos ou conta do usuário...</p>
+            </div>
+            <div class="ticket-card__footer">
+              <div class="ticket-card__meta">
+                <span>🎫 Ingressos</span> · <span>Duração</span>
+              </div>
+              <div class="ticket-card__actions">
+                <button class="btn btn--sm">Responder</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-tickets -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: CHAT               ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-chat">
+        <div class="section-title">Chat <span class="text-gradient">Ativo</span></div>
+        <p class="section-sub">Conversas em tempo real com usuários.</p>
+
+        <div class="chat-container">
+          <!-- Chat List -->
+          <div class="chat-list">
+            <div class="chat-item active">
+              <div class="chat-item__avatar">XX</div>
+              <div class="chat-item__content">
+                <div class="chat-item__name">Nome do usuário</div>
+                <div class="chat-item__last-msg">Última mensagem da conversa...</div>
+              </div>
+              <div class="chat-item__time">HH:MM</div>
+            </div>
+
+            <div class="chat-item">
+              <div class="chat-item__avatar">XX</div>
+              <div class="chat-item__content">
+                <div class="chat-item__name">Outro usuário</div>
+                <div class="chat-item__last-msg">Mensagem de exemplo...</div>
+              </div>
+              <div class="chat-item__time">HH:MM</div>
+            </div>
+
+            <div class="chat-item">
+              <div class="chat-item__avatar">XX</div>
+              <div class="chat-item__content">
+                <div class="chat-item__name">Usuário ativo</div>
+                <div class="chat-item__last-msg">Conversa em andamento...</div>
+              </div>
+              <div class="chat-item__time">HH:MM</div>
+            </div>
+          </div>
+
+          <!-- Chat Window -->
+          <div class="chat-window">
+            <div class="chat-header">
+              <div class="chat-user">
+                <div class="chat-user__avatar">XX</div>
+                <div class="chat-user__info">
+                  <div class="chat-user__name">Nome do usuário</div>
+                  <div class="chat-user__status">Status</div>
+                </div>
+              </div>
+              <div class="chat-actions">
+                <button class="btn btn--ghost btn--sm">📞</button>
+                <button class="btn btn--ghost btn--sm">✕</button>
+              </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+              <div class="message received">
+                <div class="message__content">Aqui aparecerão as mensagens do usuário...</div>
+                <div class="message__time">HH:MM</div>
+              </div>
+
+              <div class="message sent">
+                <div class="message__content">Aqui aparecerão suas respostas...</div>
+                <div class="message__time">HH:MM</div>
+              </div>
+
+              <div class="message received">
+                <div class="message__content">Exemplo de conversa em andamento...</div>
+                <div class="message__time">HH:MM</div>
+              </div>
+            </div>
+
+            <div class="chat-input">
+              <input type="text" placeholder="Digite sua mensagem..." id="messageInput" />
+              <button class="btn btn--primary" onclick="sendMessage()">Enviar</button>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-chat -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: ANALYTICS          ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-analytics">
+        <div class="section-title">Analytics de <span class="text-gradient">Suporte</span></div>
+        <p class="section-sub">Métricas e relatórios de atendimento.</p>
+
+        <div class="analytics-grid">
+          <div class="analytics-card glass">
+            <h3>Tickets por Categoria</h3>
+            <div class="chart-placeholder">
+              <span>📊 Gráfico de pizza</span>
+              <p>Aqui aparecerão as categorias de tickets mais frequentes</p>
+            </div>
+          </div>
+
+          <div class="analytics-card glass">
+            <h3>Tempo Médio de Resolução</h3>
+            <div class="metric-large">
+              <div class="metric-value">--h --m</div>
+              <div class="metric-label">Tempo médio</div>
+              <div class="metric-change">Variação</div>
+            </div>
+          </div>
+
+          <div class="analytics-card glass">
+            <h3>Satisfação do Cliente</h3>
+            <div class="metric-large">
+              <div class="metric-value">X.X/5</div>
+              <div class="metric-label">Avaliação média</div>
+              <div class="metric-change">Tendência</div>
+            </div>
+          </div>
+
+          <div class="analytics-card glass">
+            <h3>Tickets por Dia</h3>
+            <div class="chart-placeholder">
+              <span>📈 Gráfico de linha</span>
+              <p>Evolução diária dos chamados de suporte</p>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-analytics -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: BASE DE CONHECIMENTO ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-kb">
+        <div class="section-title">Base de <span class="text-gradient">Conhecimento</span></div>
+        <p class="section-sub">Artigos e soluções para problemas comuns.</p>
+
+        <div class="kb-container">
+          <div class="kb-search">
+            <input type="text" placeholder="Buscar artigos..." />
+            <button class="btn btn--primary">Buscar</button>
+          </div>
+
+          <div class="kb-categories">
+            <div class="kb-category glass">
+              <div class="kb-category__icon">💰</div>
+              <div class="kb-category__content">
+                <h3>Pagamentos</h3>
+                <p>Problemas com pagamentos, reembolsos, etc.</p>
+                <span class="kb-category__count">X artigos</span>
+              </div>
+            </div>
+
+            <div class="kb-category glass">
+              <div class="kb-category__icon">🎫</div>
+              <div class="kb-category__content">
+                <h3>Ingressos</h3>
+                <p>Compra, cancelamento, transferência de ingressos.</p>
+                <span class="kb-category__count">X artigos</span>
+              </div>
+            </div>
+
+            <div class="kb-category glass">
+              <div class="kb-category__icon">⚙️</div>
+              <div class="kb-category__content">
+                <h3>Conta</h3>
+                <p>Configurações, segurança, recuperação de senha.</p>
+                <span class="kb-category__count">X artigos</span>
+              </div>
+            </div>
+
+            <div class="kb-category glass">
+              <div class="kb-category__icon">🎪</div>
+              <div class="kb-category__content">
+                <h3>Eventos</h3>
+                <p>Criação, edição e gerenciamento de eventos.</p>
+                <span class="kb-category__count">X artigos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-kb -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: RELATÓRIOS        ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-reports">
+        <div class="section-title">Relatórios de <span class="text-gradient">Suporte</span></div>
+        <p class="section-sub">Relatórios detalhados de atendimento.</p>
+
+        <div class="reports-container">
+          <div class="report-card glass">
+            <div class="report-card__icon">📊</div>
+            <div class="report-card__content">
+              <h3>Relatório Semanal</h3>
+              <p>Resumo da semana passada</p>
+              <div class="report-card__meta">Gerado automaticamente</div>
+            </div>
+            <button class="btn btn--ghost">Download</button>
+          </div>
+
+          <div class="report-card glass">
+            <div class="report-card__icon">📈</div>
+            <div class="report-card__content">
+              <h3>Relatório Mensal</h3>
+              <p>Performance do mês atual</p>
+              <div class="report-card__meta">Gerado mensalmente</div>
+            </div>
+            <button class="btn btn--ghost">Download</button>
+          </div>
+
+          <div class="report-card glass">
+            <div class="report-card__icon">⭐</div>
+            <div class="report-card__content">
+              <h3>Avaliações de Satisfação</h3>
+              <p>Feedback dos usuários</p>
+              <div class="report-card__meta">Atualizado diariamente</div>
+            </div>
+            <button class="btn btn--ghost">Download</button>
+          </div>
+        </div>
+      </div><!-- /page-reports -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: CONFIGURAÇÕES     ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-settings">
+        <div class="section-title">Configurações de <span class="text-gradient">Suporte</span></div>
+        <p class="section-sub">Personalize seu ambiente de trabalho.</p>
+
+        <div class="settings-container">
+          <div class="settings-card glass">
+            <h3>Notificações</h3>
+            <div class="setting-item">
+              <div class="setting-item__content">
+                <div class="setting-item__title">Novos tickets</div>
+                <div class="setting-item__desc">Receber notificações de novos chamados</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-item__content">
+                <div class="setting-item__title">Mensagens de chat</div>
+                <div class="setting-item__desc">Notificações de novas mensagens</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-card glass">
+            <h3>Preferências</h3>
+            <div class="setting-item">
+              <div class="setting-item__content">
+                <div class="setting-item__title">Tema escuro</div>
+                <div class="setting-item__desc">Interface em modo escuro</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-item__content">
+                <div class="setting-item__title">Som de notificações</div>
+                <div class="setting-item__desc">Reproduzir sons para alertas</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-settings -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: PERFIL             ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-profile">
+        <div class="section-title">Meu <span class="text-gradient">Perfil</span></div>
+        <p class="section-sub">Gerencie suas informações pessoais.</p>
+
+        <div class="profile-content">
+          <div class="profile-card glass">
+            <h3>Informações Pessoais</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nome</label>
+                <input type="text" placeholder="Seu nome completo" />
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="seu.email@exemplo.com" />
+              </div>
+              <div class="form-group">
+                <label>Telefone</label>
+                <input type="tel" placeholder="(XX) XXXXX-XXXX" />
+              </div>
+              <div class="form-group">
+                <label>Cargo</label>
+                <input type="text" placeholder="Seu cargo" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn--primary" onclick="showToast('✅ Perfil atualizado')">Salvar Alterações</button>
+            </div>
+          </div>
+
+          <div class="profile-card glass">
+            <h3>Estatísticas de Performance</h3>
+            <div class="performance-stats">
+              <div class="performance-stat">
+                <div class="performance-stat__value">--%</div>
+                <div class="performance-stat__label">Taxa de Resolução</div>
+              </div>
+              <div class="performance-stat">
+                <div class="performance-stat__value">--h --m</div>
+                <div class="performance-stat__label">Tempo Médio</div>
+              </div>
+              <div class="performance-stat">
+                <div class="performance-stat__value">X.X</div>
+                <div class="performance-stat__label">Avaliação Média</div>
+              </div>
+              <div class="performance-stat">
+                <div class="performance-stat__value">--</div>
+                <div class="performance-stat__label">Tickets Hoje</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-profile -->
+
+    </div><!-- /main -->
+  </div><!-- /shell -->
+
+  <!-- ░░ TOAST ░░ -->
+  <div class="toast" id="toast">
+    <span class="toast__icon" id="toastIcon">✅</span>
+    <span id="toastMsg">Ação realizada!</span>
+  </div>
+
+  <script src="../js/suporte.js"></script>
+</body>
+</html>

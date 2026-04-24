@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JoinUp — Painel do Organizador</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../Css/organizador.css" />
+</head>
+<body>
+
+  <!-- BG ORBS -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- SIDEBAR OVERLAY (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="shell">
+
+    <!-- ░░ SIDEBAR ░░ -->
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="sidebar__logo">
+        <span class="logo__icon">◈</span>
+        <span class="logo__text">Join<span class="logo__accent">Up</span></span>
+      </a>
+
+      <nav class="sidebar__nav">
+        <span class="nav-section">Painel</span>
+        <button class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">📊</span> Dashboard
+        </button>
+        <button class="nav-item" data-page="events">
+          <span class="nav-icon">🎪</span> Meus Eventos
+        </button>
+        <button class="nav-item" data-page="analytics">
+          <span class="nav-icon">📈</span> Analytics
+        </button>
+
+        <span class="nav-section">Gerenciar</span>
+        <button class="nav-item" data-page="create">
+          <span class="nav-icon">➕</span> Criar Evento
+        </button>
+        <button class="nav-item" data-page="sales">
+          <span class="nav-icon">💰</span> Vendas
+        </button>
+        <button class="nav-item" data-page="support">
+          <span class="nav-icon">🆘</span> Suporte
+        </button>
+
+        <span class="nav-section">Conta</span>
+        <button class="nav-item" data-page="profile">
+          <span class="nav-icon">👤</span> Meu Perfil
+        </button>
+        <button class="nav-item" id="logoutBtn">
+          <span class="nav-icon"></span> Sair
+        </button>
+      </nav>
+
+      <div class="sidebar__user" data-page="profile" id="sidebarUser">
+        <div class="user-avatar">JO</div>
+        <div class="user-info">
+          <div class="user-name">João Organizador</div>
+          <div class="user-tag">@joaoorg · São Paulo</div>
+        </div>
+        <span style="color:var(--text-muted);font-size:0.8rem;">⚙️</span>
+      </div>
+    </aside>
+
+    <!-- ░░ MAIN ░░ -->
+    <div class="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <button class="burger-btn" id="burgerBtn">☰</button>
+
+        <div class="topbar__search">
+          <span class="topbar__search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Buscar eventos, vendas..." autocomplete="off" />
+        </div>
+
+        <div class="topbar__actions">
+          <button class="icon-btn" onclick="showToast(' Suporte em breve')">
+            💬
+          </button>
+          <button class="icon-btn" onclick="goPage('profile')" title="Perfil">
+            👤
+          </button>
+        </div>
+      </header>
+
+      <!--PAGE: DASHBOARD-->
+      
+      <div class="page active" id="page-dashboard">
+        <div class="section-title">Dashboard <span class="text-gradient">do Organizador</span></div>
+        <p class="section-sub">Gerencie seus eventos e acompanhe o desempenho.</p>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card glass">
+            <div class="stat-card__icon">🎪</div>
+            <div class="stat-card__content">
+              <div class="stat-card__value">--</div>
+              <div class="stat-card__label">Eventos Ativos</div>
+            </div>
+          </div>
+
+          <div class="stat-card glass">
+            <div class="stat-card__icon">🎟</div>
+            <div class="stat-card__content">
+              <div class="stat-card__value">--</div>
+              <div class="stat-card__label">Ingressos Vendidos</div>
+            </div>
+          </div>
+
+          <div class="stat-card glass">
+            <div class="stat-card__icon">💰</div>
+            <div class="stat-card__content">
+              <div class="stat-card__value">R$ --</div>
+              <div class="stat-card__label">Receita Total</div>
+            </div>
+          </div>
+
+          <div class="stat-card glass">
+            <div class="stat-card__icon">👥</div>
+            <div class="stat-card__content">
+              <div class="stat-card__value">--</div>
+              <div class="stat-card__label">Participantes</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <button class="btn btn--primary btn--large" onclick="goPage('create')">
+            <span>➕</span> Criar Novo Evento
+          </button>
+          <button class="btn btn--ghost btn--large" onclick="goPage('events')">
+            <span>🎪</span> Gerenciar Eventos
+          </button>
+          <button class="btn btn--ghost btn--large" onclick="goPage('analytics')">
+            <span>📈</span> Ver Analytics
+          </button>
+        </div>
+
+        <!-- Recent Events -->
+        <div class="recent-section">
+          <h3 class="section-title-small">Eventos <span class="text-gradient">Recentes</span></h3>
+          <div class="events-preview">
+            <div class="event-preview-card glass">
+              <div class="event-preview__icon">🎆</div>
+              <div class="event-preview__content">
+                <div class="event-preview__name">Festival Neon SP</div>
+                <div class="event-preview__meta">12 Jul · São Paulo · 847 ingressos</div>
+              </div>
+              <div class="event-preview__status event-preview__status--active">Ativo</div>
+            </div>
+
+            <div class="event-preview-card glass">
+              <div class="event-preview__icon">🎸</div>
+              <div class="event-preview__content">
+                <div class="event-preview__name">Rock in Rio 2025</div>
+                <div class="event-preview__meta">19 Jul · Rio de Janeiro · -- ingressos</div>
+              </div>
+              <div class="event-preview__status event-preview__status--active">Ativo</div>
+            </div>
+
+            <div class="event-preview-card glass">
+              <div class="event-preview__icon">🎪</div>
+              <div class="event-preview__content">
+                <div class="event-preview__name">Lollapalooza 2024</div>
+                <div class="event-preview__meta">23 Mar · São Paulo · Encerrado</div>
+              </div>
+              <div class="event-preview__status event-preview__status--past">Encerrado</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="activity-section">
+          <h3 class="section-title-small">Atividade <span class="text-gradient">Recente</span></h3>
+          <div class="activity-feed">
+            <div class="activity-item glass">
+              <div class="activity-item__icon">🎟</div>
+              <div class="activity-item__content">
+                <div class="activity-item__title">120 ingressos vendidos</div>
+                <div class="activity-item__meta">Festival Neon SP · há 2 horas</div>
+              </div>
+            </div>
+
+            <div class="activity-item glass">
+              <div class="activity-item__icon">💰</div>
+              <div class="activity-item__content">
+                <div class="activity-item__title">R$ 14.400 recebidos</div>
+                <div class="activity-item__meta">Pagamento processado · há 5 horas</div>
+              </div>
+            </div>
+
+            <div class="activity-item glass">
+              <div class="activity-item__icon">👥</div>
+              <div class="activity-item__content">
+                <div class="activity-item__title">Novo participante</div>
+                <div class="activity-item__meta">João Silva comprou ingresso · há 1 dia</div>
+              </div>
+            </div>
+
+            <div class="activity-item glass">
+              <div class="activity-item__icon">📊</div>
+              <div class="activity-item__content">
+                <div class="activity-item__title">Relatório mensal gerado</div>
+                <div class="activity-item__meta">Analytics atualizado · há 2 dias</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats Chart -->
+        <div class="chart-section">
+          <h3 class="section-title-small">Visão <span class="text-gradient">Geral</span></h3>
+          <div class="chart-placeholder-large glass">
+            <div class="chart-placeholder__icon">📈</div>
+            <div class="chart-placeholder__content">
+              <h4>Gráfico de Performance</h4>
+              <p>Vendas, participantes e receita dos últimos 30 dias</p>
+              <div class="chart-placeholder__bars">
+                <div class="bar" style="height: 60%"></div>
+                <div class="bar" style="height: 80%"></div>
+                <div class="bar" style="height: 40%"></div>
+                <div class="bar" style="height: 90%"></div>
+                <div class="bar" style="height: 70%"></div>
+                <div class="bar" style="height: 85%"></div>
+                <div class="bar" style="height: 75%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-dashboard -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: MEUS EVENTOS       ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-events">
+        <div class="section-title">Meus <span class="text-gradient">Eventos</span></div>
+        <p class="section-sub">Gerencie todos os seus eventos criados.</p>
+
+        <div class="events-management">
+          <div class="event-management-card glass">
+            <div class="event-management__header">
+              <div class="event-management__icon">🎆</div>
+              <div class="event-management__info">
+                <div class="event-management__name">Festival Neon SP</div>
+                <div class="event-management__meta">12 Jul 2025 · São Paulo</div>
+              </div>
+              <div class="event-management__status event-management__status--active">Ativo</div>
+            </div>
+            <div class="event-management__stats">
+              <div class="stat-item">
+                <span class="stat-value">--</span>
+                <span class="stat-label">Vendidos</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">R$ --</span>
+                <span class="stat-label">Receita</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">--%</span>
+                <span class="stat-label">Ocupação</span>
+              </div>
+            </div>
+            <div class="event-management__actions">
+              <button class="btn btn--ghost btn--sm" onclick="showToast('✏️ Editar em breve')">Editar</button>
+              <button class="btn btn--ghost btn--sm" onclick="showToast('📊 Analytics em breve')">Analytics</button>
+              <button class="btn btn--primary btn--sm" onclick="showToast('🎟 Gerenciar ingressos')">Ingressos</button>
+            </div>
+          </div>
+
+          <div class="event-management-card glass">
+            <div class="event-management__header">
+              <div class="event-management__icon">🎸</div>
+              <div class="event-management__info">
+                <div class="event-management__name">Rock in Rio 2025</div>
+                <div class="event-management__meta">19 Jul 2025 · Rio de Janeiro</div>
+              </div>
+              <div class="event-management__status event-management__status--active">Ativo</div>
+            </div>
+            <div class="event-management__stats">
+              <div class="stat-item">
+                <span class="stat-value">--</span>
+                <span class="stat-label">Vendidos</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">R$ --</span>
+                <span class="stat-label">Receita</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">--%</span>
+                <span class="stat-label">Ocupação</span>
+              </div>
+            </div>
+            <div class="event-management__actions">
+              <button class="btn btn--ghost btn--sm" onclick="showToast('✏️ Editar em breve')">Editar</button>
+              <button class="btn btn--ghost btn--sm" onclick="showToast('📊 Analytics em breve')">Analytics</button>
+              <button class="btn btn--primary btn--sm" onclick="showToast('🎟 Gerenciar ingressos')">Ingressos</button>
+            </div>
+          </div>
+
+          <div class="event-management-card glass">
+            <div class="event-management__header">
+              <div class="event-management__icon">🎪</div>
+              <div class="event-management__info">
+                <div class="event-management__name">Lollapalooza 2024</div>
+                <div class="event-management__meta">23 Mar 2024 · São Paulo</div>
+              </div>
+              <div class="event-management__status event-management__status--past">Encerrado</div>
+            </div>
+            <div class="event-management__stats">
+              <div class="stat-item">
+                <span class="stat-value">--</span>
+                <span class="stat-label">Vendidos</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">R$ --</span>
+                <span class="stat-label">Receita</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">--%</span>
+                <span class="stat-label">Ocupação</span>
+              </div>
+            </div>
+            <div class="event-management__actions">
+              <button class="btn btn--ghost btn--sm" onclick="showToast('📊 Relatório final')">Relatório</button>
+              <button class="btn btn--ghost btn--sm" onclick="showToast('💬 Suporte')">Suporte</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event Performance Overview -->
+        <div class="performance-overview">
+          <h3 class="section-title-small">Performance dos <span class="text-gradient">Eventos</span></h3>
+          <div class="performance-grid">
+            <div class="performance-card glass">
+              <div class="performance-card__header">
+                <span class="performance-card__icon">📈</span>
+                <span class="performance-card__title">Taxa de Conversão</span>
+              </div>
+              <div class="performance-card__value">--%</div>
+              <div class="performance-card__change positive">+--%</div>
+            </div>
+
+            <div class="performance-card glass">
+              <div class="performance-card__header">
+                <span class="performance-card__icon">👁</span>
+                <span class="performance-card__title">Visualizações</span>
+              </div>
+              <div class="performance-card__value">--</div>
+              <div class="performance-card__change positive">+--%</div>
+            </div>
+
+            <div class="performance-card glass">
+              <div class="performance-card__header">
+                <span class="performance-card__icon">⭐</span>
+                <span class="performance-card__title">Avaliação Média</span>
+              </div>
+              <div class="performance-card__value">--</div>
+              <div class="performance-card__change positive">+--</div>
+            </div>
+
+            <div class="performance-card glass">
+              <div class="performance-card__header">
+                <span class="performance-card__icon">🔄</span>
+                <span class="performance-card__title">Taxa de Retorno</span>
+              </div>
+              <div class="performance-card__value">--%</div>
+              <div class="performance-card__change negative">---%</div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-events -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: CRIAR EVENTO       ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-create">
+        <div class="section-title">Criar <span class="text-gradient">Evento</span></div>
+        <p class="section-sub">Configure todos os detalhes do seu evento.</p>
+
+        <div class="create-form glass">
+          <div class="form-section">
+            <h3 class="form-section__title">Informações Básicas</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nome do Evento *</label>
+                <input type="text" placeholder="Ex: Festival Neon SP 2025" />
+              </div>
+              <div class="form-group">
+                <label>Categoria</label>
+                <select>
+                  <option>Festival</option>
+                  <option>Show</option>
+                  <option>Teatro</option>
+                  <option>Esporte</option>
+                  <option>Outro</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Data *</label>
+                <input type="date" />
+              </div>
+              <div class="form-group">
+                <label>Horário</label>
+                <input type="time" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">Localização</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Local *</label>
+                <input type="text" placeholder="Ex: Allianz Parque" />
+              </div>
+              <div class="form-group">
+                <label>Cidade *</label>
+                <input type="text" placeholder="Ex: São Paulo" />
+              </div>
+              <div class="form-group">
+                <label>Estado</label>
+                <input type="text" placeholder="Ex: SP" />
+              </div>
+              <div class="form-group">
+                <label>CEP</label>
+                <input type="text" placeholder="00000-000" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">Ingressos e Preços</h3>
+            <div class="ticket-types">
+              <div class="ticket-type">
+                <div class="ticket-type__header">
+                  <span class="ticket-type__name">Pista</span>
+                  <button class="btn btn--ghost btn--xs" onclick="removeTicketType(this)">✕</button>
+                </div>
+                <div class="ticket-type__fields">
+                  <div class="form-group">
+                    <label>Preço (R$)</label>
+                    <input type="number" placeholder="120" />
+                  </div>
+                  <div class="form-group">
+                    <label>Quantidade</label>
+                    <input type="number" placeholder="1000" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn--ghost" onclick="addTicketType()">
+              <span>+</span> Adicionar Tipo de Ingresso
+            </button>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">Descrição e Detalhes</h3>
+            <div class="form-group">
+              <label>Descrição *</label>
+              <textarea placeholder="Descreva seu evento, atrações, o que esperar..." rows="4"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Artistas/Atrações</label>
+              <input type="text" placeholder="Ex: DJ Alok, Major Lazer, etc." />
+            </div>
+            <div class="form-group">
+              <label>Classificação Etária</label>
+              <select>
+                <option>Livre</option>
+                <option>12 anos</option>
+                <option>14 anos</option>
+                <option>16 anos</option>
+                <option>18 anos</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">Imagens</h3>
+            <div class="image-upload">
+              <div class="upload-area" onclick="triggerFileUpload()">
+                <span class="upload-icon">📷</span>
+                <span class="upload-text">Clique para adicionar imagem do evento</span>
+                <span class="upload-sub">PNG, JPG até 5MB</span>
+              </div>
+              <input type="file" id="eventImage" accept="image/*" style="display: none;" />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn--ghost" onclick="goPage('dashboard')">Cancelar</button>
+            <button class="btn btn--primary" onclick="createEvent()">Criar Evento</button>
+          </div>
+        </div>
+      </div><!-- /page-create -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: ANALYTICS          ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-analytics">
+        <div class="section-title">Analytics <span class="text-gradient">Detalhado</span></div>
+        <p class="section-sub">Acompanhe o desempenho dos seus eventos.</p>
+
+        <div class="analytics-content">
+          <div class="analytics-card glass">
+            <h3>Vendas por Evento</h3>
+            <div class="chart-placeholder">
+              <span>📊 Gráfico de vendas</span>
+              <p>Analytics detalhado em breve</p>
+            </div>
+          </div>
+
+          <div class="analytics-card glass">
+            <h3>Receita Mensal</h3>
+            <div class="chart-placeholder">
+              <span>💰 Gráfico financeiro</span>
+              <p>Relatórios financeiros em breve</p>
+            </div>
+          </div>
+
+          <div class="analytics-card glass">
+            <h3>Engajamento</h3>
+            <div class="chart-placeholder">
+              <span>📈 Métricas de engajamento</span>
+              <p>Dados de comunidade em breve</p>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-analytics -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: VENDAS             ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-sales">
+        <div class="section-title">Gestão de <span class="text-gradient">Vendas</span></div>
+        <p class="section-sub">Controle suas vendas e pagamentos.</p>
+
+        <div class="sales-content">
+          <div class="sales-summary glass">
+            <div class="sales-stat">
+              <span class="sales-stat__value">R$ --</span>
+              <span class="sales-stat__label">Saldo Disponível</span>
+            </div>
+            <div class="sales-stat">
+              <span class="sales-stat__value">R$ --</span>
+              <span class="sales-stat__label">A Receber</span>
+            </div>
+            <div class="sales-stat">
+              <span class="sales-stat__value">R$ --</span>
+              <span class="sales-stat__label">Taxas Plataforma</span>
+            </div>
+          </div>
+
+          <div class="sales-actions">
+            <button class="btn btn--primary" onclick="showToast('💰 Solicitar saque')">Solicitar Saque</button>
+            <button class="btn btn--ghost" onclick="showToast('📄 Ver extrato')">Ver Extrato</button>
+          </div>
+        </div>
+      </div><!-- /page-sales -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: SUPORTE            ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-support">
+        <div class="section-title">Central de <span class="text-gradient">Suporte</span></div>
+        <p class="section-sub">Precisa de ajuda? Estamos aqui para você.</p>
+
+        <div class="support-content">
+          <div class="support-card glass">
+            <div class="support-card__icon">💬</div>
+            <div class="support-card__content">
+              <h3>Chat com Suporte</h3>
+              <p>Tire suas dúvidas em tempo real</p>
+              <button class="btn btn--primary" onclick="showToast('💬 Chat em breve')">Iniciar Chat</button>
+            </div>
+          </div>
+
+          <div class="support-card glass">
+            <div class="support-card__icon">📚</div>
+            <div class="support-card__content">
+              <h3>Central de Ajuda</h3>
+              <p>Artigos e tutoriais completos</p>
+              <button class="btn btn--ghost" onclick="showToast('📚 Ajuda em breve')">Ver Tutoriais</button>
+            </div>
+          </div>
+
+          <div class="support-card glass">
+            <div class="support-card__icon">📞</div>
+            <div class="support-card__content">
+              <h3>Contato</h3>
+              <p>Entre em contato conosco</p>
+              <button class="btn btn--ghost" onclick="showToast('📞 Contato em breve')">Fale Conosco</button>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-support -->
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: PERFIL ORGANIZADOR ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-profile">
+        <div class="section-title">Meu <span class="text-gradient">Perfil</span></div>
+        <p class="section-sub">Gerencie suas informações pessoais.</p>
+
+        <div class="profile-content">
+          <div class="profile-card glass">
+            <h3>Informações Pessoais</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nome</label>
+                <input type="text" value="João Organizador" />
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" value="joao@organizador.com" />
+              </div>
+              <div class="form-group">
+                <label>Telefone</label>
+                <input type="tel" value="(11) 99999-9999" />
+              </div>
+              <div class="form-group">
+                <label>Cidade</label>
+                <input type="text" value="São Paulo" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn--primary" onclick="showToast('✅ Perfil atualizado')">Salvar Alterações</button>
+            </div>
+          </div>
+
+          <div class="profile-card glass">
+            <h3>Informações do Organizador</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Razão Social</label>
+                <input type="text" value="João Eventos Ltda" />
+              </div>
+              <div class="form-group">
+                <label>CNPJ</label>
+                <input type="text" value="12.345.678/0001-90" />
+              </div>
+              <div class="form-group">
+                <label>Banco</label>
+                <input type="text" value="Banco do Brasil" />
+              </div>
+              <div class="form-group">
+                <label>Agência/Conta</label>
+                <input type="text" value="1234-5 / 12345-6" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn--primary" onclick="showToast('✅ Dados bancários atualizados')">Salvar Dados</button>
+            </div>
+          </div>
+
+          <!-- Account Security -->
+          <div class="profile-card glass">
+            <h3>Segurança da Conta</h3>
+            <div class="security-options">
+              <div class="security-item">
+                <div class="security-item__content">
+                  <div class="security-item__title">Alterar Senha</div>
+                  <div class="security-item__desc">Última alteração há 30 dias</div>
+                </div>
+                <button class="btn btn--ghost btn--sm" onclick="showToast('🔒 Alterar senha em breve')">Alterar</button>
+              </div>
+
+              <div class="security-item">
+                <div class="security-item__content">
+                  <div class="security-item__title">Autenticação de Dois Fatores</div>
+                  <div class="security-item__desc">Adicione uma camada extra de segurança</div>
+                </div>
+                <button class="btn btn--ghost btn--sm" onclick="showToast('🔐 2FA em breve')">Ativar</button>
+              </div>
+
+              <div class="security-item">
+                <div class="security-item__content">
+                  <div class="security-item__title">Sessões Ativas</div>
+                  <div class="security-item__desc">Gerencie dispositivos conectados</div>
+                </div>
+                <button class="btn btn--ghost btn--sm" onclick="showToast('📱 Gerenciar sessões')">Ver</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account Stats -->
+          <div class="profile-card glass">
+            <h3>Estatísticas da Conta</h3>
+            <div class="account-stats">
+              <div class="account-stat">
+                <div class="account-stat__value">--</div>
+                <div class="account-stat__label">Eventos Criados</div>
+              </div>
+              <div class="account-stat">
+                <div class="account-stat__value">--</div>
+                <div class="account-stat__label">Total de Ingressos</div>
+              </div>
+              <div class="account-stat">
+                <div class="account-stat__value">R$ --</div>
+                <div class="account-stat__label">Receita Total</div>
+              </div>
+              <div class="account-stat">
+                <div class="account-stat__value">--</div>
+                <div class="account-stat__label">Avaliação Média</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-profile -->
+
+    </div><!-- /main -->
+  </div><!-- /shell -->
+
+  <!-- ░░ TOAST ░░ -->
+  <div class="toast" id="toast">
+    <span class="toast__icon" id="toastIcon">✅</span>
+    <span id="toastMsg">Ação realizada!</span>
+  </div>
+
+  <script src="../js/organizador.js"></script>
+</body>
+</html>

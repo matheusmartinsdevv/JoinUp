@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JoinUp — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../Css/feed.css" />
+</head>
+<body>
+ 
+  <!-- BG ORBS -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+ 
+  <!-- SIDEBAR OVERLAY (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+ 
+  <div class="shell">
+ 
+    <!-- ░░ SIDEBAR ░░ -->
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="sidebar__logo">
+        <span class="logo__icon">◈</span>
+        <span class="logo__text">Join<span class="logo__accent">Up</span></span>
+      </a>
+ 
+      <nav class="sidebar__nav">
+        <span class="nav-section">Principal</span>
+        <button class="nav-item active" data-page="feed">
+          <span class="nav-icon"></span> Feed
+        </button>
+        <button class="nav-item" data-page="events">
+          <span class="nav-icon"></span> Explorar Eventos
+        </button>
+        <button class="nav-item" data-page="my-events">
+          <span class="nav-icon"></span> Meus Ingressos
+          <span class="nav-badge">3</span>
+        </button>
+        <button class="nav-item" data-page="groups">
+          <span class="nav-icon"></span> Comunidades
+          <span class="nav-badge">5</span>
+        </button>
+ 
+        <span class="nav-section">Conta</span>
+        <button class="nav-item" data-page="profile">
+          <span class="nav-icon">👤</span> Meu Perfil
+        </button>
+        <button class="nav-item" id="logoutBtn">
+          <span class="nav-icon"></span> Sair
+        </button>
+      </nav>
+ 
+      <div class="sidebar__user" data-page="profile" id="sidebarUser">
+        <div class="user-avatar">JC</div>
+        <div class="user-info">
+          <div class="user-name">João Carlos</div>
+          <div class="user-tag">@joaocarlos · Maringá</div>
+        </div>
+        <span style="color:var(--text-muted);font-size:0.8rem;">⚙️</span>
+      </div>
+    </aside>
+ 
+    <!-- ░░ MAIN ░░ -->
+    <div class="main">
+ 
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <button class="burger-btn" id="burgerBtn">☰</button>
+ 
+        <div class="topbar__search">
+          <span class="topbar__search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Buscar eventos, artistas, pessoas..." autocomplete="off" />
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-divider">Eventos</div>
+            <div class="search-result" onclick="goPage('events')">
+              <span class="search-result-icon">🎵</span>
+              <div class="search-result-info">
+                <div class="search-result-name">Festival Neon SP</div>
+                <div class="search-result-sub">12 Jul · São Paulo · +847 vão</div>
+              </div>
+            </div>
+            <div class="search-result" onclick="goPage('events')">
+              <span class="search-result-icon">🎸</span>
+              <div class="search-result-info">
+                <div class="search-result-name">Rock in Rio 2025</div>
+                <div class="search-result-sub">19-27 Jul · Rio de Janeiro · +12K vão</div>
+              </div>
+            </div>
+            <div class="search-divider">Pessoas</div>
+            <div class="search-result" onclick="goPage('profile')">
+              <span class="search-result-icon">👤</span>
+              <div class="search-result-info">
+                <div class="search-result-name">Bruna Martins</div>
+                <div class="search-result-sub">Vai ao Festival Neon SP</div>
+              </div>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="topbar__actions">
+          <button class="icon-btn" onclick="goPage('profile')" title="Perfil">
+            👤
+          </button>
+        </div>
+      </header>
+ 
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: FEED               ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page active" id="page-feed">
+        <div class="home-grid">
+ 
+          <!-- Feed principal -->
+          <div class="home-main">
+            <!-- Posts -->
+            <div id="feedEventos">
+              <div class="post glass">
+                <div class="post__header">
+                  <div class="post__avatar" style="background: linear-gradient(135deg, var(--purple), var(--purple-d))">
+                    📢
+                  </div>
+                  <div>
+                    <div class="post__name">Nome do Organizador</div>
+                    <span class="post__event-tag">Organizador Oficial</span>
+                  </div>
+                  <span class="post__time">Data da Postagem</span>
+                </div>
+
+                <div class="post__body">
+                  <h3 style="color: var(--text); margin-bottom: 8px;">Nome do Evento Exemplo</h3>
+                  <p>Descrição curta do evento vindo do banco de dados. Informações sobre atrações, local e o que esperar da experiência.</p>
+                  <div style="margin-top: 10px; font-size: 0.85rem; color: var(--purple-l);">
+                    📍 Local do Evento • 📅 00/00/0000
+                  </div>
+                </div>
+
+                <div class="post__img">
+                  🖼️ <div class="post__img-overlay"></div>
+                </div>
+
+                <div class="post__actions">
+                  <button class="post-action">❤️ 0</button>
+                  <button class="post-action">💬 0</button>
+                  
+                  <button class="post-action post-action--cta" style="margin-left: auto;">
+                    🔎 Ver mais informações
+                  </button>
+                </div>
+              </div>
+            </div><!-- /feedEventos -->
+          </div><!-- /home-main -->
+ 
+        </div><!-- /home-grid -->
+      </div><!-- /page-feed -->
+ 
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: EXPLORAR EVENTOS   ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-events">
+        <div class="section-title">Explorar <span class="text-gradient">Eventos</span></div>
+        <p class="section-sub">Encontre o próximo rolê e junte-se à galera antes do show começar.</p>
+ 
+        <div class="events-filters">
+          <button class="filter-btn active" onclick="filterEvents(this)">Todos</button>
+        </div>
+ 
+        <div class="events-grid">
+ 
+          <div class="event-card" onclick="showEventModal('Festival Neon SP','12 Jul · São Paulo','R$ 120','🎵','847')">
+            <div class="event-card__img" style="background:linear-gradient(135deg,#4a1d96,#7c3aed)">🎆
+              <div class="event-card__img-overlay"></div>
+              <span class="event-card__tag">📌 Exemplo</span>
+              <span class="event-card__going-count">+847 vão</span>
+            </div>
+            <div class="event-card__body">
+              <div class="event-card__title">Festival Neon SP</div>
+              <div class="event-card__meta">📅 12 Jul · 📍 São Paulo</div>
+              <div class="event-card__footer">
+                <span class="event-card__price">A partir de <strong>R$ 120</strong></span>
+              </div>
+            </div>
+          </div>
+ 
+        </div>
+      </div><!-- /page-events -->
+ 
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: MEUS INGRESSOS     ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-my-events">
+        <div class="section-title">Meus <span class="text-gradient">Ingressos</span></div>
+        <p class="section-sub">Gerencie seus ingressos, revenda com segurança ou acesse as comunidades.</p>
+ 
+        <div class="ticket-list">
+          <div class="ticket glass">
+            <div class="ticket__icon">🎆</div>
+            <div class="ticket__info">
+              <div class="ticket__name">Festival Neon SP</div>
+              <div class="ticket__meta">📅 12 Jul 2025 · 📍 São Paulo · Pista VIP</div>
+            </div>
+            <span class="ticket__status ticket__status--active">✅ Ativo</span>
+            <div class="ticket__actions">
+              <button class="btn btn--ghost btn--sm" onclick="showToast('🔒 Abrindo QR Code seguro...')">Ver QR Code</button>
+              <button class="btn btn--ghost btn--sm" onclick="openSellModal()">Revender</button>
+              <button class="btn btn--primary btn--sm" onclick="goPage('groups')">Comunidade</button>
+            </div>
+          </div>
+ 
+          <div class="ticket glass">
+            <div class="ticket__icon">🎸</div>
+            <div class="ticket__info">
+              <div class="ticket__name">Rock in Rio 2025</div>
+              <div class="ticket__meta">📅 19 Jul 2025 · 📍 Rio de Janeiro · Pista</div>
+            </div>
+            <span class="ticket__status ticket__status--active">✅ Ativo</span>
+            <div class="ticket__actions">
+              <button class="btn btn--ghost btn--sm" onclick="showToast('🔒 Abrindo QR Code seguro...')">Ver QR Code</button>
+              <button class="btn btn--ghost btn--sm" onclick="openSellModal()">Revender</button>
+              <button class="btn btn--primary btn--sm" onclick="goPage('groups')">Comunidade</button>
+            </div>
+          </div>
+ 
+          <div class="ticket glass">
+            <div class="ticket__icon">🎶</div>
+            <div class="ticket__info">
+              <div class="ticket__name">Lollapalooza 2024</div>
+              <div class="ticket__meta">📅 23 Mar 2024 · 📍 São Paulo · Pista</div>
+            </div>
+            <span class="ticket__status ticket__status--past">Encerrado</span>
+            <div class="ticket__actions">
+              <button class="btn btn--ghost btn--sm" onclick="goPage('groups')">Ver memórias</button>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-my-events -->
+ 
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: COMUNIDADES        ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-groups">
+        <div class="section-title">Minhas <span class="text-gradient">Comunidades</span></div>
+        <p class="section-sub">Grupos de eventos onde você está ou pode entrar.</p>
+ 
+        <div class="groups-grid">
+          <div class="group-card glass">
+            <div class="group-card__header">
+              <div class="group-card__icon">🎆</div>
+              <div>
+                <div class="group-card__name">Festival Neon SP</div>
+              </div>
+            </div>
+            <p class="group-card__desc">A comunidade oficial do Festival Neon SP 2025. Combine encontros, troque ingressos e compartilhe momentos!</p>
+            <div class="group-card__footer">
+              <button class="btn btn--primary btn--sm" onclick="showToast('💜 Abrindo comunidade!')">Acessar comunidade</button>
+            </div>
+          </div>
+ 
+          <div class="group-card glass">
+            <div class="group-card__header">
+              <div class="group-card__icon">🎸</div>
+              <div>
+                <div class="group-card__name">Rock in Rio 2025</div>
+                </div>
+            </div>
+            <p class="group-card__desc">Planeje sua viagem pro Rio, encontre hospedagem compartilhada e conheça sua galera antes da chegada!</p>
+            <div class="group-card__footer">
+              <button class="btn btn--primary btn--sm" onclick="showToast('💜 Abrindo comunidade!')">Acessar comunidade</button>
+            </div>
+          </div>
+ 
+          <div class="group-card glass">
+            <div class="group-card__header">
+              <div class="group-card__icon">🎪</div>
+              <div>
+                <div class="group-card__name">Lollapalooza Brasil</div>
+                </div>
+            </div>
+            <p class="group-card__desc">A maior comunidade do Lolla no Brasil. Dicas de palco, fotos, caronas e muito mais!</p>
+            <div class="group-card__footer">
+              <button class="btn btn--primary btn--sm" onclick="showToast('💜 Abrindo comunidade!')">Acessar comunidade</button>
+            </div>
+          </div>
+ 
+          <div class="group-card glass" style="border-style:dashed;opacity:0.7;cursor:pointer;" onclick="goPage('events')">
+            <div class="group-card__header">
+              <div class="group-card__icon" style="background:rgba(157,78,221,0.1);border:1px dashed var(--border-p);">＋</div>
+              <div>
+                <div class="group-card__name">Encontrar mais comunidades</div>
+                </div>
+            </div>
+            <p class="group-card__desc">Compre um ingresso ou explore eventos para entrar automaticamente nas comunidades.</p>
+            <div class="group-card__footer">
+              <button class="btn btn--ghost btn--sm">Explorar eventos →</button>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-groups -->
+ 
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: NOTIFICAÇÕES       ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-notifs">
+        <div class="section-title"><span class="text-gradient">Notificações</span></div>
+        <p class="section-sub">Fique por dentro de tudo que acontece na sua rede.</p>
+ 
+        <div class="glass" style="padding:8px;">
+          <div class="notif-list">
+            <div class="notif unread">
+              <div class="notif__av" style="background:linear-gradient(135deg,#be185d,#db2777)">❤️</div>
+              <div class="notif__body">
+                <div class="notif__text"><strong>Bruna Martins</strong> curtiu sua postagem no Festival Neon SP.</div>
+                <div class="notif__time">Agora mesmo</div>
+              </div>
+              <div class="notif__dot"></div>
+            </div>
+            <div class="notif unread">
+              <div class="notif__av">👥</div>
+              <div class="notif__body">
+                <div class="notif__text"><strong>3 novas pessoas</strong> entraram no grupo do Rock in Rio que você faz parte.</div>
+                <div class="notif__time">5 minutos atrás</div>
+              </div>
+              <div class="notif__dot"></div>
+            </div>
+            <div class="notif unread">
+              <div class="notif__av">🎟</div>
+              <div class="notif__body">
+                <div class="notif__text"><strong>Ingresso verificado!</strong> Seu ingresso para o Festival Neon SP foi autenticado com sucesso.</div>
+                <div class="notif__time">1 hora atrás</div>
+              </div>
+              <div class="notif__dot"></div>
+            </div>
+            <div class="notif">
+              <div class="notif__av" style="background:linear-gradient(135deg,#0d47a1,#1976d2)">RC</div>
+              <div class="notif__body">
+                <div class="notif__text"><strong>Rafael Costa</strong> começou a te seguir.</div>
+                <div class="notif__time">2 horas atrás</div>
+              </div>
+            </div>
+            <div class="notif">
+              <div class="notif__av">🔥</div>
+              <div class="notif__body">
+                <div class="notif__text"><strong>Festival Neon SP</strong> publicou uma atualização: "Lineup completo revelado!"</div>
+                <div class="notif__time">3 horas atrás</div>
+              </div>
+            </div>
+            <div class="notif">
+              <div class="notif__av">💬</div>
+              <div class="notif__body">
+                <div class="notif__text"><strong>Isabela Torres</strong> comentou no seu post: "Vou estar lá também! 🎶"</div>
+                <div class="notif__time">5 horas atrás</div>
+              </div>
+            </div>
+            <div class="notif">
+              <div class="notif__av">🎟</div>
+              <div class="notif__body">
+                <div class="notif__text">Alguém está vendendo ingressos para o <strong>Ultra Music Festival</strong> — evento que você salvou!</div>
+                <div class="notif__time">Ontem</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-notifs -->
+ 
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: MENSAGENS          ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-messages">
+        <div class="section-title"><span class="text-gradient">Mensagens</span></div>
+        <p class="section-sub">Converse com sua galera e grupos de eventos.</p>
+ 
+        <div class="glass" style="padding:8px;max-width:600px;">
+          <div class="notif-list">
+            <div class="notif unread" onclick="showToast('💬 Abrindo conversa...')">
+              <div class="notif__av" style="background:linear-gradient(135deg,#be185d,#db2777)">BM<div class="online-dot"></div></div>
+              <div class="notif__body">
+                <div class="notif__text"><strong>Bruna Martins</strong> — "Oi! Você também vai no Festival Neon SP?"</div>
+                <div class="notif__time">Agora mesmo</div>
+              </div>
+              <div class="notif__dot"></div>
+            </div>
+            <div class="notif unread" onclick="showToast('💬 Abrindo conversa...')">
+              <div class="notif__av" style="background:linear-gradient(135deg,#7b1fa2,#ab47bc)">IT</div>
+              <div class="notif__body">
+                <div class="notif__text"><strong>Isabela Torres</strong> — "Amei conhecer vocês no Lolla! 💜"</div>
+                <div class="notif__time">1 hora atrás</div>
+              </div>
+              <div class="notif__dot"></div>
+            </div>
+            <div class="notif" onclick="showToast('💬 Abrindo grupo...')">
+              <div class="notif__av">🎆</div>
+              <div class="notif__body">
+                <div class="notif__text"><strong>Grupo Festival Neon SP</strong> — Rafael: "Quem vai se encontrar antes do show?"</div>
+                <div class="notif__time">3 horas atrás</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-messages -->
+ 
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: PERFIL             ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-profile">
+        <div class="profile-header glass">
+          <div class="profile-cover"></div>
+          <div class="profile-content">
+            <div class="profile-avatar">JC</div>
+            <div class="profile-info">
+              <div class="profile-name">João Carlos</div>
+              <div class="profile-bio">🎵 Amante de festivais · 📍 Maringá, PR · Fã de Rock, Eletrônico e MPB</div>
+              <div class="profile-tags">
+                <span class="profile-tag">🎸 Rock</span>
+                <span class="profile-tag">🎶 Eletrônico</span>
+                <span class="profile-tag">🎵 MPB</span>
+                <span class="profile-tag">🎪 Festivais</span>
+              </div>
+            </div>
+            <div class="profile-stats">
+              <div>
+                <span class="profile-stat__num">12</span>
+                <span class="profile-stat__lbl">Eventos</span>
+              </div>
+              <div>
+                <span class="profile-stat__num">248</span>
+                <span class="profile-stat__lbl">Seguidores</span>
+              </div>
+              <div>
+                <span class="profile-stat__num">130</span>
+                <span class="profile-stat__lbl">Seguindo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="profile-grid">
+          <!-- Formulário de edição -->
+          <div>
+            <div class="glass" style="padding:22px;">
+              <div style="font-size:0.85rem;font-weight:700;margin-bottom:16px;">✏️ Editar Perfil</div>
+              <div class="edit-form">
+                <div class="form-group">
+                  <label>Nome completo</label>
+                  <input type="text" value="João Carlos" />
+                </div>
+                <div class="form-group">
+                  <label>Usuário</label>
+                  <input type="text" value="@joaocarlos" />
+                </div>
+                <div class="form-group">
+                  <label>Bio</label>
+                  <textarea>🎵 Amante de festivais · 📍 Maringá, PR · Fã de Rock, Eletrônico e MPB</textarea>
+                </div>
+                <div class="form-group">
+                  <label>Cidade</label>
+                  <input type="text" value="Maringá, PR" />
+                </div>
+                <div class="form-group">
+                  <label>Gêneros favoritos</label>
+                  <div class="genre-grid">
+                    <label class="genre-check"><input type="checkbox" checked> 🎸 Rock</label>
+                    <label class="genre-check"><input type="checkbox" checked> 🎶 Eletrônico</label>
+                    <label class="genre-check"><input type="checkbox" checked> 🎵 MPB</label>
+                    <label class="genre-check"><input type="checkbox"> 🎺 Jazz</label>
+                    <label class="genre-check"><input type="checkbox"> 🎻 Forró</label>
+                    <label class="genre-check"><input type="checkbox"> 🎤 Sertanejo</label>
+                  </div>
+                </div>
+                <button class="btn btn--primary" onclick="showToast('✅ Perfil atualizado!')">Salvar alterações</button>
+              </div>
+            </div>
+          </div>
+ 
+          <!-- Postagens do usuário -->
+          <div>
+            <div style="font-size:0.9rem;font-weight:700;margin-bottom:14px;">📸 Minhas postagens</div>
+            <div class="post glass">
+              <div class="post__header">
+                <div class="post__avatar">JC</div>
+                <div>
+                  <div class="post__name">João Carlos</div>
+                  <span class="post__event-tag">🎸 Rock in Rio 2024</span>
+                </div>
+                <span class="post__time">há 5 dias</span>
+              </div>
+              <p class="post__body">Primeiro Rock in Rio da minha vida e já virei fã para sempre 🤘 Que experiência incrível! Já tô contando os dias pro próximo.</p>
+              <div class="post__actions">
+                <button class="post-action" onclick="likePost(this)">❤️ 47</button>
+                <button class="post-action">💬 8</button>
+              </div>
+            </div>
+            <div class="post glass">
+              <div class="post__header">
+                <div class="post__avatar">JC</div>
+                <div>
+                  <div class="post__name">João Carlos</div>
+                  <span class="post__event-tag">🎵 Festival Neon SP</span>
+                </div>
+                <span class="post__time">há 2 semanas</span>
+              </div>
+              <p class="post__body">Consegui meu ingresso! Quem mais vai?? Vamos montar um grupo 💜</p>
+              <div class="post__actions">
+                <button class="post-action" onclick="likePost(this)">❤️ 23</button>
+                <button class="post-action">💬 15</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-profile -->
+ 
+    </div><!-- /main -->
+  </div><!-- /shell -->
+ 
+  <!-- ░░ MODAL: EVENTO ░░ -->
+  <div class="modal-backdrop" id="eventModal">
+    <div class="modal modal--event">
+      <div class="modal__header">
+        <button class="modal__close" onclick="closeModal('eventModal')">✕</button>
+      </div>
+      <div class="event-modal__content" id="eventModalContent">
+        <!-- Estrutura para preenchimento dinâmico pelo organizador -->
+      </div>
+    </div>
+  </div>
+ 
+  <!-- ░░ MODAL: REVENDA SEGURA ░░ -->
+  <div class="modal-backdrop" id="sellModal">
+    <div class="modal">
+      <div class="modal__header">
+        <div class="modal__title">🔒 Revenda Segura</div>
+        <button class="modal__close" onclick="closeModal('sellModal')">✕</button>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:20px;">Revenda protegida pelo JoinUp — o comprador só recebe após confirmação da entrada.</p>
+      <div class="edit-form">
+        <div class="form-group">
+          <label>Evento</label>
+          <input type="text" value="Rock in Rio 2025 — Pista" readonly style="opacity:0.7;" />
+        </div>
+        <div class="form-group">
+          <label>Preço de revenda (R$)</label>
+          <input type="number" placeholder="350" />
+        </div>
+        <div class="form-group">
+          <label>Mensagem para comprador</label>
+          <textarea placeholder="Informe por que está revendendo..."></textarea>
+        </div>
+        <button class="btn btn--primary" onclick="closeModal('sellModal');showToast('🎟 Ingresso colocado à venda!')">Publicar anúncio</button>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- ░░ MODAL: COMENTÁRIOS ░░ -->
+  <div class="modal-backdrop" id="commentsModal">
+    <div class="modal">
+      <div class="modal__header">
+        <div class="modal__title">💬 Comentários</div>
+        <button class="modal__close" onclick="closeModal('commentsModal')">✕</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+        <div class="notif" style="padding:10px 0;">
+          <div class="notif__av" style="background:linear-gradient(135deg,#0d47a1,#1976d2)">RC</div>
+          <div class="notif__body">
+            <div class="notif__text"><strong>Rafael Costa</strong> — "Arrasando! Vou te encontrar na área VIP 🎟"</div>
+            <div class="notif__time">2min atrás</div>
+          </div>
+        </div>
+        <div class="notif" style="padding:10px 0;">
+          <div class="notif__av" style="background:linear-gradient(135deg,#7b1fa2,#ab47bc)">IT</div>
+          <div class="notif__body">
+            <div class="notif__text"><strong>Isabela Torres</strong> — "Que foto incrível!! 😍"</div>
+            <div class="notif__time">5min atrás</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div class="composer__avatar" style="width:36px;height:36px;font-size:0.8rem;">JC</div>
+        <input type="text" placeholder="Escreva um comentário..."
+          style="background:rgba(0,0,0,0.3);border:1px solid var(--border-p);padding:10px 14px;border-radius:10px;color:#fff;font-family:Poppins,sans-serif;font-size:0.85rem;outline:none;flex:1;" />
+        <button class="btn btn--primary btn--sm" onclick="closeModal('commentsModal');showToast('💬 Comentário publicado!')">Enviar</button>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <span class="toast__icon" id="toastIcon">✅</span>
+    <span id="toastMsg">Ação realizada!</span>
+  </div>
+ 
+  <script src="../js/feed.js"></script>
+</body>
+</html>
+
+
