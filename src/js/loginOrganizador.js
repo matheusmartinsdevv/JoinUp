@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Verifica a resposta do servidor
                 if (result.trim() === "sucesso") {
                     // Se deu certo, vai para a Dashboard do Organizador
-                    window.location.href = 'dashboardOrganizador.html';
+                    window.location.href = 'organizador.html';
                 } else {
                     // Se deu erro (senha errada, etc), mostra o motivo
                     alert(result);
