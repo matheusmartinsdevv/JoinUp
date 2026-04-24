@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Verifica a resposta do servidor
                 if (result.trim() === "sucesso") {
                     // Se deu certo, vai para o Dashboard de Suporte
-                    window.location.href = 'dashboardSuporte.html';
+                    window.location.href = 'suporte.html';
                 } else {
                     // Se deu erro (senha errada, etc), mostra o motivo
                     alert(result);
