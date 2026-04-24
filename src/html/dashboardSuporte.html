@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../Css/login.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <title>Dashboard Suporte | JoinUp</title>
+
+    <style>
+        .session-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--primary-purple);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .session-info h3 {
+            color: var(--primary-purple);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .session-info p {
+            margin: 0.5rem 0;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+
+        .session-info strong {
+            color: #fff;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="cta__orbs">
+            <div class="orb orb--1"></div>
+            <div class="orb orb--2"></div>
+        </div>
+        
+        <div class="container">
+            <div class="cta__inner fade-in">
+                
+                <h2 class="cta__title">Bem-vindo ao <br /><span class="text-gradient">Painel de Suporte</span></h2>
+                <p class="cta__subtitle">Suas informações de sessão foram salvas com segurança.</p>
+
+                <div class="profile-card glass">
+                    <div class="session-info">
+                        <h3>📋 Informações da Sessão</h3>
+                        <p><strong>Nome:</strong> <span id="suporte-nome">Carregando...</span></p>
+                        <p><strong>E-mail:</strong> <span id="suporte-email">Carregando...</span></p>
+                        <p><strong>Status:</strong> <span style="color: #4CAF50;">✓ Autenticado</span></p>
+                    </div>
+                </div>
+
+                <a href="../php/logout.php" style="display: block; margin-top: 2rem; color: #aaa; text-decoration: none; text-align: center;">← Fazer logout</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/dashboardSuporte.js"></script>
+</body>
+</html>
