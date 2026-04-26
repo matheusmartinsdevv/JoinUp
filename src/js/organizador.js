@@ -53,6 +53,11 @@ function goPage(pageName) {
     if (pageName === 'events') {
       loadMeusEventos();
     }
+
+    // Load profile when navigating to profile page
+    if (pageName === 'profile') {
+      loadPerfil();
+    }
   } else {
     console.log('Página não encontrada:', pageName);
   }
@@ -101,6 +106,162 @@ function showToast(message, icon = '✅', duration = 3000) {
   setTimeout(() => {
     toast.classList.remove('show');
   }, duration);
+}
+
+// =========================================
+// PERFIL DO ORGANIZADOR
+// =========================================
+
+function showProfileMsg(elId, msg, tipo) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  if (tipo === 'error') {
+    el.style.background = 'rgba(255,60,60,0.15)';
+    el.style.border = '1px solid rgba(255,60,60,0.35)';
+    el.style.color = '#ff8080';
+  } else {
+    el.style.background = 'rgba(74,222,128,0.15)';
+    el.style.border = '1px solid rgba(74,222,128,0.35)';
+    el.style.color = '#4ade80';
+  }
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+async function loadPerfil() {
+  try {
+    const res  = await fetch('../php/get_user_data_organizador.php');
+    const data = await res.json();
+
+    if (data.error) {
+      console.error('Erro ao carregar perfil:', data.error);
+      return;
+    }
+
+    // Preencher campos
+    document.getElementById('profileNome').value  = data.nome  || '';
+    document.getElementById('profileEmail').value = data.email || '';
+    document.getElementById('profileCnpj').value  = data.cnpj  || '';
+
+    // Atualizar avatar/nome na sidebar
+    const userNameEl = document.querySelector('.user-name');
+    if (userNameEl && data.nome) userNameEl.textContent = data.nome;
+
+    const avatarEl = document.querySelector('.user-avatar');
+    if (avatarEl && data.nome) {
+      avatarEl.textContent = data.nome.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+    }
+
+    // Carregar estatísticas reaproveitando get_meus_eventos
+    loadStatsPerfil();
+
+  } catch (err) {
+    console.error('Erro ao carregar perfil:', err);
+  }
+}
+
+async function loadStatsPerfil() {
+  try {
+    const res  = await fetch('../php/get_meus_eventos.php');
+    const data = await res.json();
+    if (!data.success || !data.data) return;
+
+    const eventos   = data.data;
+    const totalEvt  = eventos.length;
+    const totalVend = eventos.reduce((acc, e) => acc + (parseInt(e.vendidos) || 0), 0);
+    const totalRec  = eventos.reduce((acc, e) => acc + (parseFloat(e.receita) || 0), 0);
+
+    const el = (id) => document.getElementById(id);
+    if (el('statEventos'))  el('statEventos').textContent  = totalEvt;
+    if (el('statIngressos')) el('statIngressos').textContent = totalVend;
+    if (el('statReceita'))  el('statReceita').textContent  = 'R$ ' + totalRec.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+  } catch (err) {
+    console.error('Erro ao carregar estatísticas:', err);
+  }
+}
+
+async function salvarPerfil() {
+  const nome  = document.getElementById('profileNome')?.value.trim();
+  const email = document.getElementById('profileEmail')?.value.trim();
+  const cnpj  = document.getElementById('profileCnpj')?.value.trim();
+
+  if (!nome || !email || !cnpj) {
+    showProfileMsg('profileInfoMsg', '⚠️ Nome, e-mail e CNPJ são obrigatórios.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnSalvarPerfil');
+  if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+
+  try {
+    const res  = await fetch('../php/editar_perfil_organizador.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, cnpj })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showProfileMsg('profileInfoMsg', '✅ ' + data.message, 'success');
+      showToast('✅ Perfil atualizado!', '✅');
+      // Atualizar sidebar
+      const userNameEl = document.querySelector('.user-name');
+      if (userNameEl) userNameEl.textContent = nome;
+      const avatarEl = document.querySelector('.user-avatar');
+      if (avatarEl) avatarEl.textContent = nome.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+    } else {
+      showProfileMsg('profileInfoMsg', '❌ ' + (data.error || 'Erro ao salvar.'), 'error');
+    }
+  } catch (err) {
+    showProfileMsg('profileInfoMsg', '❌ Falha na comunicação com o servidor.', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Salvar Alterações'; }
+  }
+}
+
+async function salvarSenha() {
+  const nova     = document.getElementById('profileNovaSenha')?.value.trim();
+  const confirma = document.getElementById('profileConfirmaSenha')?.value.trim();
+
+  if (!nova || !confirma) {
+    showProfileMsg('profileSenhaMsg', '⚠️ Preencha ambos os campos de senha.', 'error');
+    return;
+  }
+  if (nova !== confirma) {
+    showProfileMsg('profileSenhaMsg', '⚠️ As senhas não coincidem.', 'error');
+    return;
+  }
+
+  const nome  = document.getElementById('profileNome')?.value.trim();
+  const email = document.getElementById('profileEmail')?.value.trim();
+  const cnpj  = document.getElementById('profileCnpj')?.value.trim();
+
+  const btn = document.getElementById('btnSalvarSenha');
+  if (btn) { btn.disabled = true; btn.textContent = 'Atualizando...'; }
+
+  try {
+    const res  = await fetch('../php/editar_perfil_organizador.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, cnpj, nova_senha: nova })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showProfileMsg('profileSenhaMsg', '✅ Senha atualizada com sucesso!', 'success');
+      showToast('🔒 Senha atualizada!', '🔒');
+      document.getElementById('profileNovaSenha').value    = '';
+      document.getElementById('profileConfirmaSenha').value = '';
+    } else {
+      showProfileMsg('profileSenhaMsg', '❌ ' + (data.error || 'Erro ao atualizar senha.'), 'error');
+    }
+  } catch (err) {
+    showProfileMsg('profileSenhaMsg', '❌ Falha na comunicação com o servidor.', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Atualizar Senha'; }
+  }
 }
 
 // =========================================

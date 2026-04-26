@@ -544,111 +544,77 @@
         <p class="section-sub">Gerencie suas informações pessoais.</p>
 
         <div class="profile-content">
-          <div class="profile-card glass">
-            <h3>Informações Pessoais</h3>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Nome</label>
-                <input type="text" value="João Organizador" />
-              </div>
-              <div class="form-group">
-                <label>Email</label>
-                <input type="email" value="joao@organizador.com" />
-              </div>
-              <div class="form-group">
-                <label>Telefone</label>
-                <input type="tel" value="(11) 99999-9999" />
-              </div>
-              <div class="form-group">
-                <label>Cidade</label>
-                <input type="text" value="São Paulo" />
-              </div>
-            </div>
-            <div class="form-actions">
-              <button class="btn btn--primary" onclick="showToast('✅ Perfil atualizado')">Salvar Alterações</button>
-            </div>
-          </div>
 
+          <!-- Informações principais -->
           <div class="profile-card glass">
             <h3>Informações do Organizador</h3>
             <div class="form-grid">
               <div class="form-group">
-                <label>Razão Social</label>
-                <input type="text" value="João Eventos Ltda" />
+                <label>Nome / Razão Social</label>
+                <input type="text" id="profileNome" placeholder="Carregando..." />
+              </div>
+              <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="profileEmail" placeholder="Carregando..." />
               </div>
               <div class="form-group">
                 <label>CNPJ</label>
-                <input type="text" value="12.345.678/0001-90" />
-              </div>
-              <div class="form-group">
-                <label>Banco</label>
-                <input type="text" value="Banco do Brasil" />
-              </div>
-              <div class="form-group">
-                <label>Agência/Conta</label>
-                <input type="text" value="1234-5 / 12345-6" />
+                <input type="text" id="profileCnpj" placeholder="Carregando..." />
               </div>
             </div>
+            <div id="profileInfoMsg"
+              style="display:none;margin-top:0.75rem;padding:0.6rem 1rem;border-radius:8px;font-size:0.875rem;"></div>
             <div class="form-actions">
-              <button class="btn btn--primary" onclick="showToast('✅ Dados bancários atualizados')">Salvar
-                Dados</button>
+              <button type="button" class="btn btn--primary" id="btnSalvarPerfil" onclick="salvarPerfil()">Salvar
+                Alterações</button>
             </div>
           </div>
 
-          <!-- Account Security -->
+          <!-- Alterar senha -->
           <div class="profile-card glass">
-            <h3>Segurança da Conta</h3>
-            <div class="security-options">
-              <div class="security-item">
-                <div class="security-item__content">
-                  <div class="security-item__title">Alterar Senha</div>
-                  <div class="security-item__desc">Última alteração há 30 dias</div>
-                </div>
-                <button class="btn btn--ghost btn--sm" onclick="showToast('🔒 Alterar senha em breve')">Alterar</button>
+            <h3>Alterar Senha</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nova Senha</label>
+                <input type="password" id="profileNovaSenha" placeholder="Nova senha"
+                  autocomplete="new-password" />
               </div>
-
-              <div class="security-item">
-                <div class="security-item__content">
-                  <div class="security-item__title">Autenticação de Dois Fatores</div>
-                  <div class="security-item__desc">Adicione uma camada extra de segurança</div>
-                </div>
-                <button class="btn btn--ghost btn--sm" onclick="showToast('🔐 2FA em breve')">Ativar</button>
+              <div class="form-group">
+                <label>Confirmar Nova Senha</label>
+                <input type="password" id="profileConfirmaSenha" placeholder="Repita a nova senha"
+                  autocomplete="new-password" />
               </div>
-
-              <div class="security-item">
-                <div class="security-item__content">
-                  <div class="security-item__title">Sessões Ativas</div>
-                  <div class="security-item__desc">Gerencie dispositivos conectados</div>
-                </div>
-                <button class="btn btn--ghost btn--sm" onclick="showToast('📱 Gerenciar sessões')">Ver</button>
-              </div>
+            </div>
+            <div id="profileSenhaMsg"
+              style="display:none;margin-top:0.75rem;padding:0.6rem 1rem;border-radius:8px;font-size:0.875rem;"></div>
+            <div class="form-actions">
+              <button type="button" class="btn btn--primary" id="btnSalvarSenha" onclick="salvarSenha()">Atualizar
+                Senha</button>
             </div>
           </div>
 
-          <!-- Account Stats -->
+          <!-- Estatísticas da conta -->
           <div class="profile-card glass">
             <h3>Estatísticas da Conta</h3>
             <div class="account-stats">
               <div class="account-stat">
-                <div class="account-stat__value">--</div>
+                <div class="account-stat__value" id="statEventos">--</div>
                 <div class="account-stat__label">Eventos Criados</div>
               </div>
               <div class="account-stat">
-                <div class="account-stat__value">--</div>
-                <div class="account-stat__label">Total de Ingressos</div>
+                <div class="account-stat__value" id="statIngressos">--</div>
+                <div class="account-stat__label">Ingressos Vendidos</div>
               </div>
               <div class="account-stat">
-                <div class="account-stat__value">R$ --</div>
+                <div class="account-stat__value" id="statReceita">R$ --</div>
                 <div class="account-stat__label">Receita Total</div>
-              </div>
-              <div class="account-stat">
-                <div class="account-stat__value">--</div>
-                <div class="account-stat__label">Avaliação Média</div>
               </div>
             </div>
           </div>
+
         </div>
       </div><!-- /page-profile -->
+
 
     </div><!-- /main -->
   </div><!-- /shell -->
