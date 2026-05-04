@@ -1,4 +1,97 @@
 /* =========================================
+   INITIALIZATION & AJAX
+========================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  loadUserData();
+  loadEvents();
+});
+
+async function loadUserData() {
+  try {
+    const response = await fetch('../php/get_user_data.php');
+    const user = await response.json();
+
+    if (user.error) {
+      window.location.href = 'loginParticipante.html';
+      return;
+    }
+
+    const initials = user.nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('userName').textContent = user.nome;
+    document.getElementById('userTag').textContent = '@' + user.nome.toLowerCase().replace(/\s/g, '');
+
+    // Atualiza também no perfil
+    const profileAvatars = document.querySelectorAll('.profile-avatar, .composer__avatar');
+    profileAvatars.forEach(av => av.textContent = initials);
+    const profileNames = document.querySelectorAll('.profile-name, .post__name');
+    profileNames.forEach(name => {
+      if (name.textContent === "João Carlos") name.textContent = user.nome;
+    });
+
+  } catch (error) {
+    console.error('Erro ao carregar dados do usuário:', error);
+  }
+}
+
+async function loadEvents() {
+  const grid = document.getElementById('eventsGrid');
+  try {
+    const response = await fetch('../php/get_explorar_eventos.php');
+    const eventos = await response.json();
+
+    if (!eventos || eventos.length === 0) {
+      grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhum evento encontrado no momento. 😢</p>';
+      return;
+    }
+
+    const cores = {
+      'Rock': 'linear-gradient(135deg,#1e1b4b,#4338ca)',
+      'Pop': 'linear-gradient(135deg,#be185d,#db2777)',
+      'Sertanejo': 'linear-gradient(135deg,#166534,#15803d)',
+      'Eletrônica': 'linear-gradient(135deg,#4c1d95,#6d28d9)',
+      'Funk': 'linear-gradient(135deg,#991b1b,#b91c1c)',
+      'Pagode': 'linear-gradient(135deg,#854d0e,#a16207)'
+    };
+
+    grid.innerHTML = eventos.map(evento => {
+      const bgCard = cores[evento.genero_nome] || 'linear-gradient(135deg,#312e81,#4f46e5)';
+      const participantes = (evento.total_participantes || 0) > 0 ? `+${evento.total_participantes}` : '0';
+      const artistasTxt = (evento.artistas && evento.artistas.length > 0) ? evento.artistas.join(', ') : 'Atrações a confirmar';
+
+      // Sanitização segura (evita erro se algum campo vier null)
+      const cleanName = (evento.evento_nome || '').replace(/'/g, "\\'");
+      const cleanDesc = (evento.descricao || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
+      const cleanLoc = (evento.localizacao || '').replace(/'/g, "\\'");
+      const cleanCity = (evento.cidade || '').replace(/'/g, "\\'");
+      const cleanUF = (evento.estado || '').replace(/'/g, "\\'");
+      const cleanArtistas = artistasTxt.replace(/'/g, "\\'");
+
+      return `
+        <div class="event-card" onclick="showEventModal('${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','🎵','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}')">
+          <div class="event-card__img" style="background:${bgCard}">✨
+            <div class="event-card__img-overlay"></div>
+            <span class="event-card__tag">📌 ${evento.genero_nome || 'Evento'}</span>
+            <span class="event-card__going-count">${participantes} vão</span>
+          </div>
+          <div class="event-card__body">
+            <div class="event-card__title">${evento.evento_nome || 'Sem nome'}</div>
+            <div class="event-card__meta">📅 ${evento.data_formatada || ''}</div>
+            <div class="event-card__footer">
+              <span class="event-card__price">A partir de <strong>${evento.preco_formatado || 'Grátis'}</strong></span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  } catch (error) {
+    console.error('Erro ao carregar eventos:', error);
+    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Erro ao carregar eventos. Tente novamente mais tarde.</p>';
+  }
+}
+
+/* =========================================
    NAVIGATION
 ========================================= */
 function goPage(id) {
@@ -36,11 +129,11 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 /* =========================================
    SEARCH
 ========================================= */
-const searchInput    = document.getElementById('searchInput');
+const searchInput = document.getElementById('searchInput');
 const searchDropdown = document.getElementById('searchDropdown');
 
 searchInput.addEventListener('focus', () => searchDropdown.classList.add('open'));
-searchInput.addEventListener('blur',  () => setTimeout(() => searchDropdown.classList.remove('open'), 200));
+searchInput.addEventListener('blur', () => setTimeout(() => searchDropdown.classList.remove('open'), 200));
 searchInput.addEventListener('input', function () {
   searchDropdown.classList.toggle('open', this.value.length > 0 || document.activeElement === this);
 });
@@ -99,10 +192,10 @@ function filterEvents(btn) {
 /* =========================================
    MODALS
 ========================================= */
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function showEventModal(name, date, price, icon, going) {
+function showEventModal(name, date, price, icon, going, description, location, attractions, city, uf) {
   document.getElementById('eventModalContent').innerHTML = `
     <!-- Banner do evento -->
     <div class="event-modal__banner">
@@ -126,20 +219,20 @@ function showEventModal(name, date, price, icon, going) {
       </div>
     </div>
 
-    <!-- Seção de detalhes (estrutura para preenchimento futuro) -->
+    <!-- Seção de detalhes -->
     <div class="event-modal__section">
       <h3 class="event-modal__section-title">📍 Local</h3>
-      <p class="event-modal__section-content" id="eventLocation">Informação do local será adicionada pelo organizador</p>
+      <p class="event-modal__section-content" id="eventLocation">${location} • ${city}, ${uf}</p>
     </div>
 
     <div class="event-modal__section">
       <h3 class="event-modal__section-title">🎤 Artistas/Atrações</h3>
-      <p class="event-modal__section-content" id="eventAttractions">Artistas serão listados pelo organizador</p>
+      <p class="event-modal__section-content" id="eventAttractions">${attractions}</p>
     </div>
 
     <div class="event-modal__section">
       <h3 class="event-modal__section-title">ℹ️ Sobre o Evento</h3>
-      <p class="event-modal__section-content" id="eventDescription">Descrição do evento será adicionada pelo organizador</p>
+      <p class="event-modal__section-content" id="eventDescription">${description}</p>
     </div>
 
     <!-- CTA de compra e comunidade -->

@@ -57,10 +57,10 @@
       </nav>
  
       <div class="sidebar__user" data-page="profile" id="sidebarUser">
-        <div class="user-avatar">JC</div>
+        <div class="user-avatar" id="userAvatar">...</div>
         <div class="user-info">
-          <div class="user-name">João Carlos</div>
-          <div class="user-tag">@joaocarlos · Maringá</div>
+          <div class="user-name" id="userName">Carregando...</div>
+          <div class="user-tag" id="userTag">@...</div>
         </div>
         <span style="color:var(--text-muted);font-size:0.8rem;">⚙️</span>
       </div>
@@ -170,23 +170,8 @@
           <button class="filter-btn active" onclick="filterEvents(this)">Todos</button>
         </div>
  
-        <div class="events-grid">
- 
-          <div class="event-card" onclick="showEventModal('Festival Neon SP','12 Jul · São Paulo','R$ 120','🎵','847')">
-            <div class="event-card__img" style="background:linear-gradient(135deg,#4a1d96,#7c3aed)">🎆
-              <div class="event-card__img-overlay"></div>
-              <span class="event-card__tag">📌 Exemplo</span>
-              <span class="event-card__going-count">+847 vão</span>
-            </div>
-            <div class="event-card__body">
-              <div class="event-card__title">Festival Neon SP</div>
-              <div class="event-card__meta">📅 12 Jul · 📍 São Paulo</div>
-              <div class="event-card__footer">
-                <span class="event-card__price">A partir de <strong>R$ 120</strong></span>
-              </div>
-            </div>
-          </div>
- 
+        <div class="events-grid" id="eventsGrid">
+          <p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Carregando eventos...</p>
         </div>
       </div><!-- /page-events -->
  
