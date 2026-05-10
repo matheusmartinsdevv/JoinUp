@@ -8,29 +8,79 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadUserData() {
   try {
+    console.log('Solicitando dados do usuário...');
     const response = await fetch('../php/get_user_data.php');
     const user = await response.json();
+    console.log('Resposta recebida:', user);
 
     if (user.error) {
+      console.warn('Usuário não autenticado, redirecionando...');
       window.location.href = 'loginParticipante.html';
       return;
     }
 
-    const initials = user.nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-    document.getElementById('userAvatar').textContent = initials;
-    document.getElementById('userName').textContent = user.nome;
-    document.getElementById('userTag').textContent = '@' + user.nome.toLowerCase().replace(/\s/g, '');
+    // --- Atualizar Sidebar ---
+    const nome = user.nome || 'Usuário';
+    const email = user.email || 'participante@joinup.com';
+    const initials = nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    
+    if (document.getElementById('userAvatar')) document.getElementById('userAvatar').textContent = initials;
+    if (document.getElementById('userName')) document.getElementById('userName').textContent = nome;
+    if (document.getElementById('userTag')) document.getElementById('userTag').textContent = email;
 
-    // Atualiza também no perfil
-    const profileAvatars = document.querySelectorAll('.profile-avatar, .composer__avatar');
-    profileAvatars.forEach(av => av.textContent = initials);
-    const profileNames = document.querySelectorAll('.profile-name, .post__name');
-    profileNames.forEach(name => {
-      if (name.textContent === "João Carlos") name.textContent = user.nome;
-    });
+    // --- Atualizar Página de Perfil ---
+    const profileAvatar = document.querySelector('.profile-avatar');
+    if (profileAvatar) profileAvatar.textContent = initials;
+
+    const profileName = document.querySelector('.profile-name');
+    if (profileName) profileName.textContent = nome;
+
+    // Preencher campos de edição
+    if (document.getElementById('editNome')) document.getElementById('editNome').value = nome;
+    if (document.getElementById('editEmail')) document.getElementById('editEmail').value = email;
+
+    // Carregar postagens do usuário
+    loadMyPosts(nome, initials);
+
+    console.log('Interface atualizada com sucesso!');
 
   } catch (error) {
-    console.error('Erro ao carregar dados do usuário:', error);
+    console.error('Falha crítica ao carregar dados:', error);
+  }
+}
+
+async function loadMyPosts(userName, initials) {
+  const container = document.getElementById('minhasPostagensContainer');
+  if (!container) return;
+
+  try {
+    const response = await fetch('../php/get_minhas_postagens.php');
+    const result = await response.json();
+
+    if (result.success && result.data.length > 0) {
+      container.innerHTML = result.data.map(post => `
+        <div class="post glass">
+          <div class="post__header">
+            <div class="post__avatar">${initials}</div>
+            <div>
+              <div class="post__name">${userName}</div>
+              <span class="post__event-tag">Postagem JoinUp</span>
+            </div>
+          </div>
+          <p class="post__body">${post.descricao}</p>
+          ${post.imagem ? `<img src="${post.imagem}" class="post__img" style="width:100%; border-radius:12px; margin: 10px 0;">` : ''}
+          <div class="post__actions">
+            <button class="post-action">❤️ ${post.curtidas || 0}</button>
+            <button class="post-action">💬 0</button>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = `<p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Você ainda não fez nenhuma postagem.</p>`;
+    }
+  } catch (error) {
+    console.error('Erro ao carregar postagens:', error);
+    container.innerHTML = `<p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Erro ao carregar postagens.</p>`;
   }
 }
 
@@ -258,6 +308,47 @@ function showEventModal(name, date, price, icon, going, description, location, a
 
 function openSellModal() { openModal('sellModal'); }
 
+/* =========================================
+   PROFILE ACTIONS
+   ========================================= */
+async function saveProfile() {
+  const btn = document.getElementById('btnSalvarPerfil');
+  const nome = document.getElementById('editNome').value.trim();
+  const email = document.getElementById('editEmail').value.trim();
+
+  if (!nome || !email) {
+    showToast('❌ Nome e E-mail são obrigatórios!', '⚠️');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+
+  try {
+    const response = await fetch('../php/update_profile_participante.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      showToast('✅ Perfil atualizado com sucesso!', '✨');
+      // Recarregar dados para atualizar UI
+      loadUserData();
+    } else {
+      showToast('❌ Erro: ' + result.error, '⚠️');
+    }
+  } catch (error) {
+    console.error('Erro ao salvar perfil:', error);
+    showToast('❌ Erro de conexão com o servidor.', '⚠️');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Salvar alterações';
+  }
+}
+
 // Fechar modal clicando no backdrop
 document.querySelectorAll('.modal-backdrop').forEach(bd => {
   bd.addEventListener('click', function (e) {
@@ -269,8 +360,10 @@ document.querySelectorAll('.modal-backdrop').forEach(bd => {
    TOAST
 ========================================= */
 let toastTimer;
-function showToast(msg) {
+function showToast(msg, icon = '✅') {
   const toast = document.getElementById('toast');
+  const toastIcon = document.getElementById('toastIcon');
+  if (toastIcon) toastIcon.textContent = icon;
   document.getElementById('toastMsg').textContent = msg;
   toast.classList.add('show');
   clearTimeout(toastTimer);
