@@ -1,5 +1,5 @@
 <?php
-// criar-evento.php - Cria um novo evento com tipos de ingressos e line-up de artistas
+// criar-evento.php - Cria um novo evento com tipos de ingressos, line-up de artistas e upload de imagem
 header('Content-Type: application/json; charset=utf-8');
 session_start();
 include 'conexao.php';
@@ -10,95 +10,110 @@ if (!isset($_SESSION['usuario_cnpj'])) {
     exit;
 }
 
-// Receber dados JSON enviados pelo fetch do frontend
-$input = json_decode(file_get_contents('php://input'), true);
-if (!$input || !is_array($input)) {
-    echo json_encode(['success' => false, 'error' => 'Dados inválidos recebidos pelo servidor.']);
+// Tenta obter dados do $_POST (FormData)
+$dados_post = $_POST;
+
+// Se $_POST estiver vazio, tenta ler o corpo da requisição (JSON)
+if (empty($dados_post)) {
+    $json_input = json_decode(file_get_contents('php://input'), true);
+    if ($json_input) {
+        $dados_post = $json_input;
+    }
+}
+
+if (empty($dados_post)) {
+    echo json_encode([
+        'success' => false, 
+        'error' => 'Dados não recebidos pelo servidor.',
+        'debug' => [
+            'post' => $_POST,
+            'files' => $_FILES,
+            'method' => $_SERVER['REQUEST_METHOD'],
+            'content_type' => $_SERVER['CONTENT_TYPE'] ?? 'não definido'
+        ]
+    ]);
     exit;
 }
 
-// Extrair e sanitizar campos
-$nome              = trim($input['nome']      ?? '');
-$descricao         = trim($input['descricao'] ?? '');
-$data_raw          = trim($input['data']      ?? '');
-$local             = trim($input['local']     ?? '');
-$cidade            = trim($input['cidade']    ?? '');
-$estado            = trim($input['estado']    ?? '');
-$cep               = preg_replace('/\D/', '', $input['cep'] ?? ''); // só dígitos
-$id_genero_musical = $input['genero']        ?? '';
-$artistas          = $input['artistas']      ?? [];
-$tiposIngressos    = $input['tiposIngressos'] ?? [];
+// Extrair e sanitizar campos usando a variável unificada $dados_post
+$nome              = trim($dados_post['nome']      ?? '');
+$descricao         = trim($dados_post['descricao'] ?? '');
+$data_raw          = trim($dados_post['data']      ?? '');
+$local             = trim($dados_post['local']     ?? '');
+$cidade            = trim($dados_post['cidade']    ?? '');
+$estado            = trim($dados_post['estado']    ?? '');
+$cep               = preg_replace('/\D/', '', $dados_post['cep'] ?? '');
+$id_genero_musical = $dados_post['genero']        ?? '';
+
+// Decodificar campos complexos apenas se vierem como string (FormData)
+$artistas = is_string($dados_post['artistas'] ?? null) 
+    ? json_decode($dados_post['artistas'], true) 
+    : ($dados_post['artistas'] ?? []);
+
+$tiposIngressos = is_string($dados_post['tiposIngressos'] ?? null) 
+    ? json_decode($dados_post['tiposIngressos'], true) 
+    : ($dados_post['tiposIngressos'] ?? []);
+
 $cnpj_organizador  = $_SESSION['usuario_cnpj'];
 
-// ─── Validações ────────────────────────────────────────────────────────────
-
-// Campos de texto obrigatórios
+// ─── Validações de campos obrigatórios ─────────────────────────────────────
 if (empty($nome) || empty($descricao) || empty($data_raw) || empty($local) || empty($cidade)) {
     echo json_encode(['success' => false, 'error' => 'Preencha todos os campos obrigatórios.']);
     exit;
 }
 
-// Validar estado (ENUM do banco)
-$estados_validos = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
-if (!in_array($estado, $estados_validos)) {
-    echo json_encode(['success' => false, 'error' => 'Estado inválido.']);
-    exit;
-}
+// ─── Lógica de Upload de Imagem ─────────────────────────────────────────────
+$nome_imagem = null;
+if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+    $fileTmpPath = $_FILES['imagem']['tmp_name'];
+    $fileName = $_FILES['imagem']['name'];
+    $fileSize = $_FILES['imagem']['size'];
+    $fileType = $_FILES['imagem']['type'];
+    $fileNameCmps = explode(".", $fileName);
+    $fileExtension = strtolower(end($fileNameCmps));
 
-// Validar CEP: exatamente 8 dígitos (VARCHAR(8) no banco, sem hífen)
-if (strlen($cep) !== 8) {
-    echo json_encode(['success' => false, 'error' => 'CEP inválido. Use o formato 00000-000.']);
-    exit;
-}
+    // Validar extensões
+    $allowedfileExtensions = array('jpg', 'gif', 'png', 'jpeg', 'webp');
+    if (in_array($fileExtension, $allowedfileExtensions)) {
+        // Validar tamanho (5MB)
+        if ($fileSize < 5 * 1024 * 1024) {
+            // Gerar nome único para o arquivo
+            $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
+            
+            // Diretório de upload
+            $uploadFileDir = '../uploads/';
+            if (!is_dir($uploadFileDir)) {
+                mkdir($uploadFileDir, 0755, true);
+            }
+            $dest_path = $uploadFileDir . $newFileName;
 
-// Validar gênero musical
-if (!is_numeric($id_genero_musical) || (int)$id_genero_musical <= 0) {
-    echo json_encode(['success' => false, 'error' => 'Selecione um gênero musical válido.']);
-    exit;
-}
-$id_genero_musical = (int)$id_genero_musical;
-
-// Validar artistas
-if (empty($artistas) || !is_array($artistas)) {
-    echo json_encode(['success' => false, 'error' => 'Selecione ao menos um artista para o line-up.']);
-    exit;
-}
-
-// Validar tipos de ingressos
-if (empty($tiposIngressos) || !is_array($tiposIngressos)) {
-    echo json_encode(['success' => false, 'error' => 'Adicione ao menos um tipo de ingresso.']);
-    exit;
-}
-foreach ($tiposIngressos as $tipo) {
-    if (empty($tipo['nome']) || !isset($tipo['preco']) || !isset($tipo['quantidade'])) {
-        echo json_encode(['success' => false, 'error' => 'Dados de ingresso incompletos.']);
-        exit;
-    }
-    if (!is_numeric($tipo['preco']) || $tipo['preco'] < 0) {
-        echo json_encode(['success' => false, 'error' => 'Preço de ingresso inválido.']);
-        exit;
-    }
-    if (!is_numeric($tipo['quantidade']) || (int)$tipo['quantidade'] < 1) {
-        echo json_encode(['success' => false, 'error' => 'Quantidade de ingresso inválida.']);
+            if (move_uploaded_file($fileTmpPath, $dest_path)) {
+                $nome_imagem = $newFileName;
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Erro ao mover o arquivo para o diretório de uploads.']);
+                exit;
+            }
+        } else {
+            echo json_encode(['success' => false, 'error' => 'O arquivo é muito grande (Máx 5MB).']);
+            exit;
+        }
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Extensão de arquivo não permitida.']);
         exit;
     }
 }
 
 // Formatar data para MySQL DATETIME
 $data_formatada = date('Y-m-d H:i:s', strtotime($data_raw));
-if (!$data_formatada || $data_formatada === '1970-01-01 00:00:00') {
-    echo json_encode(['success' => false, 'error' => 'Data do evento inválida.']);
-    exit;
-}
 
-// ─── Buscar id_organizador pelo CNPJ da sessão ─────────────────────────────
+// Buscar id_organizador pelo CNPJ da sessão
 $stmt_org = $conn->prepare("SELECT id_organizador FROM organizadores WHERE cnpj = ?");
 $stmt_org->bind_param("s", $cnpj_organizador);
 $stmt_org->execute();
 $result_org = $stmt_org->get_result();
 
 if ($result_org->num_rows === 0) {
-    echo json_encode(['success' => false, 'error' => 'Organizador não encontrado. Faça login novamente.']);
+    echo json_encode(['success' => false, 'error' => 'Organizador não encontrado.']);
     exit;
 }
 
@@ -110,23 +125,21 @@ $stmt_org->close();
 $conn->begin_transaction();
 
 try {
-    // 1. Inserir evento
-    // Colunas: nome, data, descricao, localizacao, cidade, estado, cep, id_organizador, id_genero_musical
+    // 1. Inserir evento (agora incluindo a coluna imagem)
     $stmt_evento = $conn->prepare(
-        "INSERT INTO eventos (nome, data, descricao, localizacao, cidade, estado, cep, id_organizador, id_genero_musical)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        "INSERT INTO eventos (nome, data, descricao, imagem, localizacao, cidade, estado, cep, id_organizador, id_genero_musical)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
     );
-    // tipos: s=nome, s=data, s=descricao, s=localizacao, s=cidade, s=estado, s=cep, i=id_organizador, i=id_genero_musical
+    // tipos: s=nome, s=data, s=descricao, s=imagem, s=localizacao, s=cidade, s=estado, s=cep, i=id_organizador, i=id_genero_musical
     $stmt_evento->bind_param(
-        "sssssssii",
-        $nome, $data_formatada, $descricao, $local, $cidade, $estado, $cep, $id_organizador, $id_genero_musical
+        "ssssssssii",
+        $nome, $data_formatada, $descricao, $nome_imagem, $local, $cidade, $estado, $cep, $id_organizador, $id_genero_musical
     );
     $stmt_evento->execute();
     $id_evento = $conn->insert_id;
     $stmt_evento->close();
 
     // 2. Inserir tipos de ingressos
-    // Colunas: nome_tipo, valor (DECIMAL(8,2)), quantidade_disponivel, id_evento
     $stmt_ingresso = $conn->prepare(
         "INSERT INTO tipos_ingressos (nome_tipo, valor, quantidade_disponivel, id_evento)
          VALUES (?, ?, ?, ?)"
@@ -135,7 +148,6 @@ try {
         $nome_tipo  = trim($tipo['nome']);
         $valor      = (float)$tipo['preco'];
         $quantidade = (int)$tipo['quantidade'];
-        // tipos: s=nome_tipo, d=valor, i=quantidade, i=id_evento
         $stmt_ingresso->bind_param("sdii", $nome_tipo, $valor, $quantidade, $id_evento);
         $stmt_ingresso->execute();
     }
@@ -152,7 +164,6 @@ try {
     }
     $stmt_lineup->close();
 
-    // Confirmar transação
     $conn->commit();
     echo json_encode(['success' => true, 'id_evento' => $id_evento, 'message' => 'Evento criado com sucesso!']);
 

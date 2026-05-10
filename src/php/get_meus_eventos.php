@@ -36,6 +36,7 @@ $sql = "
         e.cidade,
         e.estado,
         e.localizacao,
+        e.imagem,
         gm.nome AS genero,
         -- total de ingressos disponíveis (soma de todos os tipos)
         COALESCE(SUM(ti.quantidade_disponivel), 0) AS total_ingressos,

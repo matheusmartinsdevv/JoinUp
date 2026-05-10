@@ -59,6 +59,10 @@ async function loadEvents() {
       const participantes = (evento.total_participantes || 0) > 0 ? `+${evento.total_participantes}` : '0';
       const artistasTxt = (evento.artistas && evento.artistas.length > 0) ? evento.artistas.join(', ') : 'Atrações a confirmar';
 
+      const imagemUrl = evento.imagem ? `../uploads/${evento.imagem}` : null;
+      const imgStyle = imagemUrl ? `background-image:url('${imagemUrl}'); background-size:cover; background-position:center;` : `background:${bgCard}`;
+      const iconOrImg = imagemUrl ? '' : '✨';
+
       // Sanitização segura (evita erro se algum campo vier null)
       const cleanName = (evento.evento_nome || '').replace(/'/g, "\\'");
       const cleanDesc = (evento.descricao || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
@@ -68,8 +72,8 @@ async function loadEvents() {
       const cleanArtistas = artistasTxt.replace(/'/g, "\\'");
 
       return `
-        <div class="event-card" onclick="showEventModal('${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','🎵','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}')">
-          <div class="event-card__img" style="background:${bgCard}">✨
+        <div class="event-card" onclick="showEventModal('${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','🎵','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', '${imagemUrl}')">
+          <div class="event-card__img" style="${imgStyle}">${iconOrImg}
             <div class="event-card__img-overlay"></div>
             <span class="event-card__tag">📌 ${evento.genero_nome || 'Evento'}</span>
             <span class="event-card__going-count">${participantes} vão</span>
@@ -195,12 +199,17 @@ function filterEvents(btn) {
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function showEventModal(name, date, price, icon, going, description, location, attractions, city, uf) {
+function showEventModal(name, date, price, icon, going, description, location, attractions, city, uf, imagemUrl) {
+  const bannerContent = imagemUrl 
+    ? `<img src="${imagemUrl}" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0; z-index:0;" />
+       <div class="event-modal__title" style="position:relative; z-index:1; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">${name}</div>`
+    : `<div class="event-modal__icon">${icon}</div>
+       <div class="event-modal__title">${name}</div>`;
+
   document.getElementById('eventModalContent').innerHTML = `
     <!-- Banner do evento -->
-    <div class="event-modal__banner">
-      <div class="event-modal__icon">${icon}</div>
-      <div class="event-modal__title">${name}</div>
+    <div class="event-modal__banner" style="position:relative; overflow:hidden;">
+      ${bannerContent}
     </div>
 
     <!-- Informações principais -->

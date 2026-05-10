@@ -312,21 +312,21 @@ function showCreateMsg(msg, tipo) {
 }
 
 async function submeterEvento() {
-  console.log('createEvent chamado');
+  console.log('submeterEvento chamado');
 
   // Esconder msg anterior
   const msgEl = document.getElementById('createEventMsg');
   if (msgEl) msgEl.style.display = 'none';
 
   // ── Coletar campos básicos ──
-  const nome     = (document.getElementById('nome')?.value     ?? '').trim();
-  const data     = (document.getElementById('data')?.value     ?? '').trim();
-  const genero   = (document.getElementById('genero')?.value   ?? '').trim();
-  const local    = (document.getElementById('local')?.value    ?? '').trim();
-  const cidade   = (document.getElementById('cidade')?.value   ?? '').trim();
-  const estado   = (document.getElementById('estado')?.value   ?? '').trim();
-  const cepRaw   = (document.getElementById('cep')?.value      ?? '').trim();
-  const descricao= (document.getElementById('descricao')?.value?? '').trim();
+  const nome      = (document.getElementById('nome')?.value      ?? '').trim();
+  const data      = (document.getElementById('data')?.value      ?? '').trim();
+  const genero    = (document.getElementById('genero')?.value    ?? '').trim();
+  const local     = (document.getElementById('local')?.value     ?? '').trim();
+  const cidade    = (document.getElementById('cidade')?.value    ?? '').trim();
+  const estado    = (document.getElementById('estado')?.value    ?? '').trim();
+  const cepRaw    = (document.getElementById('cep')?.value       ?? '').trim();
+  const descricao = (document.getElementById('descricao')?.value ?? '').trim();
 
   const cep = cepRaw.replace(/\D/g, ''); // apenas dígitos
 
@@ -334,12 +334,6 @@ async function submeterEvento() {
   if (!nome || !data || !genero || !local || !cidade || !estado || !cep || !descricao) {
     showCreateMsg('⚠️ Preencha todos os campos obrigatórios.', 'error');
     showToast('Preencha todos os campos obrigatórios!', '⚠️');
-    return;
-  }
-
-  if (cep.length !== 8) {
-    showCreateMsg('⚠️ CEP inválido. Use o formato 00000-000.', 'error');
-    showToast('CEP inválido!', '⚠️');
     return;
   }
 
@@ -381,9 +375,26 @@ async function submeterEvento() {
     return;
   }
 
-  // ── Montar payload ──
-  const dados = { nome, data, genero, local, cidade, estado, cep, descricao, artistas, tiposIngressos };
-  console.log('Payload a enviar:', dados);
+  // ── Imagem do evento ──
+  const imageInput = document.getElementById('eventImage');
+  const imageFile = imageInput?.files[0];
+
+  // ── Montar FormData (Necessário para upload de arquivos) ──
+  const formData = new FormData();
+  formData.append('nome', nome);
+  formData.append('data', data);
+  formData.append('genero', genero);
+  formData.append('local', local);
+  formData.append('cidade', cidade);
+  formData.append('estado', estado);
+  formData.append('cep', cep);
+  formData.append('descricao', descricao);
+  formData.append('artistas', JSON.stringify(artistas));
+  formData.append('tiposIngressos', JSON.stringify(tiposIngressos));
+
+  if (imageFile) {
+    formData.append('imagem', imageFile);
+  }
 
   // ── Bloquear botão ──
   const btn = document.getElementById('btnCriarEvento');
@@ -392,22 +403,21 @@ async function submeterEvento() {
   try {
     const response = await fetch('../php/criar-evento.php', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dados)
+      // NOTA: Ao usar FormData, NÃO definimos o Content-Type manualmente.
+      // O navegador faz isso automaticamente e adiciona o 'boundary'.
+      body: formData
     });
 
     const result = await response.json();
-    console.log('Resposta do servidor:', result);
 
     if (result.success) {
       showCreateMsg('✅ Evento criado com sucesso!', 'success');
       showToast('Evento criado com sucesso! 🎉', '🎪');
       setTimeout(() => {
         // Limpar form
-        document.querySelectorAll('#page-create input:not([type=file]), #page-create textarea, #page-create select').forEach(el => el.value = '');
-        document.querySelectorAll('#artistas-container input[type="checkbox"]').forEach(cb => cb.checked = false);
+        document.getElementById('formEvento').reset();
         document.getElementById('ticketTypes').innerHTML = '';
-        addTicketType(); // repor um ingresso inicial
+        addTicketType('Pista');
         goPage('events');
       }, 1800);
     } else {
@@ -530,6 +540,10 @@ async function loadMeusEventos() {
       const statusClass = passado ? 'event-management__status--past' : 'event-management__status--active';
       const statusLabel = passado ? 'Encerrado' : 'Ativo';
       const icone = getIconeEvento(idx);
+      const imagemUrl = ev.imagem ? `../uploads/${ev.imagem}` : null;
+      const mediaHtml = imagemUrl 
+        ? `<div class="event-management__media"><img src="${imagemUrl}" alt="${ev.nome}" /></div>`
+        : `<div class="event-management__icon">${icone}</div>`;
 
       const vendidos  = parseInt(ev.vendidos)  || 0;
       const ocupacao  = parseInt(ev.ocupacao)  || 0;
@@ -545,7 +559,7 @@ async function loadMeusEventos() {
       html += `
         <div class="event-management-card glass">
           <div class="event-management__header">
-            <div class="event-management__icon">${icone}</div>
+            ${mediaHtml}
             <div class="event-management__info">
               <div class="event-management__name">${ev.nome}</div>
               <div class="event-management__meta">${ev.data_formatada} &middot; ${ev.cidade}/${ev.estado} &middot; ${ev.genero || 'Gênero não informado'}</div>
@@ -679,6 +693,10 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 document.getElementById('eventImage').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (file) {
+    const uploadArea = document.querySelector('.upload-area');
+    const uploadText = document.querySelector('.upload-text');
+    if (uploadArea) uploadArea.classList.add('has-file');
+    if (uploadText) uploadText.textContent = `Imagem selecionada: ${file.name}`;
     showToast(`Imagem "${file.name}" selecionada!`, '📷');
   }
 });

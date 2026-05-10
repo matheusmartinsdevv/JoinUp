@@ -14,6 +14,7 @@ $sql_eventos = "SELECT
     e.cidade, 
     e.estado, 
     e.descricao,
+    e.imagem,
     g.nome AS genero_nome,
     (SELECT MIN(valor) FROM tipos_ingressos WHERE id_evento = e.id_evento) AS menor_preco,
     (SELECT COUNT(*) FROM ingressos WHERE id_evento = e.id_evento) AS total_participantes
