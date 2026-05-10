@@ -131,33 +131,52 @@ function showProfileMsg(elId, msg, tipo) {
 
 async function loadPerfil() {
   try {
+    console.log('Buscando dados do perfil...');
     const res  = await fetch('../php/get_user_data_organizador.php');
     const data = await res.json();
 
-    if (data.error) {
-      console.error('Erro ao carregar perfil:', data.error);
+    if (data.error || !data.nome) {
+      console.warn('Usando valores padrão para o perfil.');
+      atualizarSidebar('Organizador', '');
       return;
     }
 
-    // Preencher campos
-    document.getElementById('profileNome').value  = data.nome  || '';
-    document.getElementById('profileEmail').value = data.email || '';
-    document.getElementById('profileCnpj').value  = data.cnpj  || '';
+    console.log('Dados recebidos:', data);
+    atualizarSidebar(data.nome, data.email);
 
-    // Atualizar avatar/nome na sidebar
-    const userNameEl = document.querySelector('.user-name');
-    if (userNameEl && data.nome) userNameEl.textContent = data.nome;
+    // Preencher campos da página de perfil (se existirem)
+    const profileNome = document.getElementById('profileNome');
+    const profileEmail = document.getElementById('profileEmail');
+    const profileCnpj = document.getElementById('profileCnpj');
+    if (profileNome) profileNome.value = data.nome || '';
+    if (profileEmail) profileEmail.value = data.email || '';
+    if (profileCnpj) profileCnpj.value = data.cnpj || '';
 
-    const avatarEl = document.querySelector('.user-avatar');
-    if (avatarEl && data.nome) {
-      avatarEl.textContent = data.nome.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+    // Carregar estatísticas se estivermos na página de perfil
+    const pageProfile = document.getElementById('page-profile');
+    if (pageProfile && pageProfile.classList.contains('active')) {
+      loadStatsPerfil();
     }
 
-    // Carregar estatísticas reaproveitando get_meus_eventos
-    loadStatsPerfil();
-
   } catch (err) {
-    console.error('Erro ao carregar perfil:', err);
+    console.error('Falha crítica ao carregar perfil:', err);
+    atualizarSidebar('Organizador', '');
+  }
+}
+
+// Função auxiliar para atualizar a sidebar de forma segura
+function atualizarSidebar(nome, email) {
+  const sidebar = document.querySelector('.sidebar__user');
+  if (!sidebar) return;
+
+  const userNameEl = sidebar.querySelector('.user-name');
+  const userEmailEl = sidebar.querySelector('.user-tag');
+  const avatarEl = sidebar.querySelector('.user-avatar');
+
+  if (userNameEl) userNameEl.textContent = nome || 'Organizador';
+  if (userEmailEl) userEmailEl.textContent = email || '';
+  if (avatarEl && nome) {
+    avatarEl.textContent = nome.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
   }
 }
 
@@ -706,21 +725,20 @@ document.getElementById('eventImage').addEventListener('change', (e) => {
 // =========================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('DOMContentLoaded disparado');
+  console.log('Painel Inicializado');
+  
+  // 1. Tentar carregar o perfil imediatamente (independente da auth)
+  loadPerfil();
 
-  // Verificar autenticação
+  // 2. Verificar autenticação em segundo plano
   const isAuthenticated = await checkAuthentication();
-  console.log('Usuário autenticado:', isAuthenticated);
-
   if (!isAuthenticated) {
-    showToast('Você precisa fazer login primeiro!', '⚠️');
-    setTimeout(() => {
-      window.location.href = 'loginOrganizador.html';
-    }, 2000);
+    showToast('Sessão expirada. Redirecionando...', '⚠️');
+    setTimeout(() => { window.location.href = 'loginOrganizador.html'; }, 2000);
     return;
   }
 
-  // Start on dashboard
+  // 3. Iniciar na dashboard
   goPage('dashboard');
 
   // Welcome message
