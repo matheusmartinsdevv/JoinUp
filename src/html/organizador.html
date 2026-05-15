@@ -36,29 +36,29 @@
       <nav class="sidebar__nav">
         <span class="nav-section">Painel</span>
         <button class="nav-item active" data-page="dashboard">
-          <span class="nav-icon">📊</span> Dashboard
+          <span class="nav-icon"></span> Dashboard
         </button>
         <button class="nav-item" data-page="events">
-          <span class="nav-icon">🎪</span> Meus Eventos
+          <span class="nav-icon"></span> Meus Eventos
         </button>
         <button class="nav-item" data-page="analytics">
-          <span class="nav-icon">📈</span> Analytics
+          <span class="nav-icon"></span> Analytics
         </button>
 
         <span class="nav-section">Gerenciar</span>
         <button class="nav-item" data-page="create">
-          <span class="nav-icon">➕</span> Criar Evento
+          <span class="nav-icon"></span> Criar Evento
         </button>
         <button class="nav-item" data-page="sales">
-          <span class="nav-icon">💰</span> Vendas
+          <span class="nav-icon"></span> Vendas
         </button>
         <button class="nav-item" data-page="support">
-          <span class="nav-icon">🆘</span> Suporte
+          <span class="nav-icon"></span> Suporte
         </button>
 
         <span class="nav-section">Conta</span>
         <button class="nav-item" data-page="profile">
-          <span class="nav-icon">👤</span> Meu Perfil
+          <span class="nav-icon"></span> Meu Perfil
         </button>
         <button class="nav-item" id="logoutBtn">
           <span class="nav-icon"></span> Sair
@@ -107,7 +107,7 @@
           <div class="stat-card glass">
             <div class="stat-card__icon">🎪</div>
             <div class="stat-card__content">
-              <div class="stat-card__value">--</div>
+              <div class="stat-card__value" id="dash-total-eventos">--</div>
               <div class="stat-card__label">Eventos Ativos</div>
             </div>
           </div>
@@ -115,7 +115,7 @@
           <div class="stat-card glass">
             <div class="stat-card__icon">🎟</div>
             <div class="stat-card__content">
-              <div class="stat-card__value">--</div>
+              <div class="stat-card__value" id="dash-total-ingressos">--</div>
               <div class="stat-card__label">Ingressos Vendidos</div>
             </div>
           </div>
@@ -123,7 +123,7 @@
           <div class="stat-card glass">
             <div class="stat-card__icon">💰</div>
             <div class="stat-card__content">
-              <div class="stat-card__value">R$ --</div>
+              <div class="stat-card__value" id="dash-receita-total">R$ --</div>
               <div class="stat-card__label">Receita Total</div>
             </div>
           </div>
@@ -131,7 +131,7 @@
           <div class="stat-card glass">
             <div class="stat-card__icon">👥</div>
             <div class="stat-card__content">
-              <div class="stat-card__value">--</div>
+              <div class="stat-card__value" id="dash-total-participantes">--</div>
               <div class="stat-card__label">Participantes</div>
             </div>
           </div>
@@ -140,45 +140,22 @@
         <!-- Quick Actions -->
         <div class="quick-actions">
           <button class="btn btn--primary btn--large" onclick="goPage('create')">
-            <span>➕</span> Criar Novo Evento
+            <span></span> Criar Novo Evento
           </button>
           <button class="btn btn--ghost btn--large" onclick="goPage('events')">
-            <span>🎪</span> Gerenciar Eventos
+            <span></span> Gerenciar Eventos
           </button>
           <button class="btn btn--ghost btn--large" onclick="goPage('analytics')">
-            <span>📈</span> Ver Analytics
+            <span></span> Ver Analytics
           </button>
         </div>
 
         <!-- Recent Events -->
         <div class="recent-section">
           <h3 class="section-title-small">Eventos <span class="text-gradient">Recentes</span></h3>
-          <div class="events-preview">
-            <div class="event-preview-card glass">
-              <div class="event-preview__icon">🎆</div>
-              <div class="event-preview__content">
-                <div class="event-preview__name">Festival Neon SP</div>
-                <div class="event-preview__meta">12 Jul · São Paulo · 847 ingressos</div>
-              </div>
-              <div class="event-preview__status event-preview__status--active">Ativo</div>
-            </div>
-
-            <div class="event-preview-card glass">
-              <div class="event-preview__icon">🎸</div>
-              <div class="event-preview__content">
-                <div class="event-preview__name">Rock in Rio 2025</div>
-                <div class="event-preview__meta">19 Jul · Rio de Janeiro · -- ingressos</div>
-              </div>
-              <div class="event-preview__status event-preview__status--active">Ativo</div>
-            </div>
-
-            <div class="event-preview-card glass">
-              <div class="event-preview__icon">🎪</div>
-              <div class="event-preview__content">
-                <div class="event-preview__name">Lollapalooza 2024</div>
-                <div class="event-preview__meta">23 Mar · São Paulo · Encerrado</div>
-              </div>
-              <div class="event-preview__status event-preview__status--past">Encerrado</div>
+          <div class="events-preview" id="dash-events-preview">
+            <div style="padding:16px; color:var(--text-muted); font-size:0.9rem;">
+              Carregando eventos recentes...
             </div>
           </div>
         </div>
@@ -186,37 +163,9 @@
         <!-- Activity Feed -->
         <div class="activity-section">
           <h3 class="section-title-small">Atividade <span class="text-gradient">Recente</span></h3>
-          <div class="activity-feed">
-            <div class="activity-item glass">
-              <div class="activity-item__icon">🎟</div>
-              <div class="activity-item__content">
-                <div class="activity-item__title">120 ingressos vendidos</div>
-                <div class="activity-item__meta">Festival Neon SP · há 2 horas</div>
-              </div>
-            </div>
-
-            <div class="activity-item glass">
-              <div class="activity-item__icon">💰</div>
-              <div class="activity-item__content">
-                <div class="activity-item__title">R$ 14.400 recebidos</div>
-                <div class="activity-item__meta">Pagamento processado · há 5 horas</div>
-              </div>
-            </div>
-
-            <div class="activity-item glass">
-              <div class="activity-item__icon">👥</div>
-              <div class="activity-item__content">
-                <div class="activity-item__title">Novo participante</div>
-                <div class="activity-item__meta">João Silva comprou ingresso · há 1 dia</div>
-              </div>
-            </div>
-
-            <div class="activity-item glass">
-              <div class="activity-item__icon">📊</div>
-              <div class="activity-item__content">
-                <div class="activity-item__title">Relatório mensal gerado</div>
-                <div class="activity-item__meta">Analytics atualizado · há 2 dias</div>
-              </div>
+          <div class="activity-feed" id="dash-activity-feed">
+            <div style="padding:16px; color:var(--text-muted); font-size:0.9rem;">
+              Nenhuma atividade recente para exibir.
             </div>
           </div>
         </div>
@@ -619,11 +568,13 @@
 
   <!-- ░░ TOAST ░░ -->
   <div class="toast" id="toast">
-    <span class="toast__icon" id="toastIcon">✅</span>
-    <span id="toastMsg">Ação realizada!</span>
+    <div class="toast-content">
+      <span class="toast__icon" id="toastIcon">✅</span>
+      <span id="toastMsg">Ação realizada!</span>
+    </div>
   </div>
 
-  <script src="../js/organizador.js?v=2"></script>
+  <script src="../js/organizador.js?v=4"></script>
 </body>
 
 </html>

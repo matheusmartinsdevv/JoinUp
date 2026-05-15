@@ -37,6 +37,11 @@ function goPage(pageName) {
     targetPage.classList.add('active');
     console.log('Página ativada:', pageName);
 
+    // Load data for dashboard
+    if (pageName === 'dashboard') {
+      loadDashboard();
+    }
+
     // Load dynamic data when navigating to create page
     if (pageName === 'create') {
       console.log('Carregando dados para página create');
@@ -98,13 +103,13 @@ function showToast(message, icon = '✅', duration = 3000) {
   const toastIcon = document.getElementById('toastIcon');
   const toastMsg = document.getElementById('toastMsg');
 
-  toastIcon.textContent = icon;
-  toastMsg.textContent = message;
+  if (toastIcon) toastIcon.textContent = icon;
+  if (toastMsg) toastMsg.textContent = message;
 
-  toast.classList.add('show');
+  if (toast) toast.classList.add('show');
 
   setTimeout(() => {
-    toast.classList.remove('show');
+    if (toast) toast.classList.remove('show');
   }, duration);
 }
 
@@ -198,6 +203,88 @@ async function loadStatsPerfil() {
 
   } catch (err) {
     console.error('Erro ao carregar estatísticas:', err);
+  }
+}
+
+async function loadDashboard() {
+  console.log('loadDashboard() iniciado');
+  const previewContainer = document.getElementById('dash-events-preview');
+  const elAtivos = document.getElementById('dash-total-eventos');
+  const elVendidos = document.getElementById('dash-total-ingressos');
+  const elReceita = document.getElementById('dash-receita-total');
+  const elParticipantes = document.getElementById('dash-total-participantes');
+
+  if (!previewContainer) {
+    console.error('Container dash-events-preview não encontrado!');
+    return;
+  }
+
+  try {
+    console.log('Fazendo fetch dos eventos do dashboard...');
+    const res = await fetch('../php/get_meus_eventos.php');
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
+    const data = await res.json();
+    console.log('Dados do dashboard recebidos:', data);
+
+    if (!data.success) {
+      console.warn('Falha ao carregar dados do dashboard:', data.error);
+      previewContainer.innerHTML = `
+        <div style="padding:16px; color:#ff8080; font-size:0.9rem;">
+          ⚠️ Erro: ${data.error}
+        </div>`;
+      return;
+    }
+
+    const eventos = data.data;
+    
+    // 1. Atualizar Stats
+    const totalAtivos = eventos.filter(e => !e.passado).length;
+    const totalVendidos = eventos.reduce((acc, e) => acc + (parseInt(e.vendidos) || 0), 0);
+    const receitaTotal = eventos.reduce((acc, e) => acc + (parseFloat(e.receita) || 0), 0);
+    
+    if (elAtivos) elAtivos.textContent = totalAtivos;
+    if (elVendidos) elVendidos.textContent = totalVendidos;
+    if (elReceita) elReceita.textContent = 'R$ ' + receitaTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    if (elParticipantes) elParticipantes.textContent = totalVendidos;
+
+    // 2. Atualizar Eventos Recentes (Preview)
+    if (eventos.length === 0) {
+      previewContainer.innerHTML = `
+        <div style="padding:24px; text-align:center; color:var(--text-muted);">
+          <p style="font-size:0.9rem;">Nenhum evento criado ainda.</p>
+          <button class="btn btn--ghost btn--sm" style="margin-top:8px;" onclick="goPage('create')">Criar agora</button>
+        </div>`;
+    } else {
+      // Pegar os 3 mais recentes
+      const recentes = eventos.slice(0, 3);
+      previewContainer.innerHTML = recentes.map((ev, idx) => {
+        const statusClass = ev.passado ? 'event-preview__status--past' : 'event-preview__status--active';
+        const statusLabel = ev.passado ? 'Encerrado' : 'Ativo';
+        const icone = getIconeEvento(idx);
+        
+        return `
+          <div class="event-preview-card glass">
+            <div class="event-preview__icon">${icone}</div>
+            <div class="event-preview__content">
+              <div class="event-preview__name">${ev.nome}</div>
+              <div class="event-preview__meta">${ev.data_formatada.split(' ')[0]} · ${ev.cidade} · ${ev.vendidos} ingressos</div>
+            </div>
+            <div class="event-preview__status ${statusClass}">${statusLabel}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+  } catch (err) {
+    console.error('Erro crítico no loadDashboard:', err);
+    previewContainer.innerHTML = `
+      <div style="padding:16px; color:#ff8080; font-size:0.9rem;">
+        ❌ Falha ao conectar com o servidor: ${err.message}
+      </div>`;
   }
 }
 
@@ -304,10 +391,6 @@ async function checkAuthentication() {
     return false;
   }
 }
-
-// =========================================
-// EVENT CREATION
-// =========================================
 
 // =========================================
 // EVENT CREATION
@@ -422,8 +505,6 @@ async function submeterEvento() {
   try {
     const response = await fetch('../php/criar-evento.php', {
       method: 'POST',
-      // NOTA: Ao usar FormData, NÃO definimos o Content-Type manualmente.
-      // O navegador faz isso automaticamente e adiciona o 'boundary'.
       body: formData
     });
 
@@ -433,7 +514,6 @@ async function submeterEvento() {
       showCreateMsg('✅ Evento criado com sucesso!', 'success');
       showToast('Evento criado com sucesso! 🎉', '🎪');
       setTimeout(() => {
-        // Limpar form
         document.getElementById('formEvento').reset();
         document.getElementById('ticketTypes').innerHTML = '';
         addTicketType('Pista');
@@ -462,7 +542,7 @@ async function loadGeneros() {
     const data = await response.json();
     if (data.success) {
       const select = document.getElementById('genero');
-      select.innerHTML = '<option value=""></option>'; // Option vazia sem texto
+      select.innerHTML = '<option value=""></option>';
       data.data.forEach(genero => {
         const option = document.createElement('option');
         option.value = genero.id;
@@ -481,7 +561,7 @@ async function loadArtistas() {
     const data = await response.json();
     if (data.success) {
       const container = document.getElementById('artistas-container');
-      container.innerHTML = ''; // Limpar loading text
+      container.innerHTML = '';
 
       data.data.forEach(artista => {
         const checkboxItem = document.createElement('div');
@@ -521,7 +601,6 @@ async function loadMeusEventos() {
   const container = document.getElementById('eventsContainer');
   if (!container) return;
 
-  // Mostrar loading
   container.innerHTML = `
     <div style="padding:32px;text-align:center;">
       <span style="font-size:2rem;">⏳</span>
@@ -552,7 +631,6 @@ async function loadMeusEventos() {
       return;
     }
 
-    // Renderizar cards
     let html = '';
     data.data.forEach((ev, idx) => {
       const passado = ev.passado;
@@ -604,9 +682,7 @@ async function loadMeusEventos() {
           </div>
         </div>`;
     });
-
     container.innerHTML = html;
-
   } catch (err) {
     console.error('Erro ao carregar eventos:', err);
     container.innerHTML = `
@@ -654,7 +730,7 @@ function addTicketType(nomeDefault) {
 
 function removeTicketType(button) {
   const ticketType = button.closest('.ticket-type');
-  ticketType.remove();
+  if (ticketType) ticketType.remove();
 }
 
 // =========================================
@@ -662,75 +738,70 @@ function removeTicketType(button) {
 // =========================================
 
 function triggerFileUpload() {
-  document.getElementById('eventImage').click();
+  const input = document.getElementById('eventImage');
+  if (input) input.click();
 }
 
 // =========================================
 // EVENT LISTENERS
 // =========================================
 
-// Navigation
 navItems.forEach(item => {
   item.addEventListener('click', () => {
-    console.log('Botão de navegação clicado');
     const page = item.getAttribute('data-page');
-    console.log('Página solicitada:', page);
     goPage(page);
   });
 });
 
-console.log('Event listeners de navegação adicionados');
+if (burgerBtn) {
+  burgerBtn.addEventListener('click', openSidebar);
+}
+if (sidebarOverlay) {
+  sidebarOverlay.addEventListener('click', closeSidebar);
+}
 
-// Sidebar
-burgerBtn.addEventListener('click', () => {
-  console.log('Botão burger clicado');
-  openSidebar();
-});
-sidebarOverlay.addEventListener('click', () => {
-  console.log('Overlay clicado');
-  closeSidebar();
-});
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', () => {
+    showToast('Até logo! 👋', '👋');
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 1500);
+  });
+}
 
-// Logout
-logoutBtn.addEventListener('click', () => {
-  console.log('Botão logout clicado');
-  showToast('Até logo! 👋', '👋');
-  setTimeout(() => {
-    window.location.href = 'login.html';
-  }, 1500);
-});
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    if (query.length > 2) {
+      showToast(`Buscando por "${query}"...`, '🔍');
+    }
+  });
+}
 
-// Search
-document.getElementById('searchInput').addEventListener('input', (e) => {
-  const query = e.target.value.toLowerCase();
-  if (query) {
-    showToast(`Buscando por "${query}"...`, '🔍');
-  }
-});
-
-// File upload
-document.getElementById('eventImage').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const uploadArea = document.querySelector('.upload-area');
-    const uploadText = document.querySelector('.upload-text');
-    if (uploadArea) uploadArea.classList.add('has-file');
-    if (uploadText) uploadText.textContent = `Imagem selecionada: ${file.name}`;
-    showToast(`Imagem "${file.name}" selecionada!`, '📷');
-  }
-});
+const eventImageInput = document.getElementById('eventImage');
+if (eventImageInput) {
+  eventImageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const uploadArea = document.querySelector('.upload-area');
+      const uploadText = document.querySelector('.upload-text');
+      if (uploadArea) uploadArea.classList.add('has-file');
+      if (uploadText) uploadText.textContent = `Imagem selecionada: ${file.name}`;
+      showToast(`Imagem "${file.name}" selecionada!`, '📷');
+    }
+  });
+}
 
 // =========================================
 // INITIALIZATION
 // =========================================
 
-document.addEventListener('DOMContentLoaded', async () => {
-  console.log('Painel Inicializado');
+async function init() {
+  console.log('Painel Inicializando...');
   
-  // 1. Tentar carregar o perfil imediatamente (independente da auth)
   loadPerfil();
 
-  // 2. Verificar autenticação em segundo plano
   const isAuthenticated = await checkAuthentication();
   if (!isAuthenticated) {
     showToast('Sessão expirada. Redirecionando...', '⚠️');
@@ -738,29 +809,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // 3. Iniciar na dashboard
   goPage('dashboard');
 
-  // Welcome message
   setTimeout(() => {
     showToast('Bem-vindo ao painel do organizador!', '🎪');
   }, 500);
-});
+}
+
+document.addEventListener('DOMContentLoaded', init);
 
 // =========================================
 // KEYBOARD SHORTCUTS
 // =========================================
 
 document.addEventListener('keydown', (e) => {
-  // ESC to close sidebar
-  if (e.key === 'Escape') {
-    closeSidebar();
-  }
-
-  // Ctrl/Cmd + K to focus search
+  if (e.key === 'Escape') closeSidebar();
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
     e.preventDefault();
-    document.getElementById('searchInput').focus();
+    const si = document.getElementById('searchInput');
+    if (si) si.focus();
   }
 });
 
