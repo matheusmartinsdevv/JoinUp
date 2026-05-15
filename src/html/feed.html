@@ -57,6 +57,9 @@
         <button class="nav-item" id="logoutBtn">
           <span class="nav-icon"></span> Sair
         </button>
+        <button class="nav-item" id="ticketHelp" data-page="ticketHelp">
+          <span class="nav-icon"></span> Central de ajuda
+        </button>
       </nav>
 
       <div class="sidebar__user" data-page="profile" id="sidebarUser">
@@ -112,6 +115,30 @@
           </button>
         </div>
       </header>
+
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <!-- ░░ PAGE: TICKET             ░░ -->
+      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+      <div class="page" id="page-ticketHelp">
+        <div class="section-title">Central de <span class="text-gradient">Ajuda</span></div>
+        <p class="section-sub">Abra um ticket e descreva seu problema. Nossa equipe de suporte entrará em contato em breve.</p>
+        <div class="home-grid">
+          <div class="form-ticket glass">
+            <form id="ticketHelpForm">
+              <div class="form-group">
+                <label for="ticketTitle">Título do ticket</label>
+                <input type="text" id="ticketTitle" placeholder="Informe o assunto do seu problema" required />
+              </div>
+              <div class="form-group">
+                <label for="ticketDescription">Descrição do problema</label>
+                <textarea id="ticketDescription" placeholder="Descreva o que aconteceu, onde e quando..." rows="6" required></textarea>
+              </div>
+              <button type="submit" id="ticketHelpSubmit" class="btn btn--primary">Enviar ticket</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
 
       <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
       <!-- ░░ PAGE: FEED               ░░ -->

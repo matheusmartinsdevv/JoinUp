@@ -243,6 +243,46 @@ function filterEvents(btn) {
   btn.classList.add('active');
 }
 
+const ticketHelpForm = document.getElementById('ticketHelpForm');
+if (ticketHelpForm) {
+  ticketHelpForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const title = document.getElementById('ticketTitle').value.trim();
+    const description = document.getElementById('ticketDescription').value.trim();
+    const submitBtn = document.getElementById('ticketHelpSubmit');
+
+    if (!title || !description) {
+      showToast('Preencha título e descrição antes de enviar.', '⚠️');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+
+    try {
+      const response = await fetch('../php/create_ticket.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titulo: title, descricao: description })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        showToast('✅ Ticket enviado com sucesso!');
+        ticketHelpForm.reset();
+      } else {
+        showToast(result.error || 'Erro ao enviar ticket.', '⚠️');
+      }
+    } catch (error) {
+      console.error('Erro ao enviar ticket:', error);
+      showToast('Erro de conexão ao enviar ticket.', '⚠️');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Enviar ticket';
+    }
+  });
+}
+
 /* =========================================
    MODALS
 ========================================= */
