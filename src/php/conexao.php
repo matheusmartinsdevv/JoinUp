@@ -1,5 +1,5 @@
 <?php
-$host = "localhost: 3307";
+$host = "localhost";
 $usuario = "root";
 $senha_db = "";
 $nome_banco = "joinup";
