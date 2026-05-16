@@ -6,6 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
   loadEvents();
 });
 
+const purchaseState = {
+  eventId: null,
+  ticketTypes: []
+};
+
 async function loadUserData() {
   try {
     console.log('Solicitando dados do usuário...');
@@ -105,6 +110,7 @@ async function loadEvents() {
     };
 
     grid.innerHTML = eventos.map(evento => {
+      const eventId = Number(evento.id_evento) || 0;
       const bgCard = cores[evento.genero_nome] || 'linear-gradient(135deg,#312e81,#4f46e5)';
       const participantes = (evento.total_participantes || 0) > 0 ? `+${evento.total_participantes}` : '0';
       const artistasTxt = (evento.artistas && evento.artistas.length > 0) ? evento.artistas.join(', ') : 'Atrações a confirmar';
@@ -112,6 +118,7 @@ async function loadEvents() {
       const imagemUrl = evento.imagem ? `../uploads/${evento.imagem}` : null;
       const imgStyle = imagemUrl ? `background-image:url('${imagemUrl}'); background-size:cover; background-position:center;` : `background:${bgCard}`;
       const iconOrImg = imagemUrl ? '' : '✨';
+      const imagemParam = imagemUrl ? `'${imagemUrl}'` : 'null';
 
       // Sanitização segura (evita erro se algum campo vier null)
       const cleanName = (evento.evento_nome || '').replace(/'/g, "\\'");
@@ -122,7 +129,7 @@ async function loadEvents() {
       const cleanArtistas = artistasTxt.replace(/'/g, "\\'");
 
       return `
-        <div class="event-card" onclick="showEventModal('${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','🎵','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', '${imagemUrl}')">
+        <div class="event-card" onclick="showEventModal(${eventId},'${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','🎵','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', ${imagemParam})">
           <div class="event-card__img" style="${imgStyle}">${iconOrImg}
             <div class="event-card__img-overlay"></div>
             <span class="event-card__tag">📌 ${evento.genero_nome || 'Evento'}</span>
@@ -289,7 +296,19 @@ if (ticketHelpForm) {
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function showEventModal(name, date, price, icon, going, description, location, attractions, city, uf, imagemUrl) {
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function showEventModal(eventId, name, date, price, icon, going, description, location, attractions, city, uf, imagemUrl) {
+  purchaseState.eventId = Number(eventId) || null;
+  purchaseState.ticketTypes = [];
+
   const bannerContent = imagemUrl 
     ? `<img src="${imagemUrl}" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0; z-index:0;" />
        <div class="event-modal__title" style="position:relative; z-index:1; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">${name}</div>`
@@ -334,16 +353,201 @@ function showEventModal(name, date, price, icon, going, description, location, a
       <p class="event-modal__section-content" id="eventDescription">${description}</p>
     </div>
 
+    <div class="event-modal__section">
+      <h3 class="event-modal__section-title">🎟 Ingressos</h3>
+      <div class="event-modal__section-content" id="ticketPurchaseArea">
+        Carregando ingressos...
+      </div>
+    </div>
+
     <!-- CTA de compra e comunidade -->
     <div class="event-modal__cta-section">
       <div class="event-modal__community-banner">
         <span>🎟 Compre para participar da comunidade!</span>
       </div>
-      <button class="btn btn--primary btn--large" onclick="closeModal('eventModal');showToast('🎟 Abrindo compra segura...')">Comprar ingresso — ${price}</button>
+      <button id="buyTicketBtn" class="btn btn--primary btn--large" onclick="buyTicket()" disabled>Carregando ingressos...</button>
       <p class="event-modal__footer-text">✅ Transação verificada · 🔒 Pagamento protegido · 📱 Ingresso no seu celular</p>
     </div>
   `;
   openModal('eventModal');
+
+  if (!purchaseState.eventId) {
+    const area = document.getElementById('ticketPurchaseArea');
+    const btn = document.getElementById('buyTicketBtn');
+    if (area) area.textContent = 'Ingresso indisponível para este evento';
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Ingresso indisponível para este evento';
+    }
+    return;
+  }
+
+  loadTicketTypesForEvent(purchaseState.eventId);
+}
+
+async function loadTicketTypesForEvent(eventId) {
+  const area = document.getElementById('ticketPurchaseArea');
+  const btn = document.getElementById('buyTicketBtn');
+  if (!area || !btn) return;
+
+  area.textContent = 'Carregando ingressos...';
+  btn.disabled = true;
+  btn.textContent = 'Carregando ingressos...';
+
+  try {
+    const response = await fetch(`../php/get_tipos_ingressos_evento.php?id_evento=${encodeURIComponent(eventId)}`);
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Falha ao carregar ingressos.');
+    }
+
+    purchaseState.ticketTypes = Array.isArray(result.data) ? result.data : [];
+    renderPurchaseArea();
+  } catch (error) {
+    console.error('Erro ao carregar tipos de ingresso:', error);
+    area.textContent = 'Ingresso indisponível para este evento';
+    btn.disabled = true;
+    btn.textContent = 'Ingresso indisponível para este evento';
+  }
+}
+
+function renderPurchaseArea() {
+  const area = document.getElementById('ticketPurchaseArea');
+  const btn = document.getElementById('buyTicketBtn');
+  if (!area || !btn) return;
+
+  const tiposDisponiveis = purchaseState.ticketTypes.filter(tipo => Number(tipo.quantidade_disponivel) > 0);
+  if (tiposDisponiveis.length === 0) {
+    area.textContent = 'Ingresso indisponível para este evento';
+    btn.disabled = true;
+    btn.textContent = 'Ingresso indisponível para este evento';
+    return;
+  }
+
+  const options = purchaseState.ticketTypes.map(tipo => {
+    const quantidade = Number(tipo.quantidade_disponivel) || 0;
+    const esgotado = quantidade <= 0;
+    const valorFmt = tipo.valor_formatado || `R$ ${Number(tipo.valor || 0).toFixed(2).replace('.', ',')}`;
+    const label = `${escapeHtml(tipo.nome_tipo)} - ${escapeHtml(valorFmt)} (${esgotado ? 'Esgotado' : `${quantidade} disponiveis`})`;
+    return `<option value="${Number(tipo.id_tipo_ingresso)}" data-qtd="${quantidade}" data-valor="${Number(tipo.valor || 0)}" ${esgotado ? 'disabled' : ''}>${label}</option>`;
+  }).join('');
+
+  area.innerHTML = `
+    <div style="display:grid; gap:10px;">
+      <label style="display:grid; gap:6px;">
+        <span>Tipo de ingresso</span>
+        <select id="ticketTypeSelect" class="results-field">${options}</select>
+      </label>
+      <label style="display:grid; gap:6px;">
+        <span>Quantidade</span>
+        <input id="ticketQuantityInput" class="results-field" type="number" min="1" step="1" value="1">
+      </label>
+      <small id="ticketStockHint" style="color:var(--text-muted);"></small>
+    </div>
+  `;
+
+  const select = document.getElementById('ticketTypeSelect');
+  const firstEnabled = Array.from(select.options).find(opt => !opt.disabled);
+  if (firstEnabled) {
+    select.value = firstEnabled.value;
+  }
+
+  select.addEventListener('change', syncPurchaseState);
+  document.getElementById('ticketQuantityInput').addEventListener('input', syncPurchaseState);
+  syncPurchaseState();
+}
+
+function syncPurchaseState() {
+  const select = document.getElementById('ticketTypeSelect');
+  const quantityInput = document.getElementById('ticketQuantityInput');
+  const stockHint = document.getElementById('ticketStockHint');
+  const btn = document.getElementById('buyTicketBtn');
+  if (!select || !quantityInput || !stockHint || !btn) return;
+
+  const selectedOption = select.options[select.selectedIndex];
+  if (!selectedOption || selectedOption.disabled) {
+    btn.disabled = true;
+    btn.textContent = 'Ingresso indisponível para este evento';
+    stockHint.textContent = 'Ingresso indisponível para este evento';
+    return;
+  }
+
+  const quantidadeDisponivel = Number(selectedOption.dataset.qtd || 0);
+  const valor = Number(selectedOption.dataset.valor || 0);
+  const quantidadeAtual = Math.max(1, Number(quantityInput.value) || 1);
+  const quantidadeAjustada = Math.min(quantidadeAtual, quantidadeDisponivel);
+
+  quantityInput.max = String(quantidadeDisponivel);
+  quantityInput.value = String(quantidadeAjustada);
+
+  const total = valor * quantidadeAjustada;
+  btn.disabled = quantidadeDisponivel <= 0;
+  btn.textContent = `Comprar ingresso — R$ ${total.toFixed(2).replace('.', ',')}`;
+  stockHint.textContent = `${quantidadeDisponivel} disponiveis`;
+}
+
+async function buyTicket() {
+  const select = document.getElementById('ticketTypeSelect');
+  const quantityInput = document.getElementById('ticketQuantityInput');
+  const btn = document.getElementById('buyTicketBtn');
+
+  if (!select || !quantityInput || !btn || !purchaseState.eventId) {
+    showToast('Ingresso indisponível para este evento', '⚠️');
+    return;
+  }
+
+  const idTipo = Number(select.value);
+  const quantidade = Math.max(1, Number(quantityInput.value) || 1);
+  if (!idTipo || !quantidade) {
+    showToast('Ingresso indisponível para este evento', '⚠️');
+    return;
+  }
+
+  btn.disabled = true;
+  const textoOriginal = btn.textContent;
+  btn.textContent = 'Processando compra...';
+
+  try {
+    const response = await fetch('../php/comprar_ingresso.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id_evento: purchaseState.eventId,
+        id_tipo_ingresso: idTipo,
+        quantidade
+      })
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      showToast('Ingresso comprado com sucesso', '✅');
+      closeModal('eventModal');
+      loadEvents();
+      return;
+    }
+
+    if (result.message === 'Ingresso indisponível para este evento') {
+      showToast('Ingresso indisponível para este evento', '⚠️');
+      await loadTicketTypesForEvent(purchaseState.eventId);
+      return;
+    }
+
+    showToast(result.error || result.message || 'Falha ao concluir compra.', '⚠️');
+  } catch (error) {
+    console.error('Erro ao comprar ingresso:', error);
+    showToast('Erro ao processar compra.', '⚠️');
+  } finally {
+    if (btn.textContent === 'Processando compra...') {
+      btn.textContent = textoOriginal;
+    }
+    if (document.getElementById('ticketTypeSelect')) {
+      syncPurchaseState();
+    } else {
+      btn.disabled = false;
+    }
+  }
 }
 
 function openSellModal() { openModal('sellModal'); }
