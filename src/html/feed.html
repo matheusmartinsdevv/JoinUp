@@ -214,48 +214,8 @@
         <div class="section-title">Meus <span class="text-gradient">Ingressos</span></div>
         <p class="section-sub">Gerencie seus ingressos, revenda com segurança ou acesse as comunidades.</p>
 
-        <div class="ticket-list">
-          <div class="ticket glass">
-            <div class="ticket__icon">🎆</div>
-            <div class="ticket__info">
-              <div class="ticket__name">Festival Neon SP</div>
-              <div class="ticket__meta">📅 12 Jul 2025 · 📍 São Paulo · Pista VIP</div>
-            </div>
-            <span class="ticket__status ticket__status--active">✅ Ativo</span>
-            <div class="ticket__actions">
-              <button class="btn btn--ghost btn--sm" onclick="showToast('🔒 Abrindo QR Code seguro...')">Ver QR
-                Code</button>
-              <button class="btn btn--ghost btn--sm" onclick="openSellModal()">Revender</button>
-              <button class="btn btn--primary btn--sm" onclick="goPage('groups')">Comunidade</button>
-            </div>
-          </div>
-
-          <div class="ticket glass">
-            <div class="ticket__icon">🎸</div>
-            <div class="ticket__info">
-              <div class="ticket__name">Rock in Rio 2025</div>
-              <div class="ticket__meta">📅 19 Jul 2025 · 📍 Rio de Janeiro · Pista</div>
-            </div>
-            <span class="ticket__status ticket__status--active">✅ Ativo</span>
-            <div class="ticket__actions">
-              <button class="btn btn--ghost btn--sm" onclick="showToast('🔒 Abrindo QR Code seguro...')">Ver QR
-                Code</button>
-              <button class="btn btn--ghost btn--sm" onclick="openSellModal()">Revender</button>
-              <button class="btn btn--primary btn--sm" onclick="goPage('groups')">Comunidade</button>
-            </div>
-          </div>
-
-          <div class="ticket glass">
-            <div class="ticket__icon">🎶</div>
-            <div class="ticket__info">
-              <div class="ticket__name">Lollapalooza 2024</div>
-              <div class="ticket__meta">📅 23 Mar 2024 · 📍 São Paulo · Pista</div>
-            </div>
-            <span class="ticket__status ticket__status--past">Encerrado</span>
-            <div class="ticket__actions">
-              <button class="btn btn--ghost btn--sm" onclick="goPage('groups')">Ver memórias</button>
-            </div>
-          </div>
+        <div class="ticket-list" id="myTicketsList">
+          <p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Carregando seus ingressos...</p>
         </div>
       </div><!-- /page-my-events -->
 
@@ -565,7 +525,7 @@
     <span id="toastMsg">Ação realizada!</span>
   </div>
 
-  <script src="../js/feed.js?v=3"></script>
+  <script src="../js/feed.js?v=4"></script>
 </body>
 
 </html>

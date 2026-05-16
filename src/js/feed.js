@@ -4,6 +4,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   loadUserData();
   loadEvents();
+  loadMyTickets();
 });
 
 const purchaseState = {
@@ -87,6 +88,100 @@ async function loadMyPosts(userName, initials) {
     console.error('Erro ao carregar postagens:', error);
     container.innerHTML = `<p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Erro ao carregar postagens.</p>`;
   }
+}
+
+function setMyTicketsBadge(totalTickets) {
+  // Atualiza o badge do menu com o total real de ingressos.
+  const badge = document.querySelector('[data-page="my-events"] .nav-badge');
+  if (!badge) return;
+
+  const total = Number(totalTickets) || 0;
+  if (total > 0) {
+    badge.style.display = 'inline-block';
+    badge.textContent = String(total);
+    return;
+  }
+
+  badge.style.display = 'none';
+}
+
+async function loadMyTickets() {
+  // Busca os ingressos do participante autenticado no backend.
+  const container = document.getElementById('myTicketsList');
+  if (!container) return;
+
+  container.innerHTML = '<p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Carregando seus ingressos...</p>';
+
+  try {
+    const response = await fetch('../php/get_meus_ingressos.php');
+    const result = await response.json();
+
+    if (response.status === 401) {
+      window.location.href = 'loginParticipante.html';
+      return;
+    }
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Falha ao carregar ingressos.');
+    }
+
+    renderMyTickets(Array.isArray(result.data) ? result.data : []);
+  } catch (error) {
+    console.error('Erro ao carregar meus ingressos:', error);
+    setMyTicketsBadge(0);
+    container.innerHTML = '<p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Erro ao carregar seus ingressos.</p>';
+  }
+}
+
+function renderMyTickets(tickets) {
+  // Renderiza os cards de ingressos em "Meus Ingressos".
+  const container = document.getElementById('myTicketsList');
+  if (!container) return;
+
+  if (!tickets.length) {
+    setMyTicketsBadge(0);
+    container.innerHTML = '<p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Você ainda não comprou ingressos.</p>';
+    return;
+  }
+
+  const totalTickets = tickets.reduce((acc, ticket) => acc + (Number(ticket.quantidade) || 0), 0);
+  setMyTicketsBadge(totalTickets);
+
+  container.innerHTML = tickets.map(ticket => {
+    const quantidade = Math.max(1, Number(ticket.quantidade) || 1);
+    const quantidadeLabel = quantidade > 1 ? ` · ${quantidade} ingressos` : '';
+    const statusClass = ticket.status_class === 'ticket__status--active' ? 'ticket__status--active' : 'ticket__status--past';
+    const statusLabel = escapeHtml(ticket.status_label || 'Encerrado');
+    const eventoNome = escapeHtml(ticket.evento_nome || 'Evento');
+    const nomeTipo = escapeHtml(ticket.nome_tipo || 'Ingresso');
+    const cidade = escapeHtml(ticket.cidade || '');
+    const estado = escapeHtml(ticket.estado || '');
+    const data = escapeHtml(ticket.evento_data_formatada || '');
+    const local = cidade && estado ? `${cidade}, ${estado}` : 'Local a confirmar';
+    const isAtivo = ticket.status === 'ativo' && !ticket.passado;
+
+    const actions = isAtivo
+      // Evento ativo mantém ações de QR, revenda e comunidade.
+      ? `<button class="btn btn--ghost btn--sm" onclick="showToast('🔒 Abrindo QR Code seguro...')">Ver QR Code</button>
+         <button class="btn btn--ghost btn--sm" onclick="openSellModal()">Revender</button>
+         <button class="btn btn--primary btn--sm" onclick="goPage('groups')">Comunidade</button>`
+      // Evento encerrado mostra apenas acesso às memórias/comunidade.
+      : `<button class="btn btn--ghost btn--sm" onclick="goPage('groups')">Ver memórias</button>`;
+
+    return `
+      <div class="ticket glass">
+        <div class="ticket__icon">🎟️</div>
+        <div class="ticket__info">
+          <div class="ticket__name">${eventoNome}</div>
+          <div class="ticket__meta">📅 ${data} · 📍 ${local} · ${nomeTipo}${quantidadeLabel}</div>
+        </div>
+        <span class="ticket__status ${statusClass}">${statusLabel}</span>
+        <div class="ticket__actions">
+          ${actions}
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 async function loadEvents() {
@@ -525,6 +620,7 @@ async function buyTicket() {
       showToast('Ingresso comprado com sucesso', '✅');
       closeModal('eventModal');
       loadEvents();
+      loadMyTickets();
       return;
     }
 
