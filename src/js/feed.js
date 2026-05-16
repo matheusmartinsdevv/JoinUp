@@ -91,7 +91,7 @@ async function loadMyPosts(userName, initials) {
 }
 
 function setMyTicketsBadge(totalTickets) {
-  // Atualiza o badge do menu com o total real de ingressos.
+  // Badge com total de ingressos do participante.
   const badge = document.querySelector('[data-page="my-events"] .nav-badge');
   if (!badge) return;
 
@@ -106,7 +106,7 @@ function setMyTicketsBadge(totalTickets) {
 }
 
 async function loadMyTickets() {
-  // Busca os ingressos do participante autenticado no backend.
+  // Carrega os ingressos comprados para a tela "Meus Ingressos".
   const container = document.getElementById('myTicketsList');
   if (!container) return;
 
@@ -134,7 +134,7 @@ async function loadMyTickets() {
 }
 
 function renderMyTickets(tickets) {
-  // Renderiza os cards de ingressos em "Meus Ingressos".
+  // Monta a lista de cards com status e ações por ingresso.
   const container = document.getElementById('myTicketsList');
   if (!container) return;
 
@@ -161,11 +161,11 @@ function renderMyTickets(tickets) {
     const isAtivo = ticket.status === 'ativo' && !ticket.passado;
 
     const actions = isAtivo
-      // Evento ativo mantém ações de QR, revenda e comunidade.
+      // Ingresso válido para uso.
       ? `<button class="btn btn--ghost btn--sm" onclick="showToast('🔒 Abrindo QR Code seguro...')">Ver QR Code</button>
          <button class="btn btn--ghost btn--sm" onclick="openSellModal()">Revender</button>
          <button class="btn btn--primary btn--sm" onclick="goPage('groups')">Comunidade</button>`
-      // Evento encerrado mostra apenas acesso às memórias/comunidade.
+      // Ingresso já encerrado/utilizado.
       : `<button class="btn btn--ghost btn--sm" onclick="goPage('groups')">Ver memórias</button>`;
 
     return `
