@@ -103,7 +103,7 @@ while ($row = $result->fetch_assoc()) {
     $passado = $evento_ts !== false && $evento_ts < $agora;
     $status = strtolower((string) ($row['status'] ?? ''));
 
-    // Mantém o label/status pronto para o frontend.
+    // Status pronto para exibição no frontend.
     $status_label = 'Ativo';
     $status_class = 'ticket__status--active';
 
