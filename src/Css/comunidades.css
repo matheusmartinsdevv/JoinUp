@@ -1,0 +1,228 @@
+/* =========================================
+   COMUNIDADES — JoinUp
+   Segue o design system do projeto:
+   fundo #090714, glassmorphism, roxo #9d4edd
+   ========================================= */
+
+/* ---- Grid de cards ---- */
+.comunidades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 18px;
+}
+
+/* ---- Card individual ---- */
+.comunidade-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    position: relative;
+}
+
+.comunidade-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(157, 78, 221, 0.25);
+    border-color: rgba(157, 78, 221, 0.45);
+}
+
+/* Imagem do card */
+.comunidade-card__img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+    background: rgba(157, 78, 221, 0.15);
+}
+
+/* Placeholder quando não há imagem */
+.comunidade-card__img-placeholder {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(157, 78, 221, 0.25), rgba(90, 24, 154, 0.35));
+    font-size: 2.4rem;
+}
+
+/* Rodapé do card */
+.comunidade-card__body {
+    padding: 10px 12px 12px;
+}
+
+.comunidade-card__titulo {
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.comunidade-card__evento {
+    color: #a19ba8;
+    font-size: 0.72rem;
+    margin: 0 0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.comunidade-card__membros {
+    font-size: 0.7rem;
+    color: #e0aaff;
+    margin-bottom: 10px;
+}
+
+/* Botão dentro do card */
+.comunidade-card__btn {
+    width: 100%;
+    padding: 8px 0;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.comunidade-card__btn--entrar {
+    background: #9d4edd;
+    color: #fff;
+}
+
+.comunidade-card__btn--entrar:hover {
+    background: #5a189a;
+    box-shadow: 0 0 14px rgba(157, 78, 221, 0.5);
+}
+
+.comunidade-card__btn--sair {
+    background: rgba(255, 255, 255, 0.06);
+    color: #e0aaff;
+    border: 1px solid rgba(157, 78, 221, 0.35);
+}
+
+.comunidade-card__btn--sair:hover {
+    background: rgba(157, 78, 221, 0.15);
+    border-color: #9d4edd;
+}
+
+/* Badge "membro" no canto superior do card */
+.comunidade-card__badge-membro {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(157, 78, 221, 0.75);
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    backdrop-filter: blur(6px);
+    letter-spacing: 0.04em;
+}
+
+/* ---- Mensagem de lista vazia ---- */
+.vazio-msg {
+    color: #a19ba8;
+    font-size: 0.9rem;
+    margin-top: 8px;
+}
+
+/* ---- Toast de feedback ---- */
+.toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 9999;
+    background: rgba(157, 78, 221, 0.15);
+    border: 1px solid #9d4edd;
+    color: #e0aaff;
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    animation: slideUp 0.3s ease;
+}
+
+.toast--erro {
+    border-color: #ef4444;
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Skeleton loader ---- */
+.skeleton {
+    background: linear-gradient(90deg,
+        rgba(255,255,255,0.04) 25%,
+        rgba(157, 78, 221, 0.08) 50%,
+        rgba(255,255,255,0.04) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 16px;
+    aspect-ratio: 1 / 1.35;
+}
+
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ---- Responsivo ---- */
+@media (max-width: 600px) {
+    .comunidades-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
+    }
+}
+
+/* ── Integração com o layout shell/main do feed.css ── */
+.comunidades-section-title {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.vazio-msg {
+  color: var(--text-muted, #a19ba8);
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+/* Toast reaproveitando o padrão do feed.css */
+#toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  background: rgba(157, 78, 221, 0.15);
+  border: 1px solid #9d4edd;
+  color: #e0aaff;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+#toast.toast--erro {
+  border-color: #ef4444;
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.1);
+}

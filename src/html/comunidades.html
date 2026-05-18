@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JoinUp — Comunidades</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../Css/feed.css" />
+  <link rel="stylesheet" href="../Css/comunidades.css" />
+</head>
+<body>
+
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="shell">
+
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="sidebar__logo">
+        <span class="logo__icon">◈</span>
+        <span class="logo__text">Join<span class="logo__accent">Up</span></span>
+      </a>
+
+      <nav class="sidebar__nav">
+        <span class="nav-section">Principal</span>
+        <button class="nav-item" onclick="window.location.href='dashboardOrganizador.html'">
+          <span class="nav-icon"></span> Feed
+        </button>
+        <button class="nav-item" onclick="window.location.href='dashboardOrganizador.html'">
+          <span class="nav-icon"></span> Explorar Eventos
+        </button>
+        <button class="nav-item" onclick="window.location.href='dashboardOrganizador.html'">
+          <span class="nav-icon"></span> Meus Ingressos
+        </button>
+        <button class="nav-item active">
+          <span class="nav-icon"></span> Comunidades
+        </button>
+
+        <span class="nav-section">Conta</span>
+        <button class="nav-item" onclick="window.location.href='dashboardOrganizador.html'">
+          <span class="nav-icon">👤</span> Meu Perfil
+        </button>
+        <button class="nav-item" id="logoutBtn">
+          <span class="nav-icon"></span> Sair
+        </button>
+      </nav>
+
+      <div class="sidebar__user" id="sidebarUser">
+        <div class="user-avatar" id="userAvatar">...</div>
+        <div class="user-info">
+          <div class="user-name" id="userName">Carregando...</div>
+          <div class="user-tag" id="userTag">@...</div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+
+      <header class="topbar">
+        <button class="burger-btn" id="burgerBtn">☰</button>
+        <div class="topbar__search">
+          <span class="topbar__search-icon">🔍</span>
+          <input type="text" placeholder="Buscar comunidades..." autocomplete="off" />
+        </div>
+        <div class="topbar__actions">
+          <button class="icon-btn" title="Perfil">👤</button>
+        </div>
+      </header>
+
+      <div class="page active" id="page-comunidades">
+
+        <div class="section-title">Minhas <span class="text-gradient">Comunidades</span></div>
+        <p class="section-sub">Gerencie suas comunidades e descubra novos grupos interativos.</p>
+
+        <div class="toast" id="toast" style="display:none;">
+          <span id="toastMsg"></span>
+        </div>
+
+        <div style="margin-bottom: 40px;">
+          <h3 class="comunidades-section-title">Minhas Comunidades</h3>
+          <div id="minhas-comunidades-grid" class="comunidades-grid"></div>
+          <p id="minhas-vazio" class="vazio-msg" style="display:none;">
+            Você ainda não participa de nenhuma comunidade. Explore abaixo!
+          </p>
+        </div>
+
+        <div>
+          <h3 class="comunidades-section-title">Explorar</h3>
+          <div id="explorar-grid" class="comunidades-grid"></div>
+          <p id="explorar-vazio" class="vazio-msg" style="display:none;">
+            Não há novas comunidades disponíveis no momento.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      window.location.href = '../php/logout.php';
+    });
+
+    const burger = document.getElementById('burgerBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (burger) {
+      burger.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+      });
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+      });
+    }
+  </script>
+  <script src="../js/comunidades.js"></script>
+</body>
+</html>

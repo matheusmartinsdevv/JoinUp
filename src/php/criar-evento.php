@@ -139,6 +139,16 @@ try {
     $id_evento = $conn->insert_id;
     $stmt_evento->close();
 
+    // Cria comunidade automaticamente para o evento
+    $stmt_comunidade = $conn->prepare(
+        "INSERT INTO comunidades (nome, descricao, id_evento) VALUES (?, ?, ?)"
+    );
+    $nome_comunidade = "Comunidade: " . $nome;
+    $desc_comunidade = "Comunidade oficial do evento " . $nome . " em " . $cidade . "/" . $estado . ".";
+    $stmt_comunidade->bind_param('ssi', $nome_comunidade, $desc_comunidade, $id_evento);
+    $stmt_comunidade->execute();
+    $stmt_comunidade->close();
+
     // 2. Inserir tipos de ingressos
     $stmt_ingresso = $conn->prepare(
         "INSERT INTO tipos_ingressos (nome_tipo, valor, quantidade_disponivel, id_evento)
