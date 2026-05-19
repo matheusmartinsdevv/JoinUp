@@ -242,6 +242,6 @@ try {
 } catch (Throwable $e) {
     $conn->rollback();
     $conn->close();
-    responder_json(500, ['success' => false, 'error' => 'Erro ao processar a compra do ingresso.']);
+    responder_json(500, ['success' => false, 'error' => 'Erro ao processar a compra do ingresso: ' . $e->getMessage()]);
 }
 ?>

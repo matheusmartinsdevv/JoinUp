@@ -60,6 +60,9 @@
         <button class="nav-item" data-page="profile">
           <span class="nav-icon"></span> Meu Perfil
         </button>
+        <button class="nav-item" data-page="ticketHelp">
+          <span class="nav-icon"></span> Central de Ajuda
+        </button>
         <button class="nav-item" id="logoutBtn">
           <span class="nav-icon"></span> Sair
         </button>
@@ -87,12 +90,7 @@
         </div>
 
         <div class="topbar__actions">
-          <button class="icon-btn" onclick="showToast(' Suporte em breve')">
-            💬
-          </button>
-          <button class="icon-btn" onclick="goPage('profile')" title="Perfil">
-            👤
-          </button>
+          <!-- Ícones removidos -->
         </div>
       </header>
 
@@ -561,6 +559,27 @@
 
         </div>
       </div><!-- /page-profile -->
+      
+      <!-- ░░ PAGE: TICKET HELP ░░ -->
+      <div class="page" id="page-ticketHelp">
+        <div class="section-title">Central de <span class="text-gradient">Ajuda</span></div>
+        <p class="section-sub">Abra um ticket e descreva seu problema. Nossa equipe de suporte entrará em contato em breve.</p>
+        <div style="max-width: 600px; margin: 0 auto;">
+          <div class="profile-card glass" style="padding: 24px;">
+            <form id="ticketHelpForm">
+              <div class="form-group" style="margin-bottom: 20px;">
+                <label for="ticketTitle">Título do ticket</label>
+                <input type="text" id="ticketTitle" placeholder="Informe o assunto do seu problema" required />
+              </div>
+              <div class="form-group" style="margin-bottom: 20px;">
+                <label for="ticketDescription">Descrição do problema</label>
+                <textarea id="ticketDescription" placeholder="Descreva o que aconteceu, onde e quando..." rows="6" required></textarea>
+              </div>
+              <button type="submit" id="ticketHelpSubmit" class="btn btn--primary" style="width: 100%; justify-content: center; padding: 14px;">Enviar ticket</button>
+            </form>
+          </div>
+        </div>
+      </div><!-- /page-ticketHelp -->
 
 
     </div><!-- /main -->

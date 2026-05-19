@@ -793,6 +793,58 @@ if (eventImageInput) {
   });
 }
 
+
+// =========================================
+// HELP CENTER / TICKET SUBMISSION
+// =========================================
+
+function setupHelpCenter() {
+  const ticketHelpForm = document.getElementById('ticketHelpForm');
+  if (ticketHelpForm) {
+    ticketHelpForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const titleInput = document.getElementById('ticketTitle');
+      const descriptionInput = document.getElementById('ticketDescription');
+      const submitBtn = document.getElementById('ticketHelpSubmit');
+
+      if (!titleInput || !descriptionInput) return;
+
+      const title = titleInput.value.trim();
+      const description = descriptionInput.value.trim();
+
+      if (!title || !description) {
+        showToast('Preencha título e descrição antes de enviar.', '⚠️');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+
+      try {
+        const response = await fetch('../php/create_ticket.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ titulo: title, descricao: description, tipo: 'organizador' })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showToast('✅ Ticket enviado com sucesso!');
+          ticketHelpForm.reset();
+        } else {
+          showToast(result.error || 'Erro ao enviar ticket.', '⚠️');
+        }
+      } catch (error) {
+        console.error('Erro ao enviar ticket:', error);
+        showToast('Falha na comunicação com o servidor.', '⚠️');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar ticket';
+      }
+    });
+  }
+}
+
 // =========================================
 // INITIALIZATION
 // =========================================
@@ -801,6 +853,7 @@ async function init() {
   console.log('Painel Inicializando...');
   
   loadPerfil();
+  setupHelpCenter();
 
   const isAuthenticated = await checkAuthentication();
   if (!isAuthenticated) {

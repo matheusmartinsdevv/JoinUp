@@ -45,16 +45,6 @@
           <span class="nav-icon">📈</span> Analytics
         </button>
 
-        <span class="nav-section">Ferramentas</span>
-        <button class="nav-item" data-page="kb">
-          <span class="nav-icon">📚</span> Base de Conhecimento
-        </button>
-        <button class="nav-item" data-page="reports">
-          <span class="nav-icon">📋</span> Relatórios
-        </button>
-        <button class="nav-item" data-page="settings">
-          <span class="nav-icon">⚙️</span> Configurações
-        </button>
 
         <span class="nav-section">Conta</span>
         <button class="nav-item" data-page="profile">
@@ -82,21 +72,10 @@
       <header class="topbar">
         <button class="burger-btn" id="burgerBtn">☰</button>
 
-        <div class="topbar__search">
-          <span class="topbar__search-icon">🔍</span>
-          <input type="text" id="searchInput" placeholder="Buscar tickets, usuários..." autocomplete="off" />
-        </div>
+
 
         <div class="topbar__actions">
-          <button class="icon-btn" onclick="showToast('🔔 Notificações em breve')">
-            🔔 <span class="dot"></span>
-          </button>
-          <button class="icon-btn" onclick="showToast('💬 Chat em breve')">
-            💬
-          </button>
-          <button class="icon-btn" onclick="goPage('profile')" title="Perfil">
-            👤
-          </button>
+          <!-- Ícones removidos -->
         </div>
       </header>
 
@@ -112,7 +91,7 @@
           <div class="stat-card glass">
             <div class="stat-card__icon">🎫</div>
             <div class="stat-card__content">
-              <div class="stat-card__value">--</div>
+              <div class="stat-card__value" id="statsAbertos">--</div>
               <div class="stat-card__label">Tickets Abertos</div>
             </div>
           </div>
@@ -120,7 +99,7 @@
           <div class="stat-card glass">
             <div class="stat-card__icon">⏳</div>
             <div class="stat-card__content">
-              <div class="stat-card__value">--</div>
+              <div class="stat-card__value" id="statsEmAndamento">--</div>
               <div class="stat-card__label">Em Andamento</div>
             </div>
           </div>
@@ -128,7 +107,7 @@
           <div class="stat-card glass">
             <div class="stat-card__icon">✅</div>
             <div class="stat-card__content">
-              <div class="stat-card__value">--</div>
+              <div class="stat-card__value" id="statsResolvidos">0</div>
               <div class="stat-card__label">Resolvidos Hoje</div>
             </div>
           </div>
@@ -136,7 +115,7 @@
           <div class="stat-card glass">
             <div class="stat-card__icon">⭐</div>
             <div class="stat-card__content">
-              <div class="stat-card__value">--</div>
+              <div class="stat-card__value" id="statsSatisfacao">5.0</div>
               <div class="stat-card__label">Satisfação Média</div>
             </div>
           </div>
@@ -150,41 +129,13 @@
           <button class="btn btn--ghost btn--large" onclick="goPage('chat')">
             <span>💬</span> Chat Ativo
           </button>
-          <button class="btn btn--ghost btn--large" onclick="goPage('kb')">
-            <span>📚</span> Base de Conhecimento
-          </button>
         </div>
 
         <!-- Recent Activity -->
         <div class="recent-activity">
           <h3 class="section-title-small">Atividade <span class="text-gradient">Recente</span></h3>
-          <div class="activity-list">
-            <div class="activity-item glass">
-              <div class="activity-item__icon activity-item__icon--ticket">🎫</div>
-              <div class="activity-item__content">
-                <div class="activity-item__title">Aqui aparecerão os novos tickets</div>
-                <div class="activity-item__meta">Notificações de chamados abertos recentemente</div>
-              </div>
-              <div class="activity-item__status activity-item__status--urgent">Status</div>
-            </div>
-
-            <div class="activity-item glass">
-              <div class="activity-item__icon activity-item__icon--chat">💬</div>
-              <div class="activity-item__content">
-                <div class="activity-item__title">Conversas ativas aparecerão aqui</div>
-                <div class="activity-item__meta">Chats em andamento com usuários</div>
-              </div>
-              <div class="activity-item__status activity-item__status--active">Online</div>
-            </div>
-
-            <div class="activity-item glass">
-              <div class="activity-item__icon activity-item__icon--resolved">✅</div>
-              <div class="activity-item__content">
-                <div class="activity-item__title">Tickets resolvidos recentemente</div>
-                <div class="activity-item__meta">Histórico de soluções implementadas</div>
-              </div>
-              <div class="activity-item__status activity-item__status--resolved">Resolvido</div>
-            </div>
+          <div class="activity-list" id="activityListContainer">
+            <!-- As atividades recentes serão carregadas dinamicamente aqui -->
           </div>
         </div>
       </div><!-- /page-dashboard -->
@@ -217,72 +168,8 @@
         </div>
 
         <!-- Tickets List -->
-        <div class="tickets-list">
-          <div class="ticket-card glass">
-            <div class="ticket-card__header">
-              <div class="ticket-card__info">
-                <div class="ticket-card__id">#XXXX</div>
-                <div class="ticket-card__title">Aqui aparecerão os títulos dos tickets</div>
-                <div class="ticket-card__user">Nome do usuário (Tipo)</div>
-              </div>
-              <div class="ticket-card__status ticket-card__status--urgent">Status</div>
-            </div>
-            <div class="ticket-card__content">
-              <p>Aqui aparecerá a descrição do problema relatado pelo usuário...</p>
-            </div>
-            <div class="ticket-card__footer">
-              <div class="ticket-card__meta">
-                <span>🏷️ Categoria</span> · <span>Data/Hora</span>
-              </div>
-              <div class="ticket-card__actions">
-                <button class="btn btn--sm">Responder</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="ticket-card glass">
-            <div class="ticket-card__header">
-              <div class="ticket-card__info">
-                <div class="ticket-card__id">#XXXX</div>
-                <div class="ticket-card__title">Exemplo de ticket de organizador</div>
-                <div class="ticket-card__user">Nome do organizador (Organizador)</div>
-              </div>
-              <div class="ticket-card__status ticket-card__status--high">Prioridade</div>
-            </div>
-            <div class="ticket-card__content">
-              <p>Descrição do problema técnico ou dúvida sobre funcionalidades...</p>
-            </div>
-            <div class="ticket-card__footer">
-              <div class="ticket-card__meta">
-                <span>⚙️ Técnica</span> · <span>Tempo decorrido</span>
-              </div>
-              <div class="ticket-card__actions">
-                <button class="btn btn--sm">Responder</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="ticket-card glass">
-            <div class="ticket-card__header">
-              <div class="ticket-card__info">
-                <div class="ticket-card__id">#XXXX</div>
-                <div class="ticket-card__title">Ticket de participante</div>
-                <div class="ticket-card__user">Nome do participante (Participante)</div>
-              </div>
-              <div class="ticket-card__status ticket-card__status--normal">Normal</div>
-            </div>
-            <div class="ticket-card__content">
-              <p>Questões sobre ingressos, eventos ou conta do usuário...</p>
-            </div>
-            <div class="ticket-card__footer">
-              <div class="ticket-card__meta">
-                <span>🎫 Ingressos</span> · <span>Duração</span>
-              </div>
-              <div class="ticket-card__actions">
-                <button class="btn btn--sm">Responder</button>
-              </div>
-            </div>
-          </div>
+        <div class="tickets-list" id="ticketsListContainer">
+          <!-- Tickets serão carregados dinamicamente aqui -->
         </div>
       </div><!-- /page-tickets -->
 
@@ -295,44 +182,15 @@
 
         <div class="chat-container">
           <!-- Chat List -->
-          <div class="chat-list">
-            <div class="chat-item active">
-              <div class="chat-item__avatar">XX</div>
-              <div class="chat-item__content">
-                <div class="chat-item__name">Nome do usuário</div>
-                <div class="chat-item__last-msg">Última mensagem da conversa...</div>
-              </div>
-              <div class="chat-item__time">HH:MM</div>
-            </div>
-
-            <div class="chat-item">
-              <div class="chat-item__avatar">XX</div>
-              <div class="chat-item__content">
-                <div class="chat-item__name">Outro usuário</div>
-                <div class="chat-item__last-msg">Mensagem de exemplo...</div>
-              </div>
-              <div class="chat-item__time">HH:MM</div>
-            </div>
-
-            <div class="chat-item">
-              <div class="chat-item__avatar">XX</div>
-              <div class="chat-item__content">
-                <div class="chat-item__name">Usuário ativo</div>
-                <div class="chat-item__last-msg">Conversa em andamento...</div>
-              </div>
-              <div class="chat-item__time">HH:MM</div>
-            </div>
+          <div class="chat-list" id="chatListContainer">
+            <!-- Conversas serão carregadas dinamicamente aqui -->
           </div>
 
           <!-- Chat Window -->
           <div class="chat-window">
             <div class="chat-header">
-              <div class="chat-user">
-                <div class="chat-user__avatar">XX</div>
-                <div class="chat-user__info">
-                  <div class="chat-user__name">Nome do usuário</div>
-                  <div class="chat-user__status">Status</div>
-                </div>
+              <div class="chat-user" id="activeChatUser">
+                <!-- Dados do usuário selecionado -->
               </div>
               <div class="chat-actions">
                 <button class="btn btn--ghost btn--sm">📞</button>
@@ -341,20 +199,7 @@
             </div>
 
             <div class="chat-messages" id="chatMessages">
-              <div class="message received">
-                <div class="message__content">Aqui aparecerão as mensagens do usuário...</div>
-                <div class="message__time">HH:MM</div>
-              </div>
-
-              <div class="message sent">
-                <div class="message__content">Aqui aparecerão suas respostas...</div>
-                <div class="message__time">HH:MM</div>
-              </div>
-
-              <div class="message received">
-                <div class="message__content">Exemplo de conversa em andamento...</div>
-                <div class="message__time">HH:MM</div>
-              </div>
+              <!-- Mensagens serão carregadas dinamicamente aqui -->
             </div>
 
             <div class="chat-input">

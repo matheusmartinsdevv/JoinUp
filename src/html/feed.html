@@ -47,7 +47,6 @@
         </button>
         <button class="nav-item" data-page="groups">
           <span class="nav-icon"></span> Comunidades
-          <span class="nav-badge">5</span>
         </button>
 
         <span class="nav-section">Conta</span>
@@ -150,40 +149,7 @@
           <div class="home-main">
             <!-- Posts -->
             <div id="feedEventos">
-              <div class="post glass">
-                <div class="post__header">
-                  <div class="post__avatar" style="background: linear-gradient(135deg, var(--purple), var(--purple-d))">
-                    📢
-                  </div>
-                  <div>
-                    <div class="post__name">Nome do Organizador</div>
-                    <span class="post__event-tag">Organizador Oficial</span>
-                  </div>
-                  <span class="post__time">Data da Postagem</span>
-                </div>
-
-                <div class="post__body">
-                  <h3 style="color: var(--text); margin-bottom: 8px;">Nome do Evento Exemplo</h3>
-                  <p>Descrição curta do evento vindo do banco de dados. Informações sobre atrações, local e o que
-                    esperar da experiência.</p>
-                  <div style="margin-top: 10px; font-size: 0.85rem; color: var(--purple-l);">
-                    📍 Local do Evento • 📅 00/00/0000
-                  </div>
-                </div>
-
-                <div class="post__img">
-                  🖼️ <div class="post__img-overlay"></div>
-                </div>
-
-                <div class="post__actions">
-                  <button class="post-action">❤️ 0</button>
-                  <button class="post-action">💬 0</button>
-
-                  <button class="post-action post-action--cta" style="margin-left: auto;">
-                    🔎 Ver mais informações
-                  </button>
-                </div>
-              </div>
+              <!-- Eventos do feed serão carregados dinamicamente aqui -->
             </div><!-- /feedEventos -->
           </div><!-- /home-main -->
 
@@ -226,67 +192,8 @@
         <div class="section-title">Minhas <span class="text-gradient">Comunidades</span></div>
         <p class="section-sub">Grupos de eventos onde você está ou pode entrar.</p>
 
-        <div class="groups-grid">
-          <div class="group-card glass">
-            <div class="group-card__header">
-              <div class="group-card__icon">🎆</div>
-              <div>
-                <div class="group-card__name">Festival Neon SP</div>
-              </div>
-            </div>
-            <p class="group-card__desc">A comunidade oficial do Festival Neon SP 2025. Combine encontros, troque
-              ingressos e compartilhe momentos!</p>
-            <div class="group-card__footer">
-              <button class="btn btn--primary btn--sm" onclick="showToast('💜 Abrindo comunidade!')">Acessar
-                comunidade</button>
-            </div>
-          </div>
-
-          <div class="group-card glass">
-            <div class="group-card__header">
-              <div class="group-card__icon">🎸</div>
-              <div>
-                <div class="group-card__name">Rock in Rio 2025</div>
-              </div>
-            </div>
-            <p class="group-card__desc">Planeje sua viagem pro Rio, encontre hospedagem compartilhada e conheça sua
-              galera antes da chegada!</p>
-            <div class="group-card__footer">
-              <button class="btn btn--primary btn--sm" onclick="showToast('💜 Abrindo comunidade!')">Acessar
-                comunidade</button>
-            </div>
-          </div>
-
-          <div class="group-card glass">
-            <div class="group-card__header">
-              <div class="group-card__icon">🎪</div>
-              <div>
-                <div class="group-card__name">Lollapalooza Brasil</div>
-              </div>
-            </div>
-            <p class="group-card__desc">A maior comunidade do Lolla no Brasil. Dicas de palco, fotos, caronas e muito
-              mais!</p>
-            <div class="group-card__footer">
-              <button class="btn btn--primary btn--sm" onclick="showToast('💜 Abrindo comunidade!')">Acessar
-                comunidade</button>
-            </div>
-          </div>
-
-          <div class="group-card glass" style="border-style:dashed;opacity:0.7;cursor:pointer;"
-            onclick="goPage('events')">
-            <div class="group-card__header">
-              <div class="group-card__icon" style="background:rgba(157,78,221,0.1);border:1px dashed var(--border-p);">＋
-              </div>
-              <div>
-                <div class="group-card__name">Encontrar mais comunidades</div>
-              </div>
-            </div>
-            <p class="group-card__desc">Compre um ingresso ou explore eventos para entrar automaticamente nas
-              comunidades.</p>
-            <div class="group-card__footer">
-              <button class="btn btn--ghost btn--sm">Explorar eventos →</button>
-            </div>
-          </div>
+        <div class="groups-grid" id="groupsGridContainer">
+          <!-- Comunidades serão carregadas dinamicamente aqui -->
         </div>
       </div><!-- /page-groups -->
 

@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadUserData();
   loadEvents();
   loadMyTickets();
+  loadCommunities();
 });
 
 const purchaseState = {
@@ -162,8 +163,7 @@ function renderMyTickets(tickets) {
 
     const actions = isAtivo
       // Ingresso válido para uso.
-      ? `<button class="btn btn--ghost btn--sm" onclick="showToast('🔒 Abrindo QR Code seguro...')">Ver QR Code</button>
-         <button class="btn btn--ghost btn--sm" onclick="openSellModal()">Revender</button>
+      ? `<button class="btn btn--ghost btn--sm" onclick="openSellModal()">Revender</button>
          <button class="btn btn--primary btn--sm" onclick="goPage('groups')">Comunidade</button>`
       // Ingresso já encerrado/utilizado.
       : `<button class="btn btn--ghost btn--sm" onclick="goPage('groups')">Ver memórias</button>`;
@@ -191,9 +191,12 @@ async function loadEvents() {
     const eventos = await response.json();
 
     if (!eventos || eventos.length === 0) {
-      grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhum evento encontrado no momento. 😢</p>';
+      if (grid) grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhum evento encontrado no momento. 😢</p>';
+      renderFeedEvents([]);
       return;
     }
+
+    renderFeedEvents(eventos);
 
     const cores = {
       'Rock': 'linear-gradient(135deg,#1e1b4b,#4338ca)',
@@ -204,47 +207,108 @@ async function loadEvents() {
       'Pagode': 'linear-gradient(135deg,#854d0e,#a16207)'
     };
 
-    grid.innerHTML = eventos.map(evento => {
-      const eventId = Number(evento.id_evento) || 0;
-      const bgCard = cores[evento.genero_nome] || 'linear-gradient(135deg,#312e81,#4f46e5)';
-      const participantes = (evento.total_participantes || 0) > 0 ? `+${evento.total_participantes}` : '0';
-      const artistasTxt = (evento.artistas && evento.artistas.length > 0) ? evento.artistas.join(', ') : 'Atrações a confirmar';
+    if (grid) {
+      grid.innerHTML = eventos.map(evento => {
+        const eventId = Number(evento.id_evento) || 0;
+        const bgCard = cores[evento.genero_nome] || 'linear-gradient(135deg,#312e81,#4f46e5)';
+        const participantes = (evento.total_participantes || 0) > 0 ? `+${evento.total_participantes}` : '0';
+        const artistasTxt = (evento.artistas && evento.artistas.length > 0) ? evento.artistas.join(', ') : 'Atrações a confirmar';
 
-      const imagemUrl = evento.imagem ? `../uploads/${evento.imagem}` : null;
-      const imgStyle = imagemUrl ? `background-image:url('${imagemUrl}'); background-size:cover; background-position:center;` : `background:${bgCard}`;
-      const iconOrImg = imagemUrl ? '' : '✨';
-      const imagemParam = imagemUrl ? `'${imagemUrl}'` : 'null';
+        const imagemUrl = evento.imagem ? `../uploads/${evento.imagem}` : null;
+        const imgStyle = imagemUrl ? `background-image:url('${imagemUrl}'); background-size:cover; background-position:center;` : `background:${bgCard}`;
+        const iconOrImg = imagemUrl ? '' : '✨';
+        const imagemParam = imagemUrl ? `'${imagemUrl}'` : 'null';
 
-      // Sanitização segura (evita erro se algum campo vier null)
-      const cleanName = (evento.evento_nome || '').replace(/'/g, "\\'");
-      const cleanDesc = (evento.descricao || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
-      const cleanLoc = (evento.localizacao || '').replace(/'/g, "\\'");
-      const cleanCity = (evento.cidade || '').replace(/'/g, "\\'");
-      const cleanUF = (evento.estado || '').replace(/'/g, "\\'");
-      const cleanArtistas = artistasTxt.replace(/'/g, "\\'");
+        // Sanitização segura (evita erro se algum campo vier null)
+        const cleanName = (evento.evento_nome || '').replace(/'/g, "\\'");
+        const cleanDesc = (evento.descricao || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
+        const cleanLoc = (evento.localizacao || '').replace(/'/g, "\\'");
+        const cleanCity = (evento.cidade || '').replace(/'/g, "\\'");
+        const cleanUF = (evento.estado || '').replace(/'/g, "\\'");
+        const cleanArtistas = artistasTxt.replace(/'/g, "\\'");
 
-      return `
-        <div class="event-card" onclick="showEventModal(${eventId},'${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','🎵','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', ${imagemParam})">
-          <div class="event-card__img" style="${imgStyle}">${iconOrImg}
-            <div class="event-card__img-overlay"></div>
-            <span class="event-card__tag">📌 ${evento.genero_nome || 'Evento'}</span>
-            <span class="event-card__going-count">${participantes} vão</span>
-          </div>
-          <div class="event-card__body">
-            <div class="event-card__title">${evento.evento_nome || 'Sem nome'}</div>
-            <div class="event-card__meta">📅 ${evento.data_formatada || ''}</div>
-            <div class="event-card__footer">
-              <span class="event-card__price">A partir de <strong>${evento.preco_formatado || 'Grátis'}</strong></span>
+        return `
+          <div class="event-card" onclick="showEventModal(${eventId},'${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','🎵','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', ${imagemParam})">
+            <div class="event-card__img" style="${imgStyle}">${iconOrImg}
+              <div class="event-card__img-overlay"></div>
+              <span class="event-card__tag">📌 ${evento.genero_nome || 'Evento'}</span>
+              <span class="event-card__going-count">${participantes} vão</span>
+            </div>
+            <div class="event-card__body">
+              <div class="event-card__title">${evento.evento_nome || 'Sem nome'}</div>
+              <div class="event-card__meta">📅 ${evento.data_formatada || ''}</div>
+              <div class="event-card__footer">
+                <span class="event-card__price">A partir de <strong>${evento.preco_formatado || 'Grátis'}</strong></span>
+              </div>
             </div>
           </div>
-        </div>
-      `;
-    }).join('');
+        `;
+      }).join('');
+    }
 
   } catch (error) {
     console.error('Erro ao carregar eventos:', error);
-    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Erro ao carregar eventos. Tente novamente mais tarde.</p>';
+    if (grid) grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Erro ao carregar eventos. Tente novamente mais tarde.</p>';
   }
+}
+
+function renderFeedEvents(eventos) {
+  const feedContainer = document.getElementById('feedEventos');
+  if (!feedContainer) return;
+
+  if (!eventos || eventos.length === 0) {
+    feedContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 40px;">Nenhum evento no feed. 😢</p>';
+    return;
+  }
+
+  feedContainer.innerHTML = eventos.map(evento => {
+    const eventId = Number(evento.id_evento) || 0;
+    const participantes = (evento.total_participantes || 0) > 0 ? `+${evento.total_participantes}` : '0';
+    const artistasTxt = (evento.artistas && evento.artistas.length > 0) ? evento.artistas.join(', ') : 'Atrações a confirmar';
+
+    const imagemUrl = evento.imagem ? `../uploads/${evento.imagem}` : null;
+    const imgStyle = imagemUrl ? `background-image:url('${imagemUrl}'); background-size:cover; background-position:center; width:100%; height:200px; border-radius:12px; margin: 10px 0;` : '';
+    const imgDiv = imagemUrl ? `<div class="post__img" style="${imgStyle}"></div>` : '';
+    const imagemParam = imagemUrl ? `'${imagemUrl}'` : 'null';
+
+    const cleanName = (evento.evento_nome || '').replace(/'/g, "\\'");
+    const cleanDesc = (evento.descricao || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
+    const cleanLoc = (evento.localizacao || '').replace(/'/g, "\\'");
+    const cleanCity = (evento.cidade || '').replace(/'/g, "\\'");
+    const cleanUF = (evento.estado || '').replace(/'/g, "\\'");
+    const cleanArtistas = artistasTxt.replace(/'/g, "\\'");
+
+    return `
+      <div class="post glass">
+        <div class="post__header">
+          <div class="post__avatar" style="background: linear-gradient(135deg, var(--purple), var(--purple-d))">
+            📢
+          </div>
+          <div>
+            <div class="post__name">JoinUp Oficial</div>
+            <span class="post__event-tag">${evento.genero_nome || 'Evento'}</span>
+          </div>
+          <span class="post__time">Postado recentemente</span>
+        </div>
+
+        <div class="post__body">
+          <h3 style="color: var(--text); margin-bottom: 8px;">${evento.evento_nome || 'Sem nome'}</h3>
+          <p>${evento.descricao || 'Sem descrição.'}</p>
+          <div style="margin-top: 10px; font-size: 0.85rem; color: var(--purple-l);">
+            📍 ${evento.localizacao || 'A definir'} • 📅 ${evento.data_formatada || ''}
+          </div>
+        </div>
+
+        ${imgDiv}
+
+        <div class="post__actions">
+          <button class="post-action post-action--cta" style="margin-left: auto;" onclick="showEventModal(${eventId},'${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','🎵','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', ${imagemParam})">
+            🎟 Comprar ingresso
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 /* =========================================
@@ -365,7 +429,7 @@ if (ticketHelpForm) {
       const response = await fetch('../php/create_ticket.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ titulo: title, descricao: description })
+        body: JSON.stringify({ titulo: title, descricao: description, tipo: 'participante' })
       });
 
       const result = await response.json();
@@ -708,4 +772,120 @@ function showToast(msg, icon = '✅') {
   toast.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+/* =========================================
+   COMMUNITY ACTIONS
+   ========================================= */
+async function loadCommunities() {
+  const container = document.getElementById('groupsGridContainer');
+  if (!container) return;
+
+  try {
+    const response = await fetch('../php/comunidades.php?fetch=1');
+    const result = await response.json();
+
+    if (result.success) {
+      const minhas = result.minhas || [];
+      const explorar = result.explorar || [];
+
+      let html = '';
+
+      if (minhas.length === 0 && explorar.length === 0) {
+        html = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhuma comunidade encontrada. 😢</p>';
+      } else {
+        // Render Minhas Comunidades
+        minhas.forEach(c => {
+          html += `
+            <div class="group-card glass">
+              <div class="group-card__header">
+                <div class="group-card__icon">🎆</div>
+                <div>
+                  <div class="group-card__name">${escapeHtml(c.nome)}</div>
+                </div>
+              </div>
+              <p class="group-card__desc">${escapeHtml(c.descricao || 'Participe de encontros e converse com a galera!')}</p>
+              <div class="group-card__footer">
+                <span class="badge" style="font-size:0.75rem; background:rgba(157,78,221,0.2); padding: 4px 8px; border-radius:12px; margin-right:auto; color: var(--purple-l);">
+                  👥 ${c.total_membros || 0} membros
+                </span>
+                <button class="btn btn--primary btn--sm" onclick="showToast('💜 Abrindo comunidade ${escapeHtml(c.nome)}!')">
+                  Acessar
+                </button>
+                <button class="btn btn--ghost btn--sm" style="color:#ef4444; border-color:rgba(239,68,68,0.2); margin-left: 5px;" onclick="toggleComunidade(${c.id_comunidade}, 'sair')">
+                  Sair
+                </button>
+              </div>
+            </div>
+          `;
+        });
+
+        // Render Explorar
+        explorar.forEach(c => {
+          html += `
+            <div class="group-card glass" style="opacity: 0.9;">
+              <div class="group-card__header">
+                <div class="group-card__icon" style="filter: grayscale(40%);">🎸</div>
+                <div>
+                  <div class="group-card__name">${escapeHtml(c.nome)}</div>
+                </div>
+              </div>
+              <p class="group-card__desc">${escapeHtml(c.descricao || 'Explore essa nova comunidade!')}</p>
+              <div class="group-card__footer">
+                <span class="badge" style="font-size:0.75rem; background:rgba(255,255,255,0.1); padding: 4px 8px; border-radius:12px; margin-right:auto; color: var(--text-muted);">
+                  👥 ${c.total_membros || 0} membros
+                </span>
+                <button class="btn btn--ghost btn--sm" onclick="toggleComunidade(${c.id_comunidade}, 'entrar')">
+                  Entrar
+                </button>
+              </div>
+            </div>
+          `;
+        });
+
+        // Card dashed "Encontrar mais comunidades"
+        html += `
+          <div class="group-card glass" style="border-style:dashed;opacity:0.7;cursor:pointer;" onclick="goPage('events')">
+            <div class="group-card__header">
+              <div class="group-card__icon" style="background:rgba(157,78,221,0.1);border:1px dashed var(--border-p);">＋</div>
+              <div>
+                <div class="group-card__name">Encontrar mais comunidades</div>
+              </div>
+            </div>
+            <p class="group-card__desc">Compre um ingresso ou explore eventos para entrar automaticamente nas comunidades.</p>
+            <div class="group-card__footer">
+              <button class="btn btn--ghost btn--sm">Explorar eventos →</button>
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    } else {
+      container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Erro ao carregar comunidades: ${result.error}</p>`;
+    }
+  } catch (e) {
+    console.error('Erro ao buscar comunidades:', e);
+    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Erro de rede ao carregar comunidades.</p>';
+  }
+}
+
+async function toggleComunidade(idComunidade, action) {
+  try {
+    const response = await fetch('../php/comunidades.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id_comunidade: idComunidade, action: action })
+    });
+    const result = await response.json();
+    if (result.success) {
+      showToast(result.message || 'Sucesso!');
+      loadCommunities();
+    } else {
+      showToast('❌ Erro: ' + result.error, '⚠️');
+    }
+  } catch (error) {
+    console.error('Erro ao interagir com comunidade:', error);
+    showToast('❌ Erro na rede.', '⚠️');
+  }
 }
