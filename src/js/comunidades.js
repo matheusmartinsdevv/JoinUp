@@ -40,12 +40,12 @@
         card.dataset.id = c.id_comunidade;
 
         const badge = ehMinha
-            ? `<span class="comunidade-card__badge-membro">✓ Membro</span>`
+            ? `<span class="comunidade-card__badge-membro"><i class="fa-solid fa-check"></i> Membro</span>`
             : '';
 
         const imgHtml = c.imagem
             ? `<img class="comunidade-card__img" src="../uploads/${escapeHtml(c.imagem)}" alt="${escapeHtml(c.nome)}">`
-            : `<div class="comunidade-card__img-placeholder">🎵</div>`;
+            : `<div class="comunidade-card__img-placeholder"><i class="fa-solid fa-music"></i></div>`;
 
         const btnClass  = ehMinha ? 'comunidade-card__btn--sair'   : 'comunidade-card__btn--entrar';
         const btnLabel  = ehMinha ? 'Sair'                         : 'Entrar';
@@ -57,7 +57,7 @@
             <div class="comunidade-card__body">
                 <p class="comunidade-card__titulo">${escapeHtml(c.nome)}</p>
                 <p class="comunidade-card__evento">${escapeHtml(c.nome_evento)}</p>
-                <p class="comunidade-card__membros">👥 ${c.total_membros} membro${c.total_membros != 1 ? 's' : ''}</p>
+                <p class="comunidade-card__membros"><i class="fa-solid fa-users"></i> ${c.total_membros} membro${c.total_membros != 1 ? 's' : ''}</p>
                 <button class="comunidade-card__btn ${btnClass}" data-action="${btnAction}" data-id="${c.id_comunidade}">
                     ${btnLabel}
                 </button>

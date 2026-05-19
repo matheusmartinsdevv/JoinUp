@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="../Css/organizador.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 
 <body>
@@ -82,10 +83,10 @@
 
       <!-- TOPBAR -->
       <header class="topbar">
-        <button class="burger-btn" id="burgerBtn">☰</button>
+        <button class="burger-btn" id="burgerBtn"><i class="fa-solid fa-bars"></i></button>
 
         <div class="topbar__search">
-          <span class="topbar__search-icon">🔍</span>
+          <span class="topbar__search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
           <input type="text" id="searchInput" placeholder="Buscar eventos, vendas..." autocomplete="off" />
         </div>
 
@@ -103,7 +104,7 @@
         <!-- Stats Cards -->
         <div class="stats-grid">
           <div class="stat-card glass">
-            <div class="stat-card__icon">🎪</div>
+            <div class="stat-card__icon"><i class="fa-solid fa-masks-theater"></i></div>
             <div class="stat-card__content">
               <div class="stat-card__value" id="dash-total-eventos">--</div>
               <div class="stat-card__label">Eventos Ativos</div>
@@ -111,7 +112,7 @@
           </div>
 
           <div class="stat-card glass">
-            <div class="stat-card__icon">🎟</div>
+            <div class="stat-card__icon"><i class="fa-solid fa-ticket"></i></div>
             <div class="stat-card__content">
               <div class="stat-card__value" id="dash-total-ingressos">--</div>
               <div class="stat-card__label">Ingressos Vendidos</div>
@@ -119,7 +120,7 @@
           </div>
 
           <div class="stat-card glass">
-            <div class="stat-card__icon">💰</div>
+            <div class="stat-card__icon"><i class="fa-solid fa-sack-dollar"></i></div>
             <div class="stat-card__content">
               <div class="stat-card__value" id="dash-receita-total">R$ --</div>
               <div class="stat-card__label">Receita Total</div>
@@ -127,7 +128,7 @@
           </div>
 
           <div class="stat-card glass">
-            <div class="stat-card__icon">👥</div>
+            <div class="stat-card__icon"><i class="fa-solid fa-users"></i></div>
             <div class="stat-card__content">
               <div class="stat-card__value" id="dash-total-participantes">--</div>
               <div class="stat-card__label">Participantes</div>
@@ -172,7 +173,7 @@
         <div class="chart-section">
           <h3 class="section-title-small">Visão <span class="text-gradient">Geral</span></h3>
           <div class="chart-placeholder-large glass">
-            <div class="chart-placeholder__icon">📈</div>
+            <div class="chart-placeholder__icon"><i class="fa-solid fa-chart-line"></i></div>
             <div class="chart-placeholder__content">
               <h4>Gráfico de Performance</h4>
               <p>Vendas, participantes e receita dos últimos 30 dias</p>
@@ -213,7 +214,7 @@
           <div class="performance-grid">
             <div class="performance-card glass">
               <div class="performance-card__header">
-                <span class="performance-card__icon">📈</span>
+                <span class="performance-card__icon"><i class="fa-solid fa-chart-line"></i></span>
                 <span class="performance-card__title">Taxa de Conversão</span>
               </div>
               <div class="performance-card__value">--%</div>
@@ -222,7 +223,7 @@
 
             <div class="performance-card glass">
               <div class="performance-card__header">
-                <span class="performance-card__icon">👁</span>
+                <span class="performance-card__icon"><i class="fa-solid fa-eye"></i></span>
                 <span class="performance-card__title">Visualizações</span>
               </div>
               <div class="performance-card__value">--</div>
@@ -240,7 +241,7 @@
 
             <div class="performance-card glass">
               <div class="performance-card__header">
-                <span class="performance-card__icon">🔄</span>
+                <span class="performance-card__icon"><i class="fa-solid fa-rotate"></i></span>
                 <span class="performance-card__title">Taxa de Retorno</span>
               </div>
               <div class="performance-card__value">--%</div>
@@ -360,7 +361,7 @@
               <h3 class="form-section__title">Imagens</h3>
               <div class="image-upload">
                 <div class="upload-area" onclick="triggerFileUpload()">
-                  <span class="upload-icon">📷</span>
+                  <span class="upload-icon"><i class="fa-solid fa-camera"></i></span>
                   <span class="upload-text">Clique para adicionar imagem do evento</span>
                   <span class="upload-sub">PNG, JPG até 5MB</span>
                 </div>
@@ -392,7 +393,7 @@
           <div class="analytics-card glass">
             <h3>Vendas por Evento</h3>
             <div class="chart-placeholder">
-              <span>📊 Gráfico de vendas</span>
+              <span><i class="fa-solid fa-chart-column"></i> Gráfico de vendas</span>
               <p>Analytics detalhado em breve</p>
             </div>
           </div>
@@ -400,7 +401,7 @@
           <div class="analytics-card glass">
             <h3>Receita Mensal</h3>
             <div class="chart-placeholder">
-              <span>💰 Gráfico financeiro</span>
+              <span><i class="fa-solid fa-sack-dollar"></i> Gráfico financeiro</span>
               <p>Relatórios financeiros em breve</p>
             </div>
           </div>
@@ -408,7 +409,7 @@
           <div class="analytics-card glass">
             <h3>Engajamento</h3>
             <div class="chart-placeholder">
-              <span>📈 Métricas de engajamento</span>
+              <span><i class="fa-solid fa-chart-line"></i> Métricas de engajamento</span>
               <p>Dados de comunidade em breve</p>
             </div>
           </div>
@@ -439,8 +440,8 @@
           </div>
 
           <div class="sales-actions">
-            <button class="btn btn--primary" onclick="showToast('💰 Solicitar saque')">Solicitar Saque</button>
-            <button class="btn btn--ghost" onclick="showToast('📄 Ver extrato')">Ver Extrato</button>
+            <button class="btn btn--primary" onclick="showToast('Solicitar saque','fa-sack-dollar')">Solicitar Saque</button>
+            <button class="btn btn--ghost" onclick="showToast('Ver extrato','fa-file-lines')">Ver Extrato</button>
           </div>
         </div>
       </div><!-- /page-sales -->
@@ -454,29 +455,29 @@
 
         <div class="support-content">
           <div class="support-card glass">
-            <div class="support-card__icon">💬</div>
+            <div class="support-card__icon"><i class="fa-solid fa-comments"></i></div>
             <div class="support-card__content">
               <h3>Chat com Suporte</h3>
               <p>Tire suas dúvidas em tempo real</p>
-              <button class="btn btn--primary" onclick="showToast('💬 Chat em breve')">Iniciar Chat</button>
+              <button class="btn btn--primary" onclick="showToast('Chat em breve','fa-comments')">Iniciar Chat</button>
             </div>
           </div>
 
           <div class="support-card glass">
-            <div class="support-card__icon">📚</div>
+            <div class="support-card__icon"><i class="fa-solid fa-book-open"></i></div>
             <div class="support-card__content">
               <h3>Central de Ajuda</h3>
               <p>Artigos e tutoriais completos</p>
-              <button class="btn btn--ghost" onclick="showToast('📚 Ajuda em breve')">Ver Tutoriais</button>
+              <button class="btn btn--ghost" onclick="showToast('Ajuda em breve','fa-book-open')">Ver Tutoriais</button>
             </div>
           </div>
 
           <div class="support-card glass">
-            <div class="support-card__icon">📞</div>
+            <div class="support-card__icon"><i class="fa-solid fa-phone"></i></div>
             <div class="support-card__content">
               <h3>Contato</h3>
               <p>Entre em contato conosco</p>
-              <button class="btn btn--ghost" onclick="showToast('📞 Contato em breve')">Fale Conosco</button>
+              <button class="btn btn--ghost" onclick="showToast('Contato em breve','fa-phone')">Fale Conosco</button>
             </div>
           </div>
         </div>
@@ -564,19 +565,25 @@
       <div class="page" id="page-ticketHelp">
         <div class="section-title">Central de <span class="text-gradient">Ajuda</span></div>
         <p class="section-sub">Abra um ticket e descreva seu problema. Nossa equipe de suporte entrará em contato em breve.</p>
-        <div style="max-width: 600px; margin: 0 auto;">
-          <div class="profile-card glass" style="padding: 24px;">
+        <div class="support-help-grid">
+          <div class="profile-card glass">
             <form id="ticketHelpForm">
-              <div class="form-group" style="margin-bottom: 20px;">
+              <div class="form-group">
                 <label for="ticketTitle">Título do ticket</label>
                 <input type="text" id="ticketTitle" placeholder="Informe o assunto do seu problema" required />
               </div>
-              <div class="form-group" style="margin-bottom: 20px;">
+              <div class="form-group">
                 <label for="ticketDescription">Descrição do problema</label>
                 <textarea id="ticketDescription" placeholder="Descreva o que aconteceu, onde e quando..." rows="6" required></textarea>
               </div>
-              <button type="submit" id="ticketHelpSubmit" class="btn btn--primary" style="width: 100%; justify-content: center; padding: 14px;">Enviar ticket</button>
+              <button type="submit" id="ticketHelpSubmit" class="btn btn--primary">Enviar ticket</button>
             </form>
+          </div>
+          <div class="profile-card glass">
+            <h3>Meus chamados</h3>
+            <div class="support-ticket-list" id="mySupportTicketsList">
+              <p class="support-ticket-empty">Carregando seus chamados...</p>
+            </div>
           </div>
         </div>
       </div><!-- /page-ticketHelp -->
@@ -586,9 +593,33 @@
   </div><!-- /shell -->
 
   <!-- ░░ TOAST ░░ -->
+  <div class="support-chat-backdrop" id="supportTicketChatModal" aria-hidden="true">
+    <div class="support-chat-modal glass">
+      <div class="support-chat-modal__header">
+        <div>
+          <div class="support-chat__id" id="supportChatTicketId">Ticket</div>
+          <div class="support-chat-modal__title" id="supportChatTitle">Atendimento</div>
+        </div>
+        <button class="support-chat-modal__close" type="button" onclick="closeSupportTicketConversation()">Fechar</button>
+      </div>
+
+      <div class="support-chat__messages" id="supportChatMessages"></div>
+
+      <form class="support-chat__form" id="supportTicketChatForm">
+        <input type="hidden" id="supportChatTicketInput" />
+        <label for="supportChatReply">Responder ao suporte</label>
+        <textarea id="supportChatReply" rows="4" maxlength="500" placeholder="Conte o que ainda aconteceu ou envie mais detalhes..." required></textarea>
+        <div class="support-chat__actions">
+          <button type="submit" class="btn btn--primary">Enviar mensagem</button>
+          <button type="button" class="btn btn--ghost" onclick="closeSupportTicketConversation()">Voltar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="toast" id="toast">
     <div class="toast-content">
-      <span class="toast__icon" id="toastIcon">✅</span>
+      <span class="toast__icon" id="toastIcon"><i class="fa-solid fa-circle-check"></i></span>
       <span id="toastMsg">Ação realizada!</span>
     </div>
   </div>

@@ -6,12 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
   loadEvents();
   loadMyTickets();
   loadCommunities();
+  loadMySupportTickets();
 });
 
 const purchaseState = {
   eventId: null,
   ticketTypes: []
 };
+let mySupportTickets = [];
 
 async function loadUserData() {
   try {
@@ -77,8 +79,8 @@ async function loadMyPosts(userName, initials) {
           <p class="post__body">${post.descricao}</p>
           ${post.imagem ? `<img src="${post.imagem}" class="post__img" style="width:100%; border-radius:12px; margin: 10px 0;">` : ''}
           <div class="post__actions">
-            <button class="post-action">❤️ ${post.curtidas || 0}</button>
-            <button class="post-action">💬 0</button>
+            <button class="post-action"><i class="fa-solid fa-heart"></i> ${post.curtidas || 0}</button>
+            <button class="post-action"><i class="fa-solid fa-comments"></i> 0</button>
           </div>
         </div>
       `).join('');
@@ -170,10 +172,10 @@ function renderMyTickets(tickets) {
 
     return `
       <div class="ticket glass">
-        <div class="ticket__icon">🎟️</div>
+        <div class="ticket__icon"><i class="fa-solid fa-ticket"></i></div>
         <div class="ticket__info">
           <div class="ticket__name">${eventoNome}</div>
-          <div class="ticket__meta">📅 ${data} · 📍 ${local} · ${nomeTipo}${quantidadeLabel}</div>
+          <div class="ticket__meta"><i class="fa-solid fa-calendar-days"></i> ${data} · <i class="fa-solid fa-location-dot"></i> ${local} · ${nomeTipo}${quantidadeLabel}</div>
         </div>
         <span class="ticket__status ${statusClass}">${statusLabel}</span>
         <div class="ticket__actions">
@@ -191,7 +193,7 @@ async function loadEvents() {
     const eventos = await response.json();
 
     if (!eventos || eventos.length === 0) {
-      if (grid) grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhum evento encontrado no momento. 😢</p>';
+      if (grid) grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhum evento encontrado no momento. <i class="fa-solid fa-face-frown"></i></p>';
       renderFeedEvents([]);
       return;
     }
@@ -216,7 +218,7 @@ async function loadEvents() {
 
         const imagemUrl = evento.imagem ? `../uploads/${evento.imagem}` : null;
         const imgStyle = imagemUrl ? `background-image:url('${imagemUrl}'); background-size:cover; background-position:center;` : `background:${bgCard}`;
-        const iconOrImg = imagemUrl ? '' : '✨';
+        const iconOrImg = imagemUrl ? '' : '<i class="fa-solid fa-sparkles"></i>';
         const imagemParam = imagemUrl ? `'${imagemUrl}'` : 'null';
 
         // Sanitização segura (evita erro se algum campo vier null)
@@ -228,15 +230,15 @@ async function loadEvents() {
         const cleanArtistas = artistasTxt.replace(/'/g, "\\'");
 
         return `
-          <div class="event-card" onclick="showEventModal(${eventId},'${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','🎵','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', ${imagemParam})">
+          <div class="event-card" onclick="showEventModal(${eventId},'${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','fa-music','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', ${imagemParam})">
             <div class="event-card__img" style="${imgStyle}">${iconOrImg}
               <div class="event-card__img-overlay"></div>
-              <span class="event-card__tag">📌 ${evento.genero_nome || 'Evento'}</span>
+              <span class="event-card__tag"><i class="fa-solid fa-thumbtack"></i> ${evento.genero_nome || 'Evento'}</span>
               <span class="event-card__going-count">${participantes} vão</span>
             </div>
             <div class="event-card__body">
               <div class="event-card__title">${evento.evento_nome || 'Sem nome'}</div>
-              <div class="event-card__meta">📅 ${evento.data_formatada || ''}</div>
+              <div class="event-card__meta"><i class="fa-solid fa-calendar-days"></i> ${evento.data_formatada || ''}</div>
               <div class="event-card__footer">
                 <span class="event-card__price">A partir de <strong>${evento.preco_formatado || 'Grátis'}</strong></span>
               </div>
@@ -257,7 +259,7 @@ function renderFeedEvents(eventos) {
   if (!feedContainer) return;
 
   if (!eventos || eventos.length === 0) {
-    feedContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 40px;">Nenhum evento no feed. 😢</p>';
+    feedContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 40px;">Nenhum evento no feed. <i class="fa-solid fa-face-frown"></i></p>';
     return;
   }
 
@@ -282,7 +284,7 @@ function renderFeedEvents(eventos) {
       <div class="post glass">
         <div class="post__header">
           <div class="post__avatar" style="background: linear-gradient(135deg, var(--purple), var(--purple-d))">
-            📢
+            <i class="fa-solid fa-bullhorn"></i>
           </div>
           <div>
             <div class="post__name">JoinUp Oficial</div>
@@ -295,15 +297,15 @@ function renderFeedEvents(eventos) {
           <h3 style="color: var(--text); margin-bottom: 8px;">${evento.evento_nome || 'Sem nome'}</h3>
           <p>${evento.descricao || 'Sem descrição.'}</p>
           <div style="margin-top: 10px; font-size: 0.85rem; color: var(--purple-l);">
-            📍 ${evento.localizacao || 'A definir'} • 📅 ${evento.data_formatada || ''}
+            <i class="fa-solid fa-location-dot"></i> ${evento.localizacao || 'A definir'} • <i class="fa-solid fa-calendar-days"></i> ${evento.data_formatada || ''}
           </div>
         </div>
 
         ${imgDiv}
 
         <div class="post__actions">
-          <button class="post-action post-action--cta" style="margin-left: auto;" onclick="showEventModal(${eventId},'${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','🎵','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', ${imagemParam})">
-            🎟 Comprar ingresso
+          <button class="post-action post-action--cta" style="margin-left: auto;" onclick="showEventModal(${eventId},'${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','fa-music','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', ${imagemParam})">
+            <i class="fa-solid fa-ticket"></i> Comprar ingresso
           </button>
         </div>
       </div>
@@ -384,21 +386,21 @@ function publishPost() {
       <div class="post__avatar">JC</div>
       <div>
         <div class="post__name">João Carlos</div>
-        <span class="post__event-tag">🎟 Festival Neon SP</span>
+        <span class="post__event-tag"><i class="fa-solid fa-ticket"></i> Festival Neon SP</span>
       </div>
       <span class="post__time">agora</span>
     </div>
     <p class="post__body">${text.replace(/</g, '&lt;')}</p>
     <div class="post__actions">
-      <button class="post-action" onclick="likePost(this)">❤️ 0</button>
-      <button class="post-action" onclick="openComments()">💬 0</button>
+      <button class="post-action" onclick="likePost(this)"><i class="fa-solid fa-heart"></i> 0</button>
+      <button class="post-action" onclick="openComments()"><i class="fa-solid fa-comments"></i> 0</button>
       <button class="post-action">↗ Compartilhar</button>
     </div>`;
 
   document.getElementById('feedPosts').prepend(post);
   input.value = '';
   input.style.minHeight = '48px';
-  showToast('✅ Post publicado!');
+  showToast('Post publicado!', 'fa-circle-check');
 }
 
 /* =========================================
@@ -418,7 +420,7 @@ if (ticketHelpForm) {
     const submitBtn = document.getElementById('ticketHelpSubmit');
 
     if (!title || !description) {
-      showToast('Preencha título e descrição antes de enviar.', '⚠️');
+      showToast('Preencha título e descrição antes de enviar.', 'fa-triangle-exclamation');
       return;
     }
 
@@ -434,19 +436,248 @@ if (ticketHelpForm) {
 
       const result = await response.json();
       if (result.success) {
-        showToast('✅ Ticket enviado com sucesso!');
+        showToast('Ticket enviado com sucesso!', 'fa-circle-check');
         ticketHelpForm.reset();
+        loadMySupportTickets();
       } else {
-        showToast(result.error || 'Erro ao enviar ticket.', '⚠️');
+        showToast(result.error || 'Erro ao enviar ticket.', 'fa-triangle-exclamation');
       }
     } catch (error) {
       console.error('Erro ao enviar ticket:', error);
-      showToast('Erro de conexão ao enviar ticket.', '⚠️');
+      showToast('Erro de conexão ao enviar ticket.', 'fa-triangle-exclamation');
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Enviar ticket';
     }
   });
+}
+
+async function loadMySupportTickets() {
+  const container = document.getElementById('mySupportTicketsList');
+  if (!container) return;
+
+  container.innerHTML = '<p style="color:var(--text-muted); font-size: 0.85rem;">Carregando seus chamados...</p>';
+
+  try {
+    const response = await fetch('../php/get_my_support_tickets.php?tipo=participante');
+    const result = await response.json();
+
+    if (response.status === 401) {
+      window.location.href = 'loginParticipante.html';
+      return;
+    }
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Falha ao carregar chamados.');
+    }
+
+    mySupportTickets = Array.isArray(result.tickets) ? result.tickets : [];
+    renderMySupportTickets(mySupportTickets);
+  } catch (error) {
+    console.error('Erro ao carregar chamados:', error);
+    container.innerHTML = '<p style="color:var(--text-muted); font-size: 0.85rem;">Não foi possível carregar seus chamados.</p>';
+  }
+}
+
+function renderMySupportTickets(tickets) {
+  const container = document.getElementById('mySupportTicketsList');
+  if (!container) return;
+
+  if (!tickets.length) {
+    container.innerHTML = '<p style="color:var(--text-muted); font-size: 0.85rem;">Você ainda não abriu chamados.</p>';
+    return;
+  }
+
+  container.innerHTML = tickets.map(ticket => {
+    const status = ticket.status_ticket || 'aberto';
+    const canReply = status !== 'fechado';
+    const response = ticket.resposta
+      ? `<div class="support-ticket-card__box"><strong>Resposta do suporte:</strong><p>${escapeHtml(ticket.resposta)}</p></div>`
+      : '';
+    const returnText = ticket.retorno_usuario
+      ? `<div class="support-ticket-card__box"><strong>Seu retorno:</strong><p>${escapeHtml(ticket.retorno_usuario)}</p></div>`
+      : '';
+    const actions = canReply
+      ? `<div class="support-ticket-card__actions">
+          <button class="btn btn--primary btn--sm" onclick="resolveSupportTicket(${ticket.id_ticket})">Problema resolvido</button>
+          <button class="btn btn--ghost btn--sm" onclick="openSupportTicketConversation(${ticket.id_ticket})">Abrir conversa</button>
+        </div>`
+      : '';
+
+    return `
+      <div class="support-ticket-card">
+        <div class="support-ticket-card__header">
+          <div>
+            <div class="support-ticket-card__id">#${ticket.id_ticket}</div>
+            <div class="support-ticket-card__title">${escapeHtml(ticket.titulo)}</div>
+          </div>
+          <span class="ticket__status ${status === 'fechado' ? 'ticket__status--past' : 'ticket__status--active'}">${supportTicketStatusLabel(status)}</span>
+        </div>
+        <p class="support-ticket-card__desc">${escapeHtml(ticket.descricao)}</p>
+        ${response}
+        ${returnText}
+        ${actions}
+      </div>
+    `;
+  }).join('');
+}
+
+async function resolveSupportTicket(ticketId) {
+  await updateSupportTicketFromUser({
+    id_ticket: ticketId,
+    action: 'resolver',
+    tipo: 'participante'
+  }, 'Chamado marcado como resolvido.');
+}
+
+function openSupportTicketConversation(ticketId) {
+  const ticket = mySupportTickets.find(item => Number(item.id_ticket) === Number(ticketId));
+  if (!ticket) {
+    showToast('Chamado não encontrado.', 'fa-triangle-exclamation');
+    return;
+  }
+
+  document.getElementById('supportChatTicketInput').value = ticket.id_ticket;
+  document.getElementById('supportChatTicketId').textContent = `Ticket #${ticket.id_ticket}`;
+  document.getElementById('supportChatTitle').textContent = ticket.titulo || 'Atendimento';
+  document.getElementById('supportChatReply').value = '';
+
+  renderSupportChatMessages(ticket);
+  openModal('supportTicketChatModal');
+  return;
+
+  const messages = document.getElementById('supportChatMessages');
+  const supportResponse = ticket.resposta
+    ? `<div class="support-chat__message support-chat__message--support">
+        <div class="support-chat__author">Suporte${ticket.suporte_nome ? ` - ${escapeHtml(ticket.suporte_nome)}` : ''}</div>
+        <p>${escapeHtml(ticket.resposta)}</p>
+      </div>`
+    : `<div class="support-chat__message support-chat__message--support">
+        <div class="support-chat__author">Suporte</div>
+        <p>A equipe ainda não enviou uma resposta para este chamado.</p>
+      </div>`;
+  const lastReturn = ticket.retorno_usuario
+    ? `<div class="support-chat__message support-chat__message--user">
+        <div class="support-chat__author">Você</div>
+        <p>${escapeHtml(ticket.retorno_usuario)}</p>
+      </div>`
+    : '';
+
+  messages.innerHTML = `
+    <div class="support-chat__message support-chat__message--user">
+      <div class="support-chat__author">Você</div>
+      <p>${escapeHtml(ticket.descricao || 'Sem descrição.')}</p>
+    </div>
+    ${supportResponse}
+    ${lastReturn}
+  `;
+  messages.scrollTop = messages.scrollHeight;
+
+  openModal('supportTicketChatModal');
+}
+
+async function returnSupportTicket(ticketId, retorno) {
+  if (!retorno || !retorno.trim()) return;
+
+  return updateSupportTicketFromUser({
+    id_ticket: ticketId,
+    action: 'retornar',
+    retorno_usuario: retorno.trim(),
+    tipo: 'participante'
+  }, 'Retorno enviado ao suporte.');
+}
+
+function renderSupportChatMessages(ticket) {
+  const messages = document.getElementById('supportChatMessages');
+  if (!messages) return;
+
+  const history = Array.isArray(ticket.mensagens) ? ticket.mensagens : [];
+  if (!history.length) {
+    messages.innerHTML = `
+      <div class="support-chat__message support-chat__message--user">
+        <div class="support-chat__author">Voce</div>
+        <p>${escapeHtml(ticket.descricao || 'Sem descricao.')}</p>
+      </div>
+    `;
+    messages.scrollTop = messages.scrollHeight;
+    return;
+  }
+
+  messages.innerHTML = history.map(message => {
+    const isSupport = message.autor_tipo === 'suporte';
+    const author = isSupport
+      ? `Suporte${message.autor_nome ? ` - ${escapeHtml(message.autor_nome)}` : ''}`
+      : 'Voce';
+    const className = isSupport ? 'support-chat__message--support' : 'support-chat__message--user';
+    return `
+      <div class="support-chat__message ${className}">
+        <div class="support-chat__author">${author}</div>
+        <p>${escapeHtml(message.mensagem)}</p>
+      </div>
+    `;
+  }).join('');
+  messages.scrollTop = messages.scrollHeight;
+}
+
+const supportTicketChatForm = document.getElementById('supportTicketChatForm');
+if (supportTicketChatForm) {
+  supportTicketChatForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const ticketId = Number(document.getElementById('supportChatTicketInput').value);
+    const replyInput = document.getElementById('supportChatReply');
+    const retorno = replyInput.value.trim();
+
+    if (!ticketId || !retorno) {
+      showToast('Escreva uma mensagem antes de enviar.', 'fa-triangle-exclamation');
+      return;
+    }
+
+    const sent = await returnSupportTicket(ticketId, retorno);
+    if (sent) {
+      const messages = document.getElementById('supportChatMessages');
+      messages.insertAdjacentHTML('beforeend', `
+        <div class="support-chat__message support-chat__message--user">
+          <div class="support-chat__author">Você</div>
+          <p>${escapeHtml(retorno)}</p>
+        </div>
+      `);
+      messages.scrollTop = messages.scrollHeight;
+      replyInput.value = '';
+    }
+  });
+}
+
+async function updateSupportTicketFromUser(payload, successMessage) {
+  try {
+    const response = await fetch('../php/update_my_support_ticket.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Não foi possível atualizar o chamado.');
+    }
+
+    showToast(successMessage);
+    loadMySupportTickets();
+    return true;
+  } catch (error) {
+    console.error('Erro ao atualizar chamado:', error);
+    showToast(error.message || 'Erro ao atualizar chamado.', 'fa-triangle-exclamation');
+    return false;
+  }
+}
+
+function supportTicketStatusLabel(status) {
+  const labels = {
+    aberto: 'Aberto',
+    em_atendimento: 'Em atendimento',
+    aguardando_usuario: 'Aguardando seu retorno',
+    fechado: 'Fechado'
+  };
+  return labels[status] || 'Aberto';
 }
 
 /* =========================================
@@ -468,10 +699,11 @@ function showEventModal(eventId, name, date, price, icon, going, description, lo
   purchaseState.eventId = Number(eventId) || null;
   purchaseState.ticketTypes = [];
 
+  const modalIcon = String(icon || '').includes('<i') ? icon : `<i class="fa-solid ${icon || 'fa-music'}"></i>`;
   const bannerContent = imagemUrl 
     ? `<img src="${imagemUrl}" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0; z-index:0;" />
        <div class="event-modal__title" style="position:relative; z-index:1; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">${name}</div>`
-    : `<div class="event-modal__icon">${icon}</div>
+    : `<div class="event-modal__icon">${modalIcon}</div>
        <div class="event-modal__title">${name}</div>`;
 
   document.getElementById('eventModalContent').innerHTML = `
@@ -483,27 +715,27 @@ function showEventModal(eventId, name, date, price, icon, going, description, lo
     <!-- Informações principais -->
     <div class="event-modal__info-grid">
       <div class="event-modal__info-item">
-        <span class="event-modal__label">📅 Data</span>
+        <span class="event-modal__label"><i class="fa-solid fa-calendar-days"></i> Data</span>
         <span class="event-modal__value">${date}</span>
       </div>
       <div class="event-modal__info-item">
-        <span class="event-modal__label">💵 Valor</span>
+        <span class="event-modal__label"><i class="fa-solid fa-money-bill-wave"></i> Valor</span>
         <span class="event-modal__value">${price}</span>
       </div>
       <div class="event-modal__info-item">
-        <span class="event-modal__label">👥 Participantes</span>
+        <span class="event-modal__label"><i class="fa-solid fa-users"></i> Participantes</span>
         <span class="event-modal__value">+${going}</span>
       </div>
     </div>
 
     <!-- Seção de detalhes -->
     <div class="event-modal__section">
-      <h3 class="event-modal__section-title">📍 Local</h3>
+      <h3 class="event-modal__section-title"><i class="fa-solid fa-location-dot"></i> Local</h3>
       <p class="event-modal__section-content" id="eventLocation">${location} • ${city}, ${uf}</p>
     </div>
 
     <div class="event-modal__section">
-      <h3 class="event-modal__section-title">🎤 Artistas/Atrações</h3>
+      <h3 class="event-modal__section-title"><i class="fa-solid fa-microphone"></i> Artistas/Atrações</h3>
       <p class="event-modal__section-content" id="eventAttractions">${attractions}</p>
     </div>
 
@@ -513,7 +745,7 @@ function showEventModal(eventId, name, date, price, icon, going, description, lo
     </div>
 
     <div class="event-modal__section">
-      <h3 class="event-modal__section-title">🎟 Ingressos</h3>
+      <h3 class="event-modal__section-title"><i class="fa-solid fa-ticket"></i> Ingressos</h3>
       <div class="event-modal__section-content" id="ticketPurchaseArea">
         Carregando ingressos...
       </div>
@@ -522,10 +754,10 @@ function showEventModal(eventId, name, date, price, icon, going, description, lo
     <!-- CTA de compra e comunidade -->
     <div class="event-modal__cta-section">
       <div class="event-modal__community-banner">
-        <span>🎟 Compre para participar da comunidade!</span>
+        <span><i class="fa-solid fa-ticket"></i> Compre para participar da comunidade!</span>
       </div>
       <button id="buyTicketBtn" class="btn btn--primary btn--large" onclick="buyTicket()" disabled>Carregando ingressos...</button>
-      <p class="event-modal__footer-text">✅ Transação verificada · 🔒 Pagamento protegido · 📱 Ingresso no seu celular</p>
+      <p class="event-modal__footer-text"><i class="fa-solid fa-circle-check"></i> Transação verificada · <i class="fa-solid fa-lock"></i> Pagamento protegido · <i class="fa-solid fa-mobile-screen-button"></i> Ingresso no seu celular</p>
     </div>
   `;
   openModal('eventModal');
@@ -652,14 +884,14 @@ async function buyTicket() {
   const btn = document.getElementById('buyTicketBtn');
 
   if (!select || !quantityInput || !btn || !purchaseState.eventId) {
-    showToast('Ingresso indisponível para este evento', '⚠️');
+    showToast('Ingresso indisponível para este evento', 'fa-triangle-exclamation');
     return;
   }
 
   const idTipo = Number(select.value);
   const quantidade = Math.max(1, Number(quantityInput.value) || 1);
   if (!idTipo || !quantidade) {
-    showToast('Ingresso indisponível para este evento', '⚠️');
+    showToast('Ingresso indisponível para este evento', 'fa-triangle-exclamation');
     return;
   }
 
@@ -681,7 +913,7 @@ async function buyTicket() {
     const result = await response.json();
 
     if (response.ok && result.success) {
-      showToast('Ingresso comprado com sucesso', '✅');
+      showToast('Ingresso comprado com sucesso', 'fa-circle-check');
       closeModal('eventModal');
       loadEvents();
       loadMyTickets();
@@ -689,15 +921,15 @@ async function buyTicket() {
     }
 
     if (result.message === 'Ingresso indisponível para este evento') {
-      showToast('Ingresso indisponível para este evento', '⚠️');
+      showToast('Ingresso indisponível para este evento', 'fa-triangle-exclamation');
       await loadTicketTypesForEvent(purchaseState.eventId);
       return;
     }
 
-    showToast(result.error || result.message || 'Falha ao concluir compra.', '⚠️');
+    showToast(result.error || result.message || 'Falha ao concluir compra.', 'fa-triangle-exclamation');
   } catch (error) {
     console.error('Erro ao comprar ingresso:', error);
-    showToast('Erro ao processar compra.', '⚠️');
+    showToast('Erro ao processar compra.', 'fa-triangle-exclamation');
   } finally {
     if (btn.textContent === 'Processando compra...') {
       btn.textContent = textoOriginal;
@@ -721,7 +953,7 @@ async function saveProfile() {
   const email = document.getElementById('editEmail').value.trim();
 
   if (!nome || !email) {
-    showToast('❌ Nome e E-mail são obrigatórios!', '⚠️');
+    showToast('Nome e E-mail são obrigatórios!', 'fa-triangle-exclamation');
     return;
   }
 
@@ -738,15 +970,15 @@ async function saveProfile() {
     const result = await response.json();
 
     if (result.success) {
-      showToast('✅ Perfil atualizado com sucesso!', '✨');
+      showToast('Perfil atualizado com sucesso!', 'fa-sparkles');
       // Recarregar dados para atualizar UI
       loadUserData();
     } else {
-      showToast('❌ Erro: ' + result.error, '⚠️');
+      showToast('Erro: ' + result.error, 'fa-triangle-exclamation');
     }
   } catch (error) {
     console.error('Erro ao salvar perfil:', error);
-    showToast('❌ Erro de conexão com o servidor.', '⚠️');
+    showToast('Erro de conexão com o servidor.', 'fa-triangle-exclamation');
   } finally {
     btn.disabled = false;
     btn.textContent = 'Salvar alterações';
@@ -764,11 +996,17 @@ document.querySelectorAll('.modal-backdrop').forEach(bd => {
    TOAST
 ========================================= */
 let toastTimer;
-function showToast(msg, icon = '✅') {
+function iconMarkup(icon = 'fa-circle-check') {
+  if (!icon || icon === ' ') return '';
+  if (String(icon).includes('<i')) return icon;
+  return `<i class="fa-solid ${icon}"></i>`;
+}
+
+function showToast(msg, icon = 'fa-circle-check') {
   const toast = document.getElementById('toast');
   const toastIcon = document.getElementById('toastIcon');
-  if (toastIcon) toastIcon.textContent = icon;
-  document.getElementById('toastMsg').textContent = msg;
+  if (toastIcon) toastIcon.innerHTML = iconMarkup(icon);
+  document.getElementById('toastMsg').innerHTML = msg;
   toast.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
@@ -792,14 +1030,14 @@ async function loadCommunities() {
       let html = '';
 
       if (minhas.length === 0 && explorar.length === 0) {
-        html = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhuma comunidade encontrada. 😢</p>';
+        html = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhuma comunidade encontrada. <i class="fa-solid fa-face-frown"></i></p>';
       } else {
         // Render Minhas Comunidades
         minhas.forEach(c => {
           html += `
             <div class="group-card glass">
               <div class="group-card__header">
-                <div class="group-card__icon">🎆</div>
+                <div class="group-card__icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                 <div>
                   <div class="group-card__name">${escapeHtml(c.nome)}</div>
                 </div>
@@ -807,9 +1045,9 @@ async function loadCommunities() {
               <p class="group-card__desc">${escapeHtml(c.descricao || 'Participe de encontros e converse com a galera!')}</p>
               <div class="group-card__footer">
                 <span class="badge" style="font-size:0.75rem; background:rgba(157,78,221,0.2); padding: 4px 8px; border-radius:12px; margin-right:auto; color: var(--purple-l);">
-                  👥 ${c.total_membros || 0} membros
+                  <i class="fa-solid fa-users"></i> ${c.total_membros || 0} membros
                 </span>
-                <button class="btn btn--primary btn--sm" onclick="showToast('💜 Abrindo comunidade ${escapeHtml(c.nome)}!')">
+                <button class="btn btn--primary btn--sm" onclick="showToast('Abrindo comunidade ${escapeHtml(c.nome)}!', 'fa-heart')">
                   Acessar
                 </button>
                 <button class="btn btn--ghost btn--sm" style="color:#ef4444; border-color:rgba(239,68,68,0.2); margin-left: 5px;" onclick="toggleComunidade(${c.id_comunidade}, 'sair')">
@@ -825,7 +1063,7 @@ async function loadCommunities() {
           html += `
             <div class="group-card glass" style="opacity: 0.9;">
               <div class="group-card__header">
-                <div class="group-card__icon" style="filter: grayscale(40%);">🎸</div>
+                <div class="group-card__icon" style="filter: grayscale(40%);"><i class="fa-solid fa-guitar"></i></div>
                 <div>
                   <div class="group-card__name">${escapeHtml(c.nome)}</div>
                 </div>
@@ -833,7 +1071,7 @@ async function loadCommunities() {
               <p class="group-card__desc">${escapeHtml(c.descricao || 'Explore essa nova comunidade!')}</p>
               <div class="group-card__footer">
                 <span class="badge" style="font-size:0.75rem; background:rgba(255,255,255,0.1); padding: 4px 8px; border-radius:12px; margin-right:auto; color: var(--text-muted);">
-                  👥 ${c.total_membros || 0} membros
+                  <i class="fa-solid fa-users"></i> ${c.total_membros || 0} membros
                 </span>
                 <button class="btn btn--ghost btn--sm" onclick="toggleComunidade(${c.id_comunidade}, 'entrar')">
                   Entrar
@@ -882,10 +1120,10 @@ async function toggleComunidade(idComunidade, action) {
       showToast(result.message || 'Sucesso!');
       loadCommunities();
     } else {
-      showToast('❌ Erro: ' + result.error, '⚠️');
+      showToast('Erro: ' + result.error, 'fa-triangle-exclamation');
     }
   } catch (error) {
     console.error('Erro ao interagir com comunidade:', error);
-    showToast('❌ Erro na rede.', '⚠️');
+    showToast('Erro na rede.', 'fa-triangle-exclamation');
   }
 }

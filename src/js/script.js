@@ -94,21 +94,21 @@ document.querySelectorAll('.search-bar__tags .tag').forEach(tag => {
 document.getElementById('ctaForm')?.addEventListener('submit', (e) => {
   e.preventDefault();
   const btn = e.target.querySelector('.cta__submit');
-  btn.textContent = '✓ Você está dentro do rolê!';
+  btn.innerHTML = '<i class="fa-solid fa-check"></i> Você está dentro do rolê!';
   btn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
   btn.disabled = true;
-  showToast('Bem-vindo(a) ao JoinUp! 💜');
+  showToast('<i class="fa-solid fa-heart"></i> Bem-vindo(a) ao JoinUp!');
 });
 
 /* Trata interacoes dos botoes do feed */
 document.querySelectorAll('.feed-action').forEach(btn => {
   btn.addEventListener('click', function () {
     if (this.classList.contains('feed-action--cta')) {
-      showToast('Redirecionando para compra segura… 🔒');
+      showToast('<i class="fa-solid fa-lock"></i> Redirecionando para compra segura...');
       return;
     }
     // Destaca visualmente o botao de curtida.
-    if (this.textContent.startsWith('❤️')) {
+    if (this.querySelector('.fa-heart')) {
       this.style.color = '#f43f5e';
       this.style.borderColor = 'rgba(244,63,94,0.4)';
     }
@@ -163,7 +163,7 @@ function showToast(message) {
 
   const toast = document.createElement('div');
   toast.className = 'toast';
-  toast.textContent = message;
+  toast.innerHTML = message;
   toast.style.cssText = `
     position: fixed;
     bottom: 32px;

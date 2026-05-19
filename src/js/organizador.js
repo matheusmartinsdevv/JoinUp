@@ -10,6 +10,7 @@ const navItems = document.querySelectorAll('.nav-item');
 const pages = document.querySelectorAll('.page');
 const toast = document.getElementById('toast');
 const logoutBtn = document.getElementById('logoutBtn');
+let mySupportTickets = [];
 
 console.log('Elementos DOM carregados:', {
   sidebar: !!sidebar,
@@ -35,7 +36,7 @@ function goPage(pageName) {
   const targetPage = document.getElementById(`page-${pageName}`);
   if (targetPage) {
     targetPage.classList.add('active');
-    console.log('Página ativada:', pageName);
+    console.log('PÃƒÂ¡gina ativada:', pageName);
 
     // Load data for dashboard
     if (pageName === 'dashboard') {
@@ -44,7 +45,7 @@ function goPage(pageName) {
 
     // Load dynamic data when navigating to create page
     if (pageName === 'create') {
-      console.log('Carregando dados para página create');
+      console.log('Carregando dados para pÃƒÂ¡gina create');
       loadGeneros();
       loadArtistas();
       // Garantir ao menos um tipo de ingresso inicial
@@ -63,8 +64,12 @@ function goPage(pageName) {
     if (pageName === 'profile') {
       loadPerfil();
     }
+
+    if (pageName === 'ticketHelp') {
+      loadMySupportTickets();
+    }
   } else {
-    console.log('Página não encontrada:', pageName);
+    console.log('PÃƒÂ¡gina nÃƒÂ£o encontrada:', pageName);
   }
 
   // Update nav active state
@@ -99,18 +104,33 @@ function closeSidebar() {
 // TOAST NOTIFICATIONS
 // =========================================
 
-function showToast(message, icon = '✅', duration = 3000) {
+function iconMarkup(icon = 'fa-circle-check') {
+  if (!icon || icon === ' ') return '';
+  if (String(icon).includes('<i')) return icon;
+  return `<i class="fa-solid ${icon}"></i>`;
+}
+
+function showToast(message, icon = 'fa-circle-check', duration = 3000) {
   const toastIcon = document.getElementById('toastIcon');
   const toastMsg = document.getElementById('toastMsg');
 
-  if (toastIcon) toastIcon.textContent = icon;
-  if (toastMsg) toastMsg.textContent = message;
+  if (toastIcon) toastIcon.innerHTML = iconMarkup(icon);
+  if (toastMsg) toastMsg.innerHTML = message;
 
   if (toast) toast.classList.add('show');
 
   setTimeout(() => {
     if (toast) toast.classList.remove('show');
   }, duration);
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 // =========================================
@@ -120,7 +140,7 @@ function showToast(message, icon = '✅', duration = 3000) {
 function showProfileMsg(elId, msg, tipo) {
   const el = document.getElementById(elId);
   if (!el) return;
-  el.textContent = msg;
+  el.innerHTML = msg;
   el.style.display = 'block';
   if (tipo === 'error') {
     el.style.background = 'rgba(255,60,60,0.15)';
@@ -141,7 +161,7 @@ async function loadPerfil() {
     const data = await res.json();
 
     if (data.error || !data.nome) {
-      console.warn('Usando valores padrão para o perfil.');
+      console.warn('Usando valores padrÃƒÂ£o para o perfil.');
       atualizarSidebar('Organizador', '');
       return;
     }
@@ -149,7 +169,7 @@ async function loadPerfil() {
     console.log('Dados recebidos:', data);
     atualizarSidebar(data.nome, data.email);
 
-    // Preencher campos da página de perfil (se existirem)
+    // Preencher campos da pÃƒÂ¡gina de perfil (se existirem)
     const profileNome = document.getElementById('profileNome');
     const profileEmail = document.getElementById('profileEmail');
     const profileCnpj = document.getElementById('profileCnpj');
@@ -157,19 +177,19 @@ async function loadPerfil() {
     if (profileEmail) profileEmail.value = data.email || '';
     if (profileCnpj) profileCnpj.value = data.cnpj || '';
 
-    // Carregar estatísticas se estivermos na página de perfil
+    // Carregar estatÃƒÂ­sticas se estivermos na pÃƒÂ¡gina de perfil
     const pageProfile = document.getElementById('page-profile');
     if (pageProfile && pageProfile.classList.contains('active')) {
       loadStatsPerfil();
     }
 
   } catch (err) {
-    console.error('Falha crítica ao carregar perfil:', err);
+    console.error('Falha crÃƒÂ­tica ao carregar perfil:', err);
     atualizarSidebar('Organizador', '');
   }
 }
 
-// Função auxiliar para atualizar a sidebar de forma segura
+// FunÃƒÂ§ÃƒÂ£o auxiliar para atualizar a sidebar de forma segura
 function atualizarSidebar(nome, email) {
   const sidebar = document.querySelector('.sidebar__user');
   if (!sidebar) return;
@@ -202,7 +222,7 @@ async function loadStatsPerfil() {
     if (el('statReceita'))  el('statReceita').textContent  = 'R$ ' + totalRec.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
   } catch (err) {
-    console.error('Erro ao carregar estatísticas:', err);
+    console.error('Erro ao carregar estatÃƒÂ­sticas:', err);
   }
 }
 
@@ -215,7 +235,7 @@ async function loadDashboard() {
   const elParticipantes = document.getElementById('dash-total-participantes');
 
   if (!previewContainer) {
-    console.error('Container dash-events-preview não encontrado!');
+    console.error('Container dash-events-preview nÃƒÂ£o encontrado!');
     return;
   }
 
@@ -234,7 +254,7 @@ async function loadDashboard() {
       console.warn('Falha ao carregar dados do dashboard:', data.error);
       previewContainer.innerHTML = `
         <div style="padding:16px; color:#ff8080; font-size:0.9rem;">
-          ⚠️ Erro: ${data.error}
+          <i class="fa-solid fa-triangle-exclamation"></i> Erro: ${data.error}
         </div>`;
       return;
     }
@@ -271,7 +291,7 @@ async function loadDashboard() {
             <div class="event-preview__icon">${icone}</div>
             <div class="event-preview__content">
               <div class="event-preview__name">${ev.nome}</div>
-              <div class="event-preview__meta">${ev.data_formatada.split(' ')[0]} · ${ev.cidade} · ${ev.vendidos} ingressos</div>
+              <div class="event-preview__meta">${ev.data_formatada.split(' ')[0]} Ã‚Â· ${ev.cidade} Ã‚Â· ${ev.vendidos} ingressos</div>
             </div>
             <div class="event-preview__status ${statusClass}">${statusLabel}</div>
           </div>
@@ -280,10 +300,10 @@ async function loadDashboard() {
     }
 
   } catch (err) {
-    console.error('Erro crítico no loadDashboard:', err);
+    console.error('Erro crÃƒÂ­tico no loadDashboard:', err);
     previewContainer.innerHTML = `
       <div style="padding:16px; color:#ff8080; font-size:0.9rem;">
-        ❌ Falha ao conectar com o servidor: ${err.message}
+        <i class="fa-solid fa-circle-xmark"></i> Falha ao conectar com o servidor: ${err.message}
       </div>`;
   }
 }
@@ -294,7 +314,7 @@ async function salvarPerfil() {
   const cnpj  = document.getElementById('profileCnpj')?.value.trim();
 
   if (!nome || !email || !cnpj) {
-    showProfileMsg('profileInfoMsg', '⚠️ Nome, e-mail e CNPJ são obrigatórios.', 'error');
+    showProfileMsg('profileInfoMsg', '<i class="fa-solid fa-triangle-exclamation"></i> Nome, e-mail e CNPJ sÃƒÂ£o obrigatÃƒÂ³rios.', 'error');
     return;
   }
 
@@ -310,20 +330,20 @@ async function salvarPerfil() {
     const data = await res.json();
 
     if (data.success) {
-      showProfileMsg('profileInfoMsg', '✅ ' + data.message, 'success');
-      showToast('✅ Perfil atualizado!', '✅');
+      showProfileMsg('profileInfoMsg', '<i class="fa-solid fa-circle-check"></i> ' + data.message, 'success');
+      showToast('Perfil atualizado!', 'fa-circle-check');
       // Atualizar sidebar
       const userNameEl = document.querySelector('.user-name');
       if (userNameEl) userNameEl.textContent = nome;
       const avatarEl = document.querySelector('.user-avatar');
       if (avatarEl) avatarEl.textContent = nome.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
     } else {
-      showProfileMsg('profileInfoMsg', '❌ ' + (data.error || 'Erro ao salvar.'), 'error');
+      showProfileMsg('profileInfoMsg', '<i class="fa-solid fa-circle-xmark"></i> ' + (data.error || 'Erro ao salvar.'), 'error');
     }
   } catch (err) {
-    showProfileMsg('profileInfoMsg', '❌ Falha na comunicação com o servidor.', 'error');
+    showProfileMsg('profileInfoMsg', '<i class="fa-solid fa-circle-xmark"></i> Falha na comunicaÃƒÂ§ÃƒÂ£o com o servidor.', 'error');
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Salvar Alterações'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Salvar AlteraÃƒÂ§ÃƒÂµes'; }
   }
 }
 
@@ -332,11 +352,11 @@ async function salvarSenha() {
   const confirma = document.getElementById('profileConfirmaSenha')?.value.trim();
 
   if (!nova || !confirma) {
-    showProfileMsg('profileSenhaMsg', '⚠️ Preencha ambos os campos de senha.', 'error');
+    showProfileMsg('profileSenhaMsg', '<i class="fa-solid fa-triangle-exclamation"></i> Preencha ambos os campos de senha.', 'error');
     return;
   }
   if (nova !== confirma) {
-    showProfileMsg('profileSenhaMsg', '⚠️ As senhas não coincidem.', 'error');
+    showProfileMsg('profileSenhaMsg', '<i class="fa-solid fa-triangle-exclamation"></i> As senhas nÃƒÂ£o coincidem.', 'error');
     return;
   }
 
@@ -356,15 +376,15 @@ async function salvarSenha() {
     const data = await res.json();
 
     if (data.success) {
-      showProfileMsg('profileSenhaMsg', '✅ Senha atualizada com sucesso!', 'success');
-      showToast('🔒 Senha atualizada!', '🔒');
+      showProfileMsg('profileSenhaMsg', '<i class="fa-solid fa-circle-check"></i> Senha atualizada com sucesso!', 'success');
+      showToast('Senha atualizada!', 'fa-lock');
       document.getElementById('profileNovaSenha').value    = '';
       document.getElementById('profileConfirmaSenha').value = '';
     } else {
-      showProfileMsg('profileSenhaMsg', '❌ ' + (data.error || 'Erro ao atualizar senha.'), 'error');
+      showProfileMsg('profileSenhaMsg', '<i class="fa-solid fa-circle-xmark"></i> ' + (data.error || 'Erro ao atualizar senha.'), 'error');
     }
   } catch (err) {
-    showProfileMsg('profileSenhaMsg', '❌ Falha na comunicação com o servidor.', 'error');
+    showProfileMsg('profileSenhaMsg', '<i class="fa-solid fa-circle-xmark"></i> Falha na comunicaÃƒÂ§ÃƒÂ£o com o servidor.', 'error');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Atualizar Senha'; }
   }
@@ -387,7 +407,7 @@ async function checkAuthentication() {
     }
     return false;
   } catch (error) {
-    console.log('Erro ao verificar autenticação:', error);
+    console.log('Erro ao verificar autenticaÃƒÂ§ÃƒÂ£o:', error);
     return false;
   }
 }
@@ -399,7 +419,7 @@ async function checkAuthentication() {
 function showCreateMsg(msg, tipo) {
   const el = document.getElementById('createEventMsg');
   if (!el) return;
-  el.textContent = msg;
+  el.innerHTML = msg;
   el.style.display = 'block';
   if (tipo === 'error') {
     el.style.background = 'rgba(255,60,60,0.15)';
@@ -420,7 +440,7 @@ async function submeterEvento() {
   const msgEl = document.getElementById('createEventMsg');
   if (msgEl) msgEl.style.display = 'none';
 
-  // ── Coletar campos básicos ──
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Coletar campos bÃƒÂ¡sicos Ã¢â€â‚¬Ã¢â€â‚¬
   const nome      = (document.getElementById('nome')?.value      ?? '').trim();
   const data      = (document.getElementById('data')?.value      ?? '').trim();
   const genero    = (document.getElementById('genero')?.value    ?? '').trim();
@@ -430,26 +450,26 @@ async function submeterEvento() {
   const cepRaw    = (document.getElementById('cep')?.value       ?? '').trim();
   const descricao = (document.getElementById('descricao')?.value ?? '').trim();
 
-  const cep = cepRaw.replace(/\D/g, ''); // apenas dígitos
+  const cep = cepRaw.replace(/\D/g, ''); // apenas dÃƒÂ­gitos
 
-  // ── Validação de campos obrigatórios ──
+  // Ã¢â€â‚¬Ã¢â€â‚¬ ValidaÃƒÂ§ÃƒÂ£o de campos obrigatÃƒÂ³rios Ã¢â€â‚¬Ã¢â€â‚¬
   if (!nome || !data || !genero || !local || !cidade || !estado || !cep || !descricao) {
-    showCreateMsg('⚠️ Preencha todos os campos obrigatórios.', 'error');
-    showToast('Preencha todos os campos obrigatórios!', '⚠️');
+    showCreateMsg('<i class="fa-solid fa-triangle-exclamation"></i> Preencha todos os campos obrigatÃƒÂ³rios.', 'error');
+    showToast('Preencha todos os campos obrigatÃƒÂ³rios!', 'fa-triangle-exclamation');
     return;
   }
 
-  // ── Artistas selecionados ──
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Artistas selecionados Ã¢â€â‚¬Ã¢â€â‚¬
   const artistasChecked = document.querySelectorAll('#artistas-container input[type="checkbox"]:checked');
   const artistas = Array.from(artistasChecked).map(cb => Number(cb.value));
 
   if (artistas.length === 0) {
-    showCreateMsg('⚠️ Selecione ao menos um artista para o line-up.', 'error');
-    showToast('Selecione ao menos um artista!', '⚠️');
+    showCreateMsg('<i class="fa-solid fa-triangle-exclamation"></i> Selecione ao menos um artista para o line-up.', 'error');
+    showToast('Selecione ao menos um artista!', 'fa-triangle-exclamation');
     return;
   }
 
-  // ── Tipos de ingressos ──
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Tipos de ingressos Ã¢â€â‚¬Ã¢â€â‚¬
   const tiposIngressos = [];
   let ingressoValido = true;
 
@@ -472,16 +492,16 @@ async function submeterEvento() {
   });
 
   if (tiposIngressos.length === 0 || !ingressoValido) {
-    showCreateMsg('⚠️ Preencha corretamente ao menos um tipo de ingresso.', 'error');
-    showToast('Configure ao menos um tipo de ingresso!', '⚠️');
+    showCreateMsg('<i class="fa-solid fa-triangle-exclamation"></i> Preencha corretamente ao menos um tipo de ingresso.', 'error');
+    showToast('Configure ao menos um tipo de ingresso!', 'fa-triangle-exclamation');
     return;
   }
 
-  // ── Imagem do evento ──
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Imagem do evento Ã¢â€â‚¬Ã¢â€â‚¬
   const imageInput = document.getElementById('eventImage');
   const imageFile = imageInput?.files[0];
 
-  // ── Montar FormData (Necessário para upload de arquivos) ──
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Montar FormData (NecessÃƒÂ¡rio para upload de arquivos) Ã¢â€â‚¬Ã¢â€â‚¬
   const formData = new FormData();
   formData.append('nome', nome);
   formData.append('data', data);
@@ -498,7 +518,7 @@ async function submeterEvento() {
     formData.append('imagem', imageFile);
   }
 
-  // ── Bloquear botão ──
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Bloquear botÃƒÂ£o Ã¢â€â‚¬Ã¢â€â‚¬
   const btn = document.getElementById('btnCriarEvento');
   if (btn) { btn.disabled = true; btn.textContent = 'Publicando...'; }
 
@@ -511,8 +531,8 @@ async function submeterEvento() {
     const result = await response.json();
 
     if (result.success) {
-      showCreateMsg('✅ Evento criado com sucesso!', 'success');
-      showToast('Evento criado com sucesso! 🎉', '🎪');
+      showCreateMsg('<i class="fa-solid fa-circle-check"></i> Evento criado com sucesso!', 'success');
+      showToast('Evento criado com sucesso!', 'fa-masks-theater');
       setTimeout(() => {
         document.getElementById('formEvento').reset();
         document.getElementById('ticketTypes').innerHTML = '';
@@ -520,13 +540,13 @@ async function submeterEvento() {
         goPage('events');
       }, 1800);
     } else {
-      showCreateMsg('❌ ' + (result.error || 'Erro desconhecido ao criar evento.'), 'error');
-      showToast('Erro: ' + (result.error || 'Desconhecido'), '⚠️');
+      showCreateMsg('<i class="fa-solid fa-circle-xmark"></i> ' + (result.error || 'Erro desconhecido ao criar evento.'), 'error');
+      showToast('Erro: ' + (result.error || 'Desconhecido'), 'fa-triangle-exclamation');
     }
   } catch (error) {
     console.error('Erro de fetch:', error);
-    showCreateMsg('❌ Falha na comunicação com o servidor.', 'error');
-    showToast('Erro de conexão. Tente novamente.', '⚠️');
+    showCreateMsg('<i class="fa-solid fa-circle-xmark"></i> Falha na comunicaÃƒÂ§ÃƒÂ£o com o servidor.', 'error');
+    showToast('Erro de conexÃƒÂ£o. Tente novamente.', 'fa-triangle-exclamation');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Criar Evento'; }
   }
@@ -551,7 +571,7 @@ async function loadGeneros() {
       });
     }
   } catch (error) {
-    console.error('Erro ao carregar gêneros:', error);
+    console.error('Erro ao carregar gÃƒÂªneros:', error);
   }
 }
 
@@ -591,7 +611,7 @@ async function loadArtistas() {
 // LOAD MEUS EVENTOS
 // =========================================
 
-const ICONES_EVENTO = ['🎆','🎸','🎪','🎵','🎤','🎷','🎹','🎻','🥁','🎺'];
+const ICONES_EVENTO = ['<i class="fa-solid fa-wand-magic-sparkles"></i>','<i class="fa-solid fa-guitar"></i>','<i class="fa-solid fa-masks-theater"></i>','<i class="fa-solid fa-music"></i>','<i class="fa-solid fa-microphone"></i>','<i class="fa-solid fa-music"></i>','<i class="fa-solid fa-music"></i>','<i class="fa-solid fa-music"></i>','<i class="fa-solid fa-drum"></i>','<i class="fa-solid fa-music"></i>'];
 
 function getIconeEvento(index) {
   return ICONES_EVENTO[index % ICONES_EVENTO.length];
@@ -603,7 +623,7 @@ async function loadMeusEventos() {
 
   container.innerHTML = `
     <div style="padding:32px;text-align:center;">
-      <span style="font-size:2rem;">⏳</span>
+      <span style="font-size:2rem;">Ã¢ÂÂ³</span>
       <p style="color:var(--text-muted);margin-top:8px;">Carregando seus eventos...</p>
     </div>`;
 
@@ -614,7 +634,7 @@ async function loadMeusEventos() {
     if (!data.success) {
       container.innerHTML = `
         <div class="glass" style="padding:32px;text-align:center;">
-          <span style="font-size:2rem;">⚠️</span>
+          <span style="font-size:2rem;"><i class="fa-solid fa-triangle-exclamation"></i></span>
           <p style="color:#ff8080;margin-top:8px;">${data.error || 'Erro ao carregar eventos.'}</p>
         </div>`;
       return;
@@ -623,10 +643,10 @@ async function loadMeusEventos() {
     if (data.data.length === 0) {
       container.innerHTML = `
         <div class="glass" style="padding:48px;text-align:center;">
-          <span style="font-size:3rem;">🎪</span>
+          <span style="font-size:3rem;"><i class="fa-solid fa-masks-theater"></i></span>
           <h3 style="margin:16px 0 8px;font-size:1.2rem;">Nenhum evento criado ainda</h3>
-          <p style="color:var(--text-muted);margin-bottom:20px;">Crie seu primeiro evento e ele aparecerá aqui.</p>
-          <button class="btn btn--primary" onclick="goPage('create')">➕ Criar Evento</button>
+          <p style="color:var(--text-muted);margin-bottom:20px;">Crie seu primeiro evento e ele aparecerÃƒÂ¡ aqui.</p>
+          <button class="btn btn--primary" onclick="goPage('create')"><i class="fa-solid fa-plus"></i> Criar Evento</button>
         </div>`;
       return;
     }
@@ -647,11 +667,11 @@ async function loadMeusEventos() {
       const receita   = ev.receita_fmt || 'R$ 0,00';
 
       const acoes = passado
-        ? `<button class="btn btn--ghost btn--sm" onclick="showToast('📊 Relatório em breve')">Relatório</button>
-           <button class="btn btn--ghost btn--sm" onclick="showToast('💬 Suporte')">Suporte</button>`
-        : `<button class="btn btn--ghost btn--sm" onclick="showToast('✏️ Editar em breve')">Editar</button>
-           <button class="btn btn--ghost btn--sm" onclick="showToast('📊 Analytics em breve')">Analytics</button>
-           <button class="btn btn--primary btn--sm" onclick="showToast('🎟️ Gerenciar ingressos')">Ingressos</button>`;
+        ? `<button class="btn btn--ghost btn--sm" onclick="showToast('Relatorio em breve', 'fa-chart-column')">Relatorio</button>
+           <button class="btn btn--ghost btn--sm" onclick="showToast('Suporte', 'fa-comments')">Suporte</button>`
+        : `<button class="btn btn--ghost btn--sm" onclick="showToast('Editar em breve', 'fa-pen')">Editar</button>
+           <button class="btn btn--ghost btn--sm" onclick="showToast('Analytics em breve', 'fa-chart-column')">Analytics</button>
+           <button class="btn btn--primary btn--sm" onclick="showToast('Gerenciar ingressos', 'fa-ticket')">Ingressos</button>`;
 
       html += `
         <div class="event-management-card glass">
@@ -659,7 +679,7 @@ async function loadMeusEventos() {
             ${mediaHtml}
             <div class="event-management__info">
               <div class="event-management__name">${ev.nome}</div>
-              <div class="event-management__meta">${ev.data_formatada} &middot; ${ev.cidade}/${ev.estado} &middot; ${ev.genero || 'Gênero não informado'}</div>
+              <div class="event-management__meta">${ev.data_formatada} &middot; ${ev.cidade}/${ev.estado} &middot; ${ev.genero || 'GÃƒÂªnero nÃƒÂ£o informado'}</div>
             </div>
             <div class="event-management__status ${statusClass}">${statusLabel}</div>
           </div>
@@ -674,7 +694,7 @@ async function loadMeusEventos() {
             </div>
             <div class="stat-item">
               <span class="stat-value">${ocupacao}%</span>
-              <span class="stat-label">Ocupação</span>
+              <span class="stat-label">OcupaÃƒÂ§ÃƒÂ£o</span>
             </div>
           </div>
           <div class="event-management__actions">
@@ -687,8 +707,8 @@ async function loadMeusEventos() {
     console.error('Erro ao carregar eventos:', err);
     container.innerHTML = `
       <div class="glass" style="padding:32px;text-align:center;">
-        <span style="font-size:2rem;">❌</span>
-        <p style="color:#ff8080;margin-top:8px;">Falha na comunicação com o servidor.</p>
+        <span style="font-size:2rem;"><i class="fa-solid fa-circle-xmark"></i></span>
+        <p style="color:#ff8080;margin-top:8px;">Falha na comunicaÃƒÂ§ÃƒÂ£o com o servidor.</p>
       </div>`;
   }
 }
@@ -712,11 +732,11 @@ function addTicketType(nomeDefault) {
       <span class="ticket-type__name">
         <input class="ticket-nome" type="text" value="${nomeLabel}" placeholder="Ex: Pista, VIP..." style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.2);color:inherit;font-weight:600;font-size:0.95rem;width:140px;padding:0.1rem 0.2rem;" />
       </span>
-      <button type="button" class="btn btn--ghost btn--xs" onclick="removeTicketType(this)">✕</button>
+      <button type="button" class="btn btn--ghost btn--xs" onclick="removeTicketType(this)"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="ticket-type__fields">
       <div class="form-group">
-        <label>Preço (R$)</label>
+        <label>PreÃƒÂ§o (R$)</label>
         <input type="number" class="ticket-preco" placeholder="120" min="0" step="0.01" />
       </div>
       <div class="form-group">
@@ -762,7 +782,7 @@ if (sidebarOverlay) {
 
 if (logoutBtn) {
   logoutBtn.addEventListener('click', () => {
-    showToast('Até logo! 👋', '👋');
+    showToast('AtÃƒÂ© logo!', 'fa-hand');
     setTimeout(() => {
       window.location.href = 'login.html';
     }, 1500);
@@ -774,7 +794,7 @@ if (searchInput) {
   searchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase();
     if (query.length > 2) {
-      showToast(`Buscando por "${query}"...`, '🔍');
+      showToast(`Buscando por "${query}"...`, 'fa-magnifying-glass');
     }
   });
 }
@@ -788,7 +808,7 @@ if (eventImageInput) {
       const uploadText = document.querySelector('.upload-text');
       if (uploadArea) uploadArea.classList.add('has-file');
       if (uploadText) uploadText.textContent = `Imagem selecionada: ${file.name}`;
-      showToast(`Imagem "${file.name}" selecionada!`, '📷');
+      showToast(`Imagem "${file.name}" selecionada!`, 'fa-camera');
     }
   });
 }
@@ -813,7 +833,7 @@ function setupHelpCenter() {
       const description = descriptionInput.value.trim();
 
       if (!title || !description) {
-        showToast('Preencha título e descrição antes de enviar.', '⚠️');
+        showToast('Preencha tÃƒÂ­tulo e descriÃƒÂ§ÃƒÂ£o antes de enviar.', 'fa-triangle-exclamation');
         return;
       }
 
@@ -829,20 +849,235 @@ function setupHelpCenter() {
 
         const result = await response.json();
         if (result.success) {
-          showToast('✅ Ticket enviado com sucesso!');
+          showToast('Ticket enviado com sucesso!', 'fa-circle-check');
           ticketHelpForm.reset();
+          loadMySupportTickets();
         } else {
-          showToast(result.error || 'Erro ao enviar ticket.', '⚠️');
+          showToast(result.error || 'Erro ao enviar ticket.', 'fa-triangle-exclamation');
         }
       } catch (error) {
         console.error('Erro ao enviar ticket:', error);
-        showToast('Falha na comunicação com o servidor.', '⚠️');
+        showToast('Falha na comunicaÃƒÂ§ÃƒÂ£o com o servidor.', 'fa-triangle-exclamation');
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Enviar ticket';
       }
     });
   }
+}
+
+async function loadMySupportTickets() {
+  const container = document.getElementById('mySupportTicketsList');
+  if (!container) return;
+
+  container.innerHTML = '<p class="support-ticket-empty">Carregando seus chamados...</p>';
+
+  try {
+    const response = await fetch('../php/get_my_support_tickets.php?tipo=organizador');
+    const result = await response.json();
+
+    if (response.status === 401) {
+      window.location.href = 'loginOrganizador.html';
+      return;
+    }
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Falha ao carregar chamados.');
+    }
+
+    mySupportTickets = Array.isArray(result.tickets) ? result.tickets : [];
+    renderMySupportTickets(mySupportTickets);
+  } catch (error) {
+    console.error('Erro ao carregar chamados:', error);
+    container.innerHTML = '<p class="support-ticket-empty">Nao foi possivel carregar seus chamados.</p>';
+  }
+}
+
+function renderMySupportTickets(tickets) {
+  const container = document.getElementById('mySupportTicketsList');
+  if (!container) return;
+
+  if (!tickets.length) {
+    container.innerHTML = '<p class="support-ticket-empty">Voce ainda nao abriu chamados.</p>';
+    return;
+  }
+
+  container.innerHTML = tickets.map(ticket => {
+    const status = ticket.status_ticket || 'aberto';
+    const canReply = status !== 'fechado';
+    const response = ticket.resposta
+      ? `<div class="support-ticket-card__box"><strong>Resposta do suporte:</strong><p>${escapeHtml(ticket.resposta)}</p></div>`
+      : '';
+    const returnText = ticket.retorno_usuario
+      ? `<div class="support-ticket-card__box"><strong>Seu retorno:</strong><p>${escapeHtml(ticket.retorno_usuario)}</p></div>`
+      : '';
+    const actions = canReply
+      ? `<div class="support-ticket-card__actions">
+          <button class="btn btn--primary btn--sm" onclick="resolveSupportTicket(${Number(ticket.id_ticket)})">Problema resolvido</button>
+          <button class="btn btn--ghost btn--sm" onclick="openSupportTicketConversation(${Number(ticket.id_ticket)})">Abrir conversa</button>
+        </div>`
+      : '';
+    const statusClass = status === 'fechado' ? 'support-ticket-status--closed' : 'support-ticket-status--active';
+
+    return `
+      <div class="support-ticket-card">
+        <div class="support-ticket-card__header">
+          <div>
+            <div class="support-ticket-card__id">#${Number(ticket.id_ticket)}</div>
+            <div class="support-ticket-card__title">${escapeHtml(ticket.titulo)}</div>
+          </div>
+          <span class="support-ticket-status ${statusClass}">${supportTicketStatusLabel(status)}</span>
+        </div>
+        <p class="support-ticket-card__desc">${escapeHtml(ticket.descricao)}</p>
+        ${response}
+        ${returnText}
+        ${actions}
+      </div>
+    `;
+  }).join('');
+}
+
+async function resolveSupportTicket(ticketId) {
+  await updateSupportTicketFromUser({
+    id_ticket: ticketId,
+    action: 'resolver',
+    tipo: 'organizador'
+  }, 'Chamado marcado como resolvido.');
+}
+
+function openSupportTicketConversation(ticketId) {
+  const ticket = mySupportTickets.find(item => Number(item.id_ticket) === Number(ticketId));
+  if (!ticket) {
+    showToast('Chamado nao encontrado.', ' ');
+    return;
+  }
+
+  document.getElementById('supportChatTicketInput').value = ticket.id_ticket;
+  document.getElementById('supportChatTicketId').textContent = `Ticket #${ticket.id_ticket}`;
+  document.getElementById('supportChatTitle').textContent = ticket.titulo || 'Atendimento';
+  document.getElementById('supportChatReply').value = '';
+
+  renderSupportChatMessages(ticket);
+  const modal = document.getElementById('supportTicketChatModal');
+  if (modal) {
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function closeSupportTicketConversation() {
+  const modal = document.getElementById('supportTicketChatModal');
+  if (modal) {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+async function returnSupportTicket(ticketId, retorno) {
+  if (!retorno || !retorno.trim()) return false;
+
+  return updateSupportTicketFromUser({
+    id_ticket: ticketId,
+    action: 'retornar',
+    retorno_usuario: retorno.trim(),
+    tipo: 'organizador'
+  }, 'Retorno enviado ao suporte.');
+}
+
+function renderSupportChatMessages(ticket) {
+  const messages = document.getElementById('supportChatMessages');
+  if (!messages) return;
+
+  const history = Array.isArray(ticket.mensagens) ? ticket.mensagens : [];
+  if (!history.length) {
+    messages.innerHTML = `
+      <div class="support-chat__message support-chat__message--user">
+        <div class="support-chat__author">Voce</div>
+        <p>${escapeHtml(ticket.descricao || 'Sem descricao.')}</p>
+      </div>
+    `;
+    messages.scrollTop = messages.scrollHeight;
+    return;
+  }
+
+  messages.innerHTML = history.map(message => {
+    const isSupport = message.autor_tipo === 'suporte';
+    const author = isSupport
+      ? `Suporte${message.autor_nome ? ` - ${escapeHtml(message.autor_nome)}` : ''}`
+      : 'Voce';
+    const className = isSupport ? 'support-chat__message--support' : 'support-chat__message--user';
+    return `
+      <div class="support-chat__message ${className}">
+        <div class="support-chat__author">${author}</div>
+        <p>${escapeHtml(message.mensagem)}</p>
+      </div>
+    `;
+  }).join('');
+  messages.scrollTop = messages.scrollHeight;
+}
+
+async function updateSupportTicketFromUser(payload, successMessage) {
+  try {
+    const response = await fetch('../php/update_my_support_ticket.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Nao foi possivel atualizar o chamado.');
+    }
+
+    showToast(successMessage, ' ');
+    loadMySupportTickets();
+    return true;
+  } catch (error) {
+    console.error('Erro ao atualizar chamado:', error);
+    showToast(error.message || 'Erro ao atualizar chamado.', ' ');
+    return false;
+  }
+}
+
+function supportTicketStatusLabel(status) {
+  const labels = {
+    aberto: 'Aberto',
+    em_atendimento: 'Em atendimento',
+    aguardando_usuario: 'Aguardando seu retorno',
+    fechado: 'Fechado'
+  };
+  return labels[status] || 'Aberto';
+}
+
+const supportTicketChatForm = document.getElementById('supportTicketChatForm');
+if (supportTicketChatForm) {
+  supportTicketChatForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const ticketId = Number(document.getElementById('supportChatTicketInput').value);
+    const replyInput = document.getElementById('supportChatReply');
+    const retorno = replyInput ? replyInput.value.trim() : '';
+
+    if (!ticketId || !retorno) {
+      showToast('Escreva uma mensagem antes de enviar.', ' ');
+      return;
+    }
+
+    const sent = await returnSupportTicket(ticketId, retorno);
+    if (sent) {
+      const messages = document.getElementById('supportChatMessages');
+      if (messages) {
+        messages.insertAdjacentHTML('beforeend', `
+          <div class="support-chat__message support-chat__message--user">
+            <div class="support-chat__author">Voce</div>
+            <p>${escapeHtml(retorno)}</p>
+          </div>
+        `);
+        messages.scrollTop = messages.scrollHeight;
+      }
+      replyInput.value = '';
+    }
+  });
 }
 
 // =========================================
@@ -857,7 +1092,7 @@ async function init() {
 
   const isAuthenticated = await checkAuthentication();
   if (!isAuthenticated) {
-    showToast('Sessão expirada. Redirecionando...', '⚠️');
+    showToast('SessÃƒÂ£o expirada. Redirecionando...', 'fa-triangle-exclamation');
     setTimeout(() => { window.location.href = 'loginOrganizador.html'; }, 2000);
     return;
   }
@@ -865,7 +1100,7 @@ async function init() {
   goPage('dashboard');
 
   setTimeout(() => {
-    showToast('Bem-vindo ao painel do organizador!', '🎪');
+    showToast('Bem-vindo ao painel do organizador!', 'fa-masks-theater');
   }, 500);
 }
 

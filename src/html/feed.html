@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="../Css/feed.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 
 <body>
@@ -51,7 +52,7 @@
 
         <span class="nav-section">Conta</span>
         <button class="nav-item" data-page="profile">
-          <span class="nav-icon">👤</span> Meu Perfil
+          <span class="nav-icon"><i class="fa-solid fa-user"></i></span> Meu Perfil
         </button>
         <button class="nav-item" id="logoutBtn">
           <span class="nav-icon"></span> Sair
@@ -67,7 +68,7 @@
           <div class="user-name" id="userName">Carregando...</div>
           <div class="user-tag" id="userTag">@...</div>
         </div>
-        <span style="color:var(--text-muted);font-size:0.8rem;">⚙️</span>
+        <span style="color:var(--text-muted);font-size:0.8rem;"><i class="fa-solid fa-gear"></i></span>
       </div>
     </aside>
 
@@ -76,22 +77,22 @@
 
       <!-- TOPBAR -->
       <header class="topbar">
-        <button class="burger-btn" id="burgerBtn">☰</button>
+        <button class="burger-btn" id="burgerBtn"><i class="fa-solid fa-bars"></i></button>
 
         <div class="topbar__search">
-          <span class="topbar__search-icon">🔍</span>
+          <span class="topbar__search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
           <input type="text" id="searchInput" placeholder="Buscar eventos, artistas, pessoas..." autocomplete="off" />
           <div class="search-dropdown" id="searchDropdown">
             <div class="search-divider">Eventos</div>
             <div class="search-result" onclick="goPage('events')">
-              <span class="search-result-icon">🎵</span>
+              <span class="search-result-icon"><i class="fa-solid fa-music"></i></span>
               <div class="search-result-info">
                 <div class="search-result-name">Festival Neon SP</div>
                 <div class="search-result-sub">12 Jul · São Paulo · +847 vão</div>
               </div>
             </div>
             <div class="search-result" onclick="goPage('events')">
-              <span class="search-result-icon">🎸</span>
+              <span class="search-result-icon"><i class="fa-solid fa-guitar"></i></span>
               <div class="search-result-info">
                 <div class="search-result-name">Rock in Rio 2025</div>
                 <div class="search-result-sub">19-27 Jul · Rio de Janeiro · +12K vão</div>
@@ -99,7 +100,7 @@
             </div>
             <div class="search-divider">Pessoas</div>
             <div class="search-result" onclick="goPage('profile')">
-              <span class="search-result-icon">👤</span>
+              <span class="search-result-icon"><i class="fa-solid fa-user"></i></span>
               <div class="search-result-info">
                 <div class="search-result-name">Bruna Martins</div>
                 <div class="search-result-sub">Vai ao Festival Neon SP</div>
@@ -110,7 +111,7 @@
 
         <div class="topbar__actions">
           <button class="icon-btn" onclick="goPage('profile')" title="Perfil">
-            👤
+            <i class="fa-solid fa-user"></i>
           </button>
         </div>
       </header>
@@ -134,6 +135,12 @@
               </div>
               <button type="submit" id="ticketHelpSubmit" class="btn btn--primary">Enviar ticket</button>
             </form>
+          </div>
+          <div class="form-ticket glass">
+            <h3>Meus chamados</h3>
+            <div class="support-ticket-list" id="mySupportTicketsList">
+              <p style="color:var(--text-muted); font-size: 0.85rem;">Carregando seus chamados...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -207,7 +214,7 @@
         <div class="glass" style="padding:8px;">
           <div class="notif-list">
             <div class="notif unread">
-              <div class="notif__av" style="background:linear-gradient(135deg,#be185d,#db2777)">❤️</div>
+              <div class="notif__av" style="background:linear-gradient(135deg,#be185d,#db2777)"><i class="fa-solid fa-heart"></i></div>
               <div class="notif__body">
                 <div class="notif__text"><strong>Bruna Martins</strong> curtiu sua postagem no Festival Neon SP.</div>
                 <div class="notif__time">Agora mesmo</div>
@@ -215,7 +222,7 @@
               <div class="notif__dot"></div>
             </div>
             <div class="notif unread">
-              <div class="notif__av">👥</div>
+              <div class="notif__av"><i class="fa-solid fa-users"></i></div>
               <div class="notif__body">
                 <div class="notif__text"><strong>3 novas pessoas</strong> entraram no grupo do Rock in Rio que você faz
                   parte.</div>
@@ -224,7 +231,7 @@
               <div class="notif__dot"></div>
             </div>
             <div class="notif unread">
-              <div class="notif__av">🎟</div>
+              <div class="notif__av"><i class="fa-solid fa-ticket"></i></div>
               <div class="notif__body">
                 <div class="notif__text"><strong>Ingresso verificado!</strong> Seu ingresso para o Festival Neon SP foi
                   autenticado com sucesso.</div>
@@ -240,7 +247,7 @@
               </div>
             </div>
             <div class="notif">
-              <div class="notif__av">🔥</div>
+              <div class="notif__av"><i class="fa-solid fa-fire"></i></div>
               <div class="notif__body">
                 <div class="notif__text"><strong>Festival Neon SP</strong> publicou uma atualização: "Lineup completo
                   revelado!"</div>
@@ -248,15 +255,15 @@
               </div>
             </div>
             <div class="notif">
-              <div class="notif__av">💬</div>
+              <div class="notif__av"><i class="fa-solid fa-comments"></i></div>
               <div class="notif__body">
-                <div class="notif__text"><strong>Isabela Torres</strong> comentou no seu post: "Vou estar lá também! 🎶"
+                <div class="notif__text"><strong>Isabela Torres</strong> comentou no seu post: "Vou estar lá também! <i class="fa-solid fa-music"></i>"
                 </div>
                 <div class="notif__time">5 horas atrás</div>
               </div>
             </div>
             <div class="notif">
-              <div class="notif__av">🎟</div>
+              <div class="notif__av"><i class="fa-solid fa-ticket"></i></div>
               <div class="notif__body">
                 <div class="notif__text">Alguém está vendendo ingressos para o <strong>Ultra Music Festival</strong> —
                   evento que você salvou!</div>
@@ -276,7 +283,7 @@
 
         <div class="glass" style="padding:8px;max-width:600px;">
           <div class="notif-list">
-            <div class="notif unread" onclick="showToast('💬 Abrindo conversa...')">
+            <div class="notif unread" onclick="showToast('Abrindo conversa...','fa-comments')">
               <div class="notif__av" style="background:linear-gradient(135deg,#be185d,#db2777)">BM<div
                   class="online-dot"></div>
               </div>
@@ -287,16 +294,16 @@
               </div>
               <div class="notif__dot"></div>
             </div>
-            <div class="notif unread" onclick="showToast('💬 Abrindo conversa...')">
+            <div class="notif unread" onclick="showToast('Abrindo conversa...','fa-comments')">
               <div class="notif__av" style="background:linear-gradient(135deg,#7b1fa2,#ab47bc)">IT</div>
               <div class="notif__body">
-                <div class="notif__text"><strong>Isabela Torres</strong> — "Amei conhecer vocês no Lolla! 💜"</div>
+                <div class="notif__text"><strong>Isabela Torres</strong> — "Amei conhecer vocês no Lolla! <i class="fa-solid fa-heart"></i>"</div>
                 <div class="notif__time">1 hora atrás</div>
               </div>
               <div class="notif__dot"></div>
             </div>
-            <div class="notif" onclick="showToast('💬 Abrindo grupo...')">
-              <div class="notif__av">🎆</div>
+            <div class="notif" onclick="showToast('Abrindo grupo...','fa-comments')">
+              <div class="notif__av"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
               <div class="notif__body">
                 <div class="notif__text"><strong>Grupo Festival Neon SP</strong> — Rafael: "Quem vai se encontrar antes
                   do show?"</div>
@@ -325,7 +332,7 @@
           <!-- Formulário de edição -->
           <div>
             <div class="glass" style="padding:22px;">
-              <div style="font-size:0.85rem;font-weight:700;margin-bottom:16px;">✏️ Editar Perfil</div>
+              <div style="font-size:0.85rem;font-weight:700;margin-bottom:16px;"><i class="fa-solid fa-pen"></i> Editar Perfil</div>
               <div class="edit-form" id="formEditarPerfil">
                 <div class="form-group">
                   <label>Nome completo</label>
@@ -342,7 +349,7 @@
 
           <!-- Postagens do usuário -->
           <div>
-            <div style="font-size:0.9rem;font-weight:700;margin-bottom:14px;">📸 Minhas postagens</div>
+            <div style="font-size:0.9rem;font-weight:700;margin-bottom:14px;"><i class="fa-solid fa-camera"></i> Minhas postagens</div>
             <div id="minhasPostagensContainer">
               <p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Carregando suas postagens...</p>
             </div>
@@ -357,7 +364,7 @@
   <div class="modal-backdrop" id="eventModal">
     <div class="modal modal--event">
       <div class="modal__header">
-        <button class="modal__close" onclick="closeModal('eventModal')">✕</button>
+        <button class="modal__close" onclick="closeModal('eventModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="event-modal__content" id="eventModalContent">
         <!-- Estrutura para preenchimento dinâmico pelo organizador -->
@@ -369,8 +376,8 @@
   <div class="modal-backdrop" id="sellModal">
     <div class="modal">
       <div class="modal__header">
-        <div class="modal__title">🔒 Revenda Segura</div>
-        <button class="modal__close" onclick="closeModal('sellModal')">✕</button>
+        <div class="modal__title"><i class="fa-solid fa-lock"></i> Revenda Segura</div>
+        <button class="modal__close" onclick="closeModal('sellModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:20px;">Revenda protegida pelo JoinUp — o
         comprador só recebe após confirmação da entrada.</p>
@@ -388,7 +395,7 @@
           <textarea placeholder="Informe por que está revendendo..."></textarea>
         </div>
         <button class="btn btn--primary"
-          onclick="closeModal('sellModal');showToast('🎟 Ingresso colocado à venda!')">Publicar anúncio</button>
+          onclick="closeModal('sellModal');showToast('Ingresso colocado à venda!','fa-ticket')">Publicar anúncio</button>
       </div>
     </div>
   </div>
@@ -397,21 +404,21 @@
   <div class="modal-backdrop" id="commentsModal">
     <div class="modal">
       <div class="modal__header">
-        <div class="modal__title">💬 Comentários</div>
-        <button class="modal__close" onclick="closeModal('commentsModal')">✕</button>
+        <div class="modal__title"><i class="fa-solid fa-comments"></i> Comentários</div>
+        <button class="modal__close" onclick="closeModal('commentsModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
         <div class="notif" style="padding:10px 0;">
           <div class="notif__av" style="background:linear-gradient(135deg,#0d47a1,#1976d2)">RC</div>
           <div class="notif__body">
-            <div class="notif__text"><strong>Rafael Costa</strong> — "Arrasando! Vou te encontrar na área VIP 🎟"</div>
+            <div class="notif__text"><strong>Rafael Costa</strong> — "Arrasando! Vou te encontrar na área VIP <i class="fa-solid fa-ticket"></i>"</div>
             <div class="notif__time">2min atrás</div>
           </div>
         </div>
         <div class="notif" style="padding:10px 0;">
           <div class="notif__av" style="background:linear-gradient(135deg,#7b1fa2,#ab47bc)">IT</div>
           <div class="notif__body">
-            <div class="notif__text"><strong>Isabela Torres</strong> — "Que foto incrível!! 😍"</div>
+            <div class="notif__text"><strong>Isabela Torres</strong> — "Que foto incrível!! <i class="fa-solid fa-face-smile"></i>"</div>
             <div class="notif__time">5min atrás</div>
           </div>
         </div>
@@ -421,14 +428,39 @@
         <input type="text" placeholder="Escreva um comentário..."
           style="background:rgba(0,0,0,0.3);border:1px solid var(--border-p);padding:10px 14px;border-radius:10px;color:#fff;font-family:Poppins,sans-serif;font-size:0.85rem;outline:none;flex:1;" />
         <button class="btn btn--primary btn--sm"
-          onclick="closeModal('commentsModal');showToast('💬 Comentário publicado!')">Enviar</button>
+          onclick="closeModal('commentsModal');showToast('Comentário publicado!','fa-comments')">Enviar</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ░░ MODAL: CONVERSA DO TICKET ░░ -->
+  <div class="modal-backdrop" id="supportTicketChatModal">
+    <div class="modal modal--support-chat">
+      <div class="modal__header">
+        <div>
+          <div class="support-chat__id" id="supportChatTicketId">Ticket</div>
+          <div class="modal__title" id="supportChatTitle">Atendimento</div>
+        </div>
+        <button class="modal__close" onclick="closeModal('supportTicketChatModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="support-chat__messages" id="supportChatMessages"></div>
+
+      <form class="support-chat__form" id="supportTicketChatForm">
+        <input type="hidden" id="supportChatTicketInput" />
+        <label for="supportChatReply">Responder ao suporte</label>
+        <textarea id="supportChatReply" rows="4" maxlength="500" placeholder="Conte o que ainda aconteceu ou envie mais detalhes..." required></textarea>
+        <div class="support-chat__actions">
+          <button type="submit" class="btn btn--primary">Enviar mensagem</button>
+          <button type="button" class="btn btn--ghost" onclick="closeModal('supportTicketChatModal')">Voltar</button>
+        </div>
+      </form>
     </div>
   </div>
 
   <!-- TOAST -->
   <div class="toast" id="toast">
-    <span class="toast__icon" id="toastIcon">✅</span>
+    <span class="toast__icon" id="toastIcon"><i class="fa-solid fa-circle-check"></i></span>
     <span id="toastMsg">Ação realizada!</span>
   </div>
 

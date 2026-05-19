@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <span>Quantidade</span>
         <input type="number" class="ticket-qtd" placeholder="500" min="1" required />
       </label>
-      <button type="button" class="btn-remove-ticket" title="Remover">✕</button>
+      <button type="button" class="btn-remove-ticket" title="Remover"><i class="fa-solid fa-xmark"></i></button>
     `;
     div.querySelector('.btn-remove-ticket').addEventListener('click', () => div.remove());
     ticketsList.appendChild(div);
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const msgFeedback = document.getElementById('msgFeedback');
 
   function showMsg(msg, tipo) {
-    msgFeedback.textContent = msg;
+    msgFeedback.innerHTML = msg;
     msgFeedback.className = tipo; // 'error' ou 'success'
     msgFeedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
@@ -186,16 +186,16 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(r => r.json())
       .then(data => {
         if (data.success) {
-          showMsg('✅ Evento criado com sucesso! Redirecionando...', 'success');
+          showMsg('<i class="fa-solid fa-circle-check"></i> Evento criado com sucesso! Redirecionando...', 'success');
           setTimeout(() => {
             window.location.href = 'dashboardOrganizador.html';
           }, 2000);
         } else {
-          showMsg('❌ ' + (data.error || 'Erro desconhecido ao criar evento.'), 'error');
+          showMsg('<i class="fa-solid fa-circle-xmark"></i> ' + (data.error || 'Erro desconhecido ao criar evento.'), 'error');
         }
       })
       .catch(err => {
-        showMsg('❌ Falha na comunicação com o servidor. Tente novamente.', 'error');
+        showMsg('<i class="fa-solid fa-circle-xmark"></i> Falha na comunicação com o servidor. Tente novamente.', 'error');
         console.error(err);
       })
       .finally(() => {
