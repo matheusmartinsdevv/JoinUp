@@ -68,6 +68,10 @@ function goPage(pageName) {
     if (pageName === 'ticketHelp') {
       loadMySupportTickets();
     }
+
+    if (pageName === 'communities') {
+      loadOrgCommunities();
+    }
   } else {
     console.log('PÃƒÂ¡gina nÃƒÂ£o encontrada:', pageName);
   }
@@ -291,7 +295,7 @@ async function loadDashboard() {
             <div class="event-preview__icon">${icone}</div>
             <div class="event-preview__content">
               <div class="event-preview__name">${ev.nome}</div>
-              <div class="event-preview__meta">${ev.data_formatada.split(' ')[0]} Ã‚Â· ${ev.cidade} Ã‚Â· ${ev.vendidos} ingressos</div>
+              <div class="event-preview__meta">${ev.data_formatada.split(' ')[0]} &middot; ${ev.cidade} &middot; ${ev.vendidos} ingressos</div>
             </div>
             <div class="event-preview__status ${statusClass}">${statusLabel}</div>
           </div>
@@ -300,7 +304,7 @@ async function loadDashboard() {
     }
 
   } catch (err) {
-    console.error('Erro crÃƒÂ­tico no loadDashboard:', err);
+    console.error('Erro crítico no loadDashboard:', err);
     previewContainer.innerHTML = `
       <div style="padding:16px; color:#ff8080; font-size:0.9rem;">
         <i class="fa-solid fa-circle-xmark"></i> Falha ao conectar com o servidor: ${err.message}
@@ -314,7 +318,7 @@ async function salvarPerfil() {
   const cnpj  = document.getElementById('profileCnpj')?.value.trim();
 
   if (!nome || !email || !cnpj) {
-    showProfileMsg('profileInfoMsg', '<i class="fa-solid fa-triangle-exclamation"></i> Nome, e-mail e CNPJ sÃƒÂ£o obrigatÃƒÂ³rios.', 'error');
+    showProfileMsg('profileInfoMsg', '<i class="fa-solid fa-triangle-exclamation"></i> Nome, e-mail e CNPJ são obrigatórios.', 'error');
     return;
   }
 
@@ -341,9 +345,9 @@ async function salvarPerfil() {
       showProfileMsg('profileInfoMsg', '<i class="fa-solid fa-circle-xmark"></i> ' + (data.error || 'Erro ao salvar.'), 'error');
     }
   } catch (err) {
-    showProfileMsg('profileInfoMsg', '<i class="fa-solid fa-circle-xmark"></i> Falha na comunicaÃƒÂ§ÃƒÂ£o com o servidor.', 'error');
+    showProfileMsg('profileInfoMsg', '<i class="fa-solid fa-circle-xmark"></i> Falha na comunicação com o servidor.', 'error');
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Salvar AlteraÃƒÂ§ÃƒÂµes'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Salvar Alterações'; }
   }
 }
 
@@ -356,7 +360,7 @@ async function salvarSenha() {
     return;
   }
   if (nova !== confirma) {
-    showProfileMsg('profileSenhaMsg', '<i class="fa-solid fa-triangle-exclamation"></i> As senhas nÃƒÂ£o coincidem.', 'error');
+    showProfileMsg('profileSenhaMsg', '<i class="fa-solid fa-triangle-exclamation"></i> As senhas não coincidem.', 'error');
     return;
   }
 
@@ -384,7 +388,7 @@ async function salvarSenha() {
       showProfileMsg('profileSenhaMsg', '<i class="fa-solid fa-circle-xmark"></i> ' + (data.error || 'Erro ao atualizar senha.'), 'error');
     }
   } catch (err) {
-    showProfileMsg('profileSenhaMsg', '<i class="fa-solid fa-circle-xmark"></i> Falha na comunicaÃƒÂ§ÃƒÂ£o com o servidor.', 'error');
+    showProfileMsg('profileSenhaMsg', '<i class="fa-solid fa-circle-xmark"></i> Falha na comunicação com o servidor.', 'error');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Atualizar Senha'; }
   }
@@ -623,7 +627,7 @@ async function loadMeusEventos() {
 
   container.innerHTML = `
     <div style="padding:32px;text-align:center;">
-      <span style="font-size:2rem;">Ã¢ÂÂ³</span>
+      <span style="font-size:2rem;">⏳</span>
       <p style="color:var(--text-muted);margin-top:8px;">Carregando seus eventos...</p>
     </div>`;
 
@@ -645,7 +649,7 @@ async function loadMeusEventos() {
         <div class="glass" style="padding:48px;text-align:center;">
           <span style="font-size:3rem;"><i class="fa-solid fa-masks-theater"></i></span>
           <h3 style="margin:16px 0 8px;font-size:1.2rem;">Nenhum evento criado ainda</h3>
-          <p style="color:var(--text-muted);margin-bottom:20px;">Crie seu primeiro evento e ele aparecerÃƒÂ¡ aqui.</p>
+          <p style="color:var(--text-muted);margin-bottom:20px;">Crie seu primeiro evento e ele aparecerá aqui.</p>
           <button class="btn btn--primary" onclick="goPage('create')"><i class="fa-solid fa-plus"></i> Criar Evento</button>
         </div>`;
       return;
@@ -679,7 +683,7 @@ async function loadMeusEventos() {
             ${mediaHtml}
             <div class="event-management__info">
               <div class="event-management__name">${ev.nome}</div>
-              <div class="event-management__meta">${ev.data_formatada} &middot; ${ev.cidade}/${ev.estado} &middot; ${ev.genero || 'GÃƒÂªnero nÃƒÂ£o informado'}</div>
+              <div class="event-management__meta">${ev.data_formatada} &middot; ${ev.cidade}/${ev.estado} &middot; ${ev.genero || 'Gênero não informado'}</div>
             </div>
             <div class="event-management__status ${statusClass}">${statusLabel}</div>
           </div>
@@ -694,7 +698,7 @@ async function loadMeusEventos() {
             </div>
             <div class="stat-item">
               <span class="stat-value">${ocupacao}%</span>
-              <span class="stat-label">OcupaÃƒÂ§ÃƒÂ£o</span>
+              <span class="stat-label">Ocupação</span>
             </div>
           </div>
           <div class="event-management__actions">
@@ -708,7 +712,7 @@ async function loadMeusEventos() {
     container.innerHTML = `
       <div class="glass" style="padding:32px;text-align:center;">
         <span style="font-size:2rem;"><i class="fa-solid fa-circle-xmark"></i></span>
-        <p style="color:#ff8080;margin-top:8px;">Falha na comunicaÃƒÂ§ÃƒÂ£o com o servidor.</p>
+        <p style="color:#ff8080;margin-top:8px;">Falha na comunicação com o servidor.</p>
       </div>`;
   }
 }
@@ -736,7 +740,7 @@ function addTicketType(nomeDefault) {
     </div>
     <div class="ticket-type__fields">
       <div class="form-group">
-        <label>PreÃƒÂ§o (R$)</label>
+        <label>Preço (R$)</label>
         <input type="number" class="ticket-preco" placeholder="120" min="0" step="0.01" />
       </div>
       <div class="form-group">
@@ -786,16 +790,6 @@ if (logoutBtn) {
     setTimeout(() => {
       window.location.href = 'login.html';
     }, 1500);
-  });
-}
-
-const searchInput = document.getElementById('searchInput');
-if (searchInput) {
-  searchInput.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase();
-    if (query.length > 2) {
-      showToast(`Buscando por "${query}"...`, 'fa-magnifying-glass');
-    }
   });
 }
 
@@ -1089,10 +1083,11 @@ async function init() {
   
   loadPerfil();
   setupHelpCenter();
+  initChatListeners();
 
   const isAuthenticated = await checkAuthentication();
   if (!isAuthenticated) {
-    showToast('SessÃƒÂ£o expirada. Redirecionando...', 'fa-triangle-exclamation');
+    showToast('Sessão expirada. Redirecionando...', 'fa-triangle-exclamation');
     setTimeout(() => { window.location.href = 'loginOrganizador.html'; }, 2000);
     return;
   }
@@ -1112,11 +1107,6 @@ document.addEventListener('DOMContentLoaded', init);
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeSidebar();
-  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-    e.preventDefault();
-    const si = document.getElementById('searchInput');
-    if (si) si.focus();
-  }
 });
 
 // =========================================
@@ -1128,3 +1118,252 @@ window.addEventListener('resize', () => {
     closeSidebar();
   }
 });
+
+/* =========================================
+   COMMUNITY ACTIONS & CHAT POPUP (ORGANIZADOR)
+   ========================================= */
+let activeChatCommunityId = null;
+let activeChatEventoId = null;
+let chatPollingInterval = null;
+let replyingToMessageId = null;
+
+async function loadOrgCommunities() {
+  const container = document.getElementById('orgGroupsGridContainer');
+  if (!container) return;
+
+  try {
+    const response = await fetch('../php/comunidades.php?fetch=1');
+    const result = await response.json();
+
+    if (result.success) {
+      const minhas = result.minhas || [];
+
+      let html = '';
+
+      if (minhas.length === 0) {
+        html = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Você ainda não possui nenhuma comunidade de evento criada. <i class="fa-solid fa-face-frown"></i></p>';
+      } else {
+        minhas.forEach(c => {
+          const escapedNome = c.nome.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+          html += `
+            <div class="comunidade-card">
+              <div class="comunidade-card__img-placeholder"><i class="fa-solid fa-users"></i></div>
+              <div class="comunidade-card__body">
+                <p class="comunidade-card__titulo">${escapeHtml(c.nome)}</p>
+                <p class="comunidade-card__evento">${escapeHtml(c.nome_evento)}</p>
+                <p class="comunidade-card__membros"><i class="fa-solid fa-users"></i> ${c.total_membros || 0} membro${c.total_membros != 1 ? 's' : ''}</p>
+                <button class="comunidade-card__btn comunidade-card__btn--entrar" onclick="openCommunityChat(${c.id_comunidade}, ${c.id_evento}, '${escapedNome}')">
+                  <i class="fa-solid fa-comments"></i> Acessar Chat
+                </button>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      container.innerHTML = html;
+    } else {
+      container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Erro ao carregar comunidades: ${result.error}</p>`;
+    }
+  } catch (e) {
+    console.error('Erro ao buscar comunidades:', e);
+    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Erro de rede ao carregar comunidades.</p>';
+  }
+}
+
+// ─── Funções do Chat Popup ──────────────────────────────────────────────────
+function openCommunityChat(idComunidade, idEvento, nomeComunidade) {
+  activeChatCommunityId = idComunidade;
+  activeChatEventoId = idEvento;
+  replyingToMessageId = null;
+
+  document.getElementById('chatModalTitle').innerText = nomeComunidade;
+  document.getElementById('chatModalSub').innerText = 'Comunidade Oficial do Evento (Painel do Organizador)';
+  document.getElementById('chatReplyBar').style.display = 'none';
+  document.getElementById('chatInput').value = '';
+  document.getElementById('chatMessages').innerHTML = '<p class="chat-loading" style="text-align:center; color:var(--text-muted); padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i> Carregando mensagens...</p>';
+
+  const modal = document.getElementById('community-chat-modal');
+  modal.style.display = 'flex';
+
+  fetchChatMessages();
+
+  if (chatPollingInterval) clearInterval(chatPollingInterval);
+  chatPollingInterval = setInterval(fetchChatMessages, 4000);
+}
+
+function closeCommunityChat() {
+  const modal = document.getElementById('community-chat-modal');
+  if (modal) modal.style.display = 'none';
+  
+  if (chatPollingInterval) {
+    clearInterval(chatPollingInterval);
+    chatPollingInterval = null;
+  }
+  activeChatCommunityId = null;
+  activeChatEventoId = null;
+  replyingToMessageId = null;
+}
+
+async function fetchChatMessages() {
+  if (!activeChatCommunityId || !activeChatEventoId) return;
+  try {
+    const response = await fetch(`../php/comunidade_feed.php?action=fetch&id_comunidade=${activeChatCommunityId}&id_evento=${activeChatEventoId}`);
+    const result = await response.json();
+    if (result.success) {
+      renderChatMessages(result.mensagens);
+    } else {
+      console.error('Erro ao buscar mensagens:', result.error);
+    }
+  } catch (err) {
+    console.error('Erro de rede ao buscar mensagens:', err);
+  }
+}
+
+function renderChatMessages(mensagens) {
+  const container = document.getElementById('chatMessages');
+  if (!container) return;
+
+  const isAtBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 80;
+
+  if (mensagens.length === 0) {
+    container.innerHTML = '<p class="chat-empty" style="text-align:center; color:var(--text-muted); padding:40px;">Nenhuma mensagem ainda. Envie a primeira instrução para seus participantes! 📢</p>';
+    return;
+  }
+
+  let html = '';
+  mensagens.forEach(msg => {
+    const isOrg = msg.autor_tipo === 'organizador';
+    const bubbleClass = isOrg ? 'chat-bubble chat-bubble--organizador' : 'chat-bubble';
+    const badgeHtml = isOrg ? '<span class="chat-bubble__badge"><i class="fa-solid fa-star"></i> Organizador</span>' : '';
+
+    let replyRefHtml = '';
+    if (msg.id_resposta_a) {
+      replyRefHtml = `
+        <div class="chat-bubble__reply-ref">
+          <div class="chat-reply-ref__author">↩ ${escapeHtml(msg.resposta_autor_nome)}:</div>
+          <div class="chat-reply-ref__text">${escapeHtml(msg.resposta_texto)}</div>
+        </div>
+      `;
+    }
+
+    const escapedMsgText = msg.mensagem.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const escapedAuthorName = msg.autor_nome.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+    html += `
+      <div class="${bubbleClass}" data-id="${msg.id_mensagem}">
+        <div class="chat-bubble__header">
+          <span class="chat-bubble__author">${escapeHtml(msg.autor_nome)}</span>
+          ${badgeHtml}
+          <span class="chat-bubble__time">${msg.data_envio}</span>
+        </div>
+        ${replyRefHtml}
+        <div class="chat-bubble__text">${escapeHtml(msg.mensagem)}</div>
+        <div class="chat-bubble__actions">
+          <button class="chat-bubble__reply-btn" onclick="setChatReply(${msg.id_mensagem}, '${escapedAuthorName}', '${escapedMsgText}')">
+            <i class="fa-solid fa-reply"></i> Responder
+          </button>
+        </div>
+      </div>
+    `;
+  });
+
+  const wasLoading = container.innerHTML.includes('chat-loading');
+  container.innerHTML = html;
+
+  if (isAtBottom || wasLoading) {
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+function setChatReply(idMensagem, autorNome, textoMensagem) {
+  replyingToMessageId = idMensagem;
+  const replyBar = document.getElementById('chatReplyBar');
+  const replyText = document.getElementById('chatReplyText');
+
+  const preview = textoMensagem.length > 50 ? textoMensagem.substring(0, 50) + '...' : textoMensagem;
+
+  replyText.innerText = `${autorNome}: "${preview}"`;
+  replyBar.style.display = 'flex';
+
+  const input = document.getElementById('chatInput');
+  if (input) input.focus();
+}
+
+function cancelChatReply() {
+  replyingToMessageId = null;
+  const replyBar = document.getElementById('chatReplyBar');
+  if (replyBar) replyBar.style.display = 'none';
+  const replyText = document.getElementById('chatReplyText');
+  if (replyText) replyText.innerText = '';
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  if (!input) return;
+  const mensagem = input.value.trim();
+
+  if (!mensagem) return;
+  if (!activeChatCommunityId || !activeChatEventoId) return;
+
+  const sendBtn = document.getElementById('chatSendBtn');
+  if (sendBtn) sendBtn.disabled = true;
+
+  try {
+    const response = await fetch('../php/comunidade_feed.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'send',
+        id_comunidade: activeChatCommunityId,
+        id_evento: activeChatEventoId,
+        mensagem: mensagem,
+        id_resposta_a: replyingToMessageId
+      })
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      input.value = '';
+      cancelChatReply();
+      await fetchChatMessages();
+    } else {
+      showToast('Erro ao enviar: ' + result.error, 'fa-triangle-exclamation');
+    }
+  } catch (err) {
+    console.error('Erro ao enviar mensagem:', err);
+    showToast('Erro de rede ao enviar mensagem.', 'fa-triangle-exclamation');
+  } finally {
+    if (sendBtn) sendBtn.disabled = false;
+  }
+}
+
+function initChatListeners() {
+  const closeBtn = document.getElementById('chatCloseBtn');
+  if (closeBtn) closeBtn.addEventListener('click', closeCommunityChat);
+
+  const replyCancel = document.getElementById('chatReplyCancel');
+  if (replyCancel) replyCancel.addEventListener('click', cancelChatReply);
+
+  const sendBtn = document.getElementById('chatSendBtn');
+  if (sendBtn) sendBtn.addEventListener('click', sendChatMessage);
+
+  const input = document.getElementById('chatInput');
+  if (input) {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+      }
+    });
+  }
+
+  const modal = document.getElementById('community-chat-modal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeCommunityChat();
+      }
+    });
+  }
+}

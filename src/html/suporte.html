@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JoinUp - Central de Suporte</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="stylesheet" href="../Css/suporte.css" />
 </head>
+
 <body>
   <div class="bg-orbs">
     <div class="orb orb-1"></div>
@@ -74,20 +77,6 @@
     <div class="main">
       <header class="topbar">
         <button class="burger-btn" id="burgerBtn"><i class="fa-solid fa-bars"></i></button>
-
-        <div class="topbar__search">
-          <span class="topbar__search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-          <input type="text" id="searchInput" placeholder="Buscar tickets ou usuários" autocomplete="off" />
-        </div>
-
-        <div class="topbar__actions">
-          <button class="icon-btn" id="refreshBtn" title="Atualizar dados">
-            <i class="fa-solid fa-rotate"></i>
-          </button>
-          <button class="icon-btn" onclick="goPage('profile')" title="Perfil">
-            <i class="fa-solid fa-user"></i>
-          </button>
-        </div>
       </header>
 
       <div class="page active" id="page-dashboard">
@@ -230,7 +219,8 @@
         <div class="empty-state glass">
           <i class="fa-solid fa-book-open"></i>
           <h3>Nenhum artigo carregado</h3>
-          <p>Para esta tela ser funcional, será necessário criar uma tabela de artigos ou conectar uma fonte real de conteúdo.</p>
+          <p>Para esta tela ser funcional, será necessário criar uma tabela de artigos ou conectar uma fonte real de
+            conteúdo.</p>
         </div>
       </div>
 
@@ -246,7 +236,8 @@
         <div class="empty-state glass">
           <i class="fa-solid fa-database"></i>
           <h3>Sem configurações persistidas</h3>
-          <p>Quando houver tabela de preferências, esta tela poderá salvar notificações, tema e outros ajustes por usuário.</p>
+          <p>Quando houver tabela de preferências, esta tela poderá salvar notificações, tema e outros ajustes por
+            usuário.</p>
         </div>
       </div>
 
@@ -311,7 +302,8 @@
         <input type="hidden" id="modalTicketInputId" />
         <div class="form-group">
           <label for="ticketResponseText">Resposta ao usuário</label>
-          <textarea id="ticketResponseText" rows="5" maxlength="500" placeholder="Escreva a orientação ou solução proposta..." required></textarea>
+          <textarea id="ticketResponseText" rows="5" maxlength="500"
+            placeholder="Escreva a orientação ou solução proposta..." required></textarea>
         </div>
         <div class="ticket-modal__actions">
           <button class="btn btn--primary" type="submit">Enviar e aguardar usuário</button>
@@ -328,4 +320,5 @@
 
   <script src="../js/suporte.js"></script>
 </body>
+
 </html>

@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="../Css/organizador.css" />
+  <link rel="stylesheet" href="../Css/comunidades.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 
@@ -53,9 +54,10 @@
         <button class="nav-item" data-page="sales">
           <span class="nav-icon"></span> Vendas
         </button>
-        <button class="nav-item" data-page="support">
-          <span class="nav-icon"></span> Suporte
+        <button class="nav-item" data-page="communities">
+          <span class="nav-icon"></span> Comunidades
         </button>
+
 
         <span class="nav-section">Conta</span>
         <button class="nav-item" data-page="profile">
@@ -84,11 +86,6 @@
       <!-- TOPBAR -->
       <header class="topbar">
         <button class="burger-btn" id="burgerBtn"><i class="fa-solid fa-bars"></i></button>
-
-        <div class="topbar__search">
-          <span class="topbar__search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-          <input type="text" id="searchInput" placeholder="Buscar eventos, vendas..." autocomplete="off" />
-        </div>
 
         <div class="topbar__actions">
           <!-- Ícones removidos -->
@@ -440,48 +437,13 @@
           </div>
 
           <div class="sales-actions">
-            <button class="btn btn--primary" onclick="showToast('Solicitar saque','fa-sack-dollar')">Solicitar Saque</button>
+            <button class="btn btn--primary" onclick="showToast('Solicitar saque','fa-sack-dollar')">Solicitar
+              Saque</button>
             <button class="btn btn--ghost" onclick="showToast('Ver extrato','fa-file-lines')">Ver Extrato</button>
           </div>
         </div>
       </div><!-- /page-sales -->
 
-      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
-      <!-- ░░ PAGE: SUPORTE            ░░ -->
-      <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
-      <div class="page" id="page-support">
-        <div class="section-title">Central de <span class="text-gradient">Suporte</span></div>
-        <p class="section-sub">Precisa de ajuda? Estamos aqui para você.</p>
-
-        <div class="support-content">
-          <div class="support-card glass">
-            <div class="support-card__icon"><i class="fa-solid fa-comments"></i></div>
-            <div class="support-card__content">
-              <h3>Chat com Suporte</h3>
-              <p>Tire suas dúvidas em tempo real</p>
-              <button class="btn btn--primary" onclick="showToast('Chat em breve','fa-comments')">Iniciar Chat</button>
-            </div>
-          </div>
-
-          <div class="support-card glass">
-            <div class="support-card__icon"><i class="fa-solid fa-book-open"></i></div>
-            <div class="support-card__content">
-              <h3>Central de Ajuda</h3>
-              <p>Artigos e tutoriais completos</p>
-              <button class="btn btn--ghost" onclick="showToast('Ajuda em breve','fa-book-open')">Ver Tutoriais</button>
-            </div>
-          </div>
-
-          <div class="support-card glass">
-            <div class="support-card__icon"><i class="fa-solid fa-phone"></i></div>
-            <div class="support-card__content">
-              <h3>Contato</h3>
-              <p>Entre em contato conosco</p>
-              <button class="btn btn--ghost" onclick="showToast('Contato em breve','fa-phone')">Fale Conosco</button>
-            </div>
-          </div>
-        </div>
-      </div><!-- /page-support -->
 
       <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
       <!-- ░░ PAGE: PERFIL ORGANIZADOR ░░ -->
@@ -560,11 +522,12 @@
 
         </div>
       </div><!-- /page-profile -->
-      
+
       <!-- ░░ PAGE: TICKET HELP ░░ -->
       <div class="page" id="page-ticketHelp">
         <div class="section-title">Central de <span class="text-gradient">Ajuda</span></div>
-        <p class="section-sub">Abra um ticket e descreva seu problema. Nossa equipe de suporte entrará em contato em breve.</p>
+        <p class="section-sub">Abra um ticket e descreva seu problema. Nossa equipe de suporte entrará em contato em
+          breve.</p>
         <div class="support-help-grid">
           <div class="profile-card glass">
             <form id="ticketHelpForm">
@@ -574,7 +537,8 @@
               </div>
               <div class="form-group">
                 <label for="ticketDescription">Descrição do problema</label>
-                <textarea id="ticketDescription" placeholder="Descreva o que aconteceu, onde e quando..." rows="6" required></textarea>
+                <textarea id="ticketDescription" placeholder="Descreva o que aconteceu, onde e quando..." rows="6"
+                  required></textarea>
               </div>
               <button type="submit" id="ticketHelpSubmit" class="btn btn--primary">Enviar ticket</button>
             </form>
@@ -588,6 +552,14 @@
         </div>
       </div><!-- /page-ticketHelp -->
 
+      <!-- ░░ PAGE: COMMUNITIES ░░ -->
+      <div class="page" id="page-communities">
+        <div class="section-title">Minhas <span class="text-gradient">Comunidades</span></div>
+        <p class="section-sub">Gerencie o chat e interaja com os participantes dos seus eventos.</p>
+        <div class="comunidades-grid" id="orgGroupsGridContainer">
+          <!-- Dinamicamente renderizado via JS -->
+        </div>
+      </div><!-- /page-communities -->
 
     </div><!-- /main -->
   </div><!-- /shell -->
@@ -600,7 +572,8 @@
           <div class="support-chat__id" id="supportChatTicketId">Ticket</div>
           <div class="support-chat-modal__title" id="supportChatTitle">Atendimento</div>
         </div>
-        <button class="support-chat-modal__close" type="button" onclick="closeSupportTicketConversation()">Fechar</button>
+        <button class="support-chat-modal__close" type="button"
+          onclick="closeSupportTicketConversation()">Fechar</button>
       </div>
 
       <div class="support-chat__messages" id="supportChatMessages"></div>
@@ -608,12 +581,40 @@
       <form class="support-chat__form" id="supportTicketChatForm">
         <input type="hidden" id="supportChatTicketInput" />
         <label for="supportChatReply">Responder ao suporte</label>
-        <textarea id="supportChatReply" rows="4" maxlength="500" placeholder="Conte o que ainda aconteceu ou envie mais detalhes..." required></textarea>
+        <textarea id="supportChatReply" rows="4" maxlength="500"
+          placeholder="Conte o que ainda aconteceu ou envie mais detalhes..." required></textarea>
         <div class="support-chat__actions">
           <button type="submit" class="btn btn--primary">Enviar mensagem</button>
           <button type="button" class="btn btn--ghost" onclick="closeSupportTicketConversation()">Voltar</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Chat da Comunidade -->
+  <div id="community-chat-modal" class="chat-modal-overlay" style="display:none">
+    <div class="chat-modal">
+      <div class="chat-modal__header">
+        <div>
+          <div class="chat-modal__title" id="chatModalTitle">Comunidade</div>
+          <div class="chat-modal__sub" id="chatModalSub"></div>
+        </div>
+        <button class="chat-modal__close" id="chatCloseBtn">✕</button>
+      </div>
+
+      <div class="chat-modal__messages" id="chatMessages"></div>
+
+      <!-- Reply indicator -->
+      <div class="chat-reply-bar" id="chatReplyBar" style="display:none">
+        <span class="chat-reply-bar__text">↩ Respondendo: <span id="chatReplyText"></span></span>
+        <button id="chatReplyCancel">✕</button>
+      </div>
+
+      <!-- Composer -->
+      <div class="chat-composer">
+        <textarea id="chatInput" placeholder="Escreva uma mensagem..." rows="1"></textarea>
+        <button id="chatSendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
     </div>
   </div>
 

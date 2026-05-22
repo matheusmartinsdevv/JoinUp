@@ -9,7 +9,6 @@ const searchInput = document.getElementById('searchInput');
 const ticketResponseForm = document.getElementById('ticketResponseForm');
 const closeTicketBtn = document.getElementById('closeTicketBtn');
 const chatReplyForm = document.getElementById('chatReplyForm');
-const refreshBtn = document.getElementById('refreshBtn');
 
 let supportTickets = [];
 let currentTicketFilter = 'all';
@@ -141,6 +140,41 @@ function updateSupportStats(stats) {
   setText('statProgressTickets', stats.em_atendimento || 0);
   setText('statWaitingTickets', stats.aguardando_usuario || 0);
   setText('statClosedTickets', stats.fechados || 0);
+}
+
+async function loadSupportProfileData() {
+  try {
+    const response = await fetch('../php/get_suporte_data.php');
+    const result = await response.json();
+
+    if (result?.sucesso || result?.success) {
+      updateSupportProfile({ nome: result.nome, email: result.email });
+      return;
+    }
+
+    console.warn('Não foi possível carregar perfil de suporte:', result.mensagem || result.error || 'Resposta inválida');
+  } catch (error) {
+    console.error('Erro ao carregar perfil de suporte:', error);
+  }
+
+  // Fallback: tente usar o mesmo payload de tickets, caso a sessão de suporte exista
+  await loadSupportProfileFromTickets();
+}
+
+async function loadSupportProfileFromTickets() {
+  try {
+    const response = await fetch('../php/get_support_tickets.php');
+    const result = await response.json();
+
+    if (result?.success && result.suporte) {
+      updateSupportProfile({ nome: result.suporte.nome, email: result.suporte.email });
+      return;
+    }
+
+    console.warn('Fallback de perfil de suporte também falhou:', result.error || result.mensagem || 'Resposta inválida');
+  } catch (error) {
+    console.error('Erro no fallback de perfil de suporte:', error);
+  }
 }
 
 function renderRecentTickets() {
@@ -655,15 +689,13 @@ sidebarOverlay.addEventListener('click', closeSidebar);
 logoutBtn.addEventListener('click', () => {
   window.location.href = '../php/logout.php';
 });
-refreshBtn.addEventListener('click', loadSupportTickets);
-
-if (searchInput) searchInput.addEventListener('input', renderSupportTickets);
 if (ticketResponseForm) ticketResponseForm.addEventListener('submit', submitTicketResponse);
 if (closeTicketBtn) closeTicketBtn.addEventListener('click', closeCurrentTicket);
 if (chatReplyForm) chatReplyForm.addEventListener('submit', submitChatReply);
 
 document.addEventListener('DOMContentLoaded', () => {
   goPage('dashboard');
+  loadSupportProfileData();
   loadSupportTickets();
 });
 

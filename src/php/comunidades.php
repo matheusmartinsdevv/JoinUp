@@ -3,47 +3,68 @@ header('Content-Type: application/json; charset=utf-8');
 session_start();
 include __DIR__ . '/conexao.php';
 
-if (!isset($_SESSION['usuario_cpf'])) {
+// ─── Autenticação Dual ─────────────────────────────────────────────────────
+$is_participante = isset($_SESSION['usuario_cpf'])  && !empty($_SESSION['usuario_cpf']);
+$is_organizador  = isset($_SESSION['usuario_cnpj']) && !empty($_SESSION['usuario_cnpj']);
+
+// Em caso de sessão compartilhada antiga, prioriza o organizador para evitar enviar mensagens como participante.
+if ($is_participante && $is_organizador) {
+    $is_participante = false;
+}
+
+if (!$is_participante && !$is_organizador) {
     echo json_encode(['success' => false, 'error' => 'Usuário não autenticado.']);
     exit;
 }
 
-$cpf = $_SESSION['usuario_cpf'];
-
-$stmt_user = $conn->prepare("SELECT id_participante FROM participantes WHERE cpf = ?");
-$stmt_user->bind_param('s', $cpf);
-$stmt_user->execute();
-$result_user = $stmt_user->get_result();
-$user = $result_user->fetch_assoc();
-$stmt_user->close();
-
-if (!$user) {
-    echo json_encode(['success' => false, 'error' => 'Participante não encontrado.']);
-    exit;
+// Resolver ID do usuário atual
+if ($is_participante) {
+    $stmt = $conn->prepare("SELECT id_participante FROM participantes WHERE cpf = ?");
+    $stmt->bind_param('s', $_SESSION['usuario_cpf']);
+    $stmt->execute();
+    $user = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    if (!$user) {
+        echo json_encode(['success' => false, 'error' => 'Participante não encontrado.']);
+        exit;
+    }
+    $id_participante = (int)$user['id_participante'];
+} else {
+    $stmt = $conn->prepare("SELECT id_organizador FROM organizadores WHERE cnpj = ?");
+    $stmt->bind_param('s', $_SESSION['usuario_cnpj']);
+    $stmt->execute();
+    $user = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    if (!$user) {
+        echo json_encode(['success' => false, 'error' => 'Organizador não encontrado.']);
+        exit;
+    }
+    $id_organizador = (int)$user['id_organizador'];
 }
 
-$id_participante = (int) $user['id_participante'];
-
+// ─── POST: Ações (entrar / sair) — apenas participante ────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!$is_participante) {
+        echo json_encode(['success' => false, 'error' => 'Ação não permitida para organizadores.']);
+        exit;
+    }
     $input = json_decode(file_get_contents('php://input'), true);
-
     if (!$input || !isset($input['action'], $input['id_comunidade'])) {
         echo json_encode(['success' => false, 'error' => 'Dados inválidos.']);
         exit;
     }
 
-    $action       = $input['action'];
-    $id_comunidade = (int) $input['id_comunidade'];
+    $action        = $input['action'];
+    $id_comunidade = (int)$input['id_comunidade'];
 
     if ($action === 'entrar') {
         $check = $conn->prepare(
-            "SELECT 1 FROM participante_comunidades 
+            "SELECT 1 FROM participante_comunidades
              WHERE id_participante = ? AND id_comunidade = ?"
         );
         $check->bind_param('ii', $id_participante, $id_comunidade);
         $check->execute();
         $check->store_result();
-
         if ($check->num_rows > 0) {
             echo json_encode(['success' => false, 'error' => 'Você já faz parte desta comunidade.']);
             exit;
@@ -54,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "INSERT INTO participante_comunidades (id_participante, id_comunidade) VALUES (?, ?)"
         );
         $stmt->bind_param('ii', $id_participante, $id_comunidade);
-
         if ($stmt->execute()) {
             echo json_encode(['success' => true, 'message' => 'Entrou na comunidade com sucesso!']);
         } else {
@@ -65,11 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'sair') {
         $stmt = $conn->prepare(
-            "DELETE FROM participante_comunidades 
+            "DELETE FROM participante_comunidades
              WHERE id_participante = ? AND id_comunidade = ?"
         );
         $stmt->bind_param('ii', $id_participante, $id_comunidade);
-
         if ($stmt->execute()) {
             echo json_encode(['success' => true, 'message' => 'Você saiu da comunidade.']);
         } else {
@@ -82,45 +101,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
+// ─── GET: Listar comunidades ──────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['fetch'])) {
 
-    $minhas = $conn->prepare(
-        "SELECT c.id_comunidade, c.nome, c.descricao, c.imagem,
-                e.nome AS nome_evento, e.cidade, e.estado, e.data AS data_evento,
-                (SELECT COUNT(*) FROM participante_comunidades pc2 
-                 WHERE pc2.id_comunidade = c.id_comunidade) AS total_membros
-         FROM comunidades c
-         INNER JOIN participante_comunidades pc ON pc.id_comunidade = c.id_comunidade
-         INNER JOIN eventos e ON e.id_evento = c.id_evento
-         WHERE pc.id_participante = ?
-         ORDER BY c.nome ASC"
-    );
-    $minhas->bind_param('i', $id_participante);
-    $minhas->execute();
-    $minhas_comunidades = $minhas->get_result()->fetch_all(MYSQLI_ASSOC);
+    if ($is_participante) {
+        $stmt = $conn->prepare("
+            SELECT
+                c.id_comunidade,
+                c.nome,
+                c.descricao,
+                c.imagem,
+                c.id_evento,
+                e.nome      AS nome_evento,
+                e.cidade,
+                e.estado,
+                e.data      AS data_evento,
+                (SELECT COUNT(*)
+                 FROM participante_comunidades pc2
+                 WHERE pc2.id_comunidade = c.id_comunidade) AS total_membros,
+                (SELECT COUNT(*)
+                 FROM ingressos i
+                 WHERE i.id_participante = ?
+                   AND i.id_evento       = c.id_evento
+                   AND i.status IN ('ativo','utilizado')
+                ) AS has_ingresso,
+                (SELECT COUNT(*)
+                 FROM participante_comunidades pc3
+                 WHERE pc3.id_participante = ?
+                   AND pc3.id_comunidade = c.id_comunidade
+                ) AS is_membro
+            FROM comunidades c
+            INNER JOIN eventos e ON e.id_evento = c.id_evento
+            ORDER BY has_ingresso DESC, c.nome ASC
+        ");
+        $stmt->bind_param('ii', $id_participante, $id_participante);
+        $stmt->execute();
+        $todas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
 
-    $explorar = $conn->prepare(
-        "SELECT c.id_comunidade, c.nome, c.descricao, c.imagem,
-                e.nome AS nome_evento, e.cidade, e.estado, e.data AS data_evento,
-                (SELECT COUNT(*) FROM participante_comunidades pc2 
-                 WHERE pc2.id_comunidade = c.id_comunidade) AS total_membros
-         FROM comunidades c
-         INNER JOIN eventos e ON e.id_evento = c.id_evento
-         WHERE c.id_comunidade NOT IN (
-             SELECT id_comunidade FROM participante_comunidades
-             WHERE id_participante = ?
-         )
-         ORDER BY total_membros DESC, c.nome ASC"
-    );
-    $explorar->bind_param('i', $id_participante);
-    $explorar->execute();
-    $explorar_comunidades = $explorar->get_result()->fetch_all(MYSQLI_ASSOC);
+        foreach ($todas as &$c) {
+            $c['has_ingresso']  = (int)$c['has_ingresso'] > 0 ? 1 : 0;
+            $c['is_membro']      = (int)$c['is_membro'] > 0 ? 1 : 0;
+            $c['total_membros'] = (int)$c['total_membros'];
+        }
+        unset($c);
 
-    echo json_encode([
-        'success'  => true,
-        'minhas'   => $minhas_comunidades,
-        'explorar' => $explorar_comunidades
-    ]);
+        $minhas   = array_values(array_filter($todas, fn($c) => $c['has_ingresso'] === 1));
+        $explorar = array_values(array_filter($todas, fn($c) => $c['has_ingresso'] === 0));
+
+        echo json_encode([
+            'success'  => true,
+            'minhas'   => $minhas,
+            'explorar' => $explorar,
+        ]);
+
+    } else {
+        // Organizador: apenas as comunidades dos seus eventos (acesso total)
+        $stmt = $conn->prepare("
+            SELECT
+                c.id_comunidade,
+                c.nome,
+                c.descricao,
+                c.imagem,
+                c.id_evento,
+                e.nome      AS nome_evento,
+                e.cidade,
+                e.estado,
+                e.data      AS data_evento,
+                (SELECT COUNT(*)
+                 FROM participante_comunidades pc2
+                 WHERE pc2.id_comunidade = c.id_comunidade) AS total_membros,
+                1 AS has_ingresso
+            FROM comunidades c
+            INNER JOIN eventos e ON e.id_evento = c.id_evento
+            WHERE e.id_organizador = ?
+            ORDER BY c.nome ASC
+        ");
+        $stmt->bind_param('i', $id_organizador);
+        $stmt->execute();
+        $minhas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        foreach ($minhas as &$c) {
+            $c['has_ingresso']  = 1;
+            $c['total_membros'] = (int)$c['total_membros'];
+        }
+        unset($c);
+
+        echo json_encode([
+            'success'  => true,
+            'minhas'   => $minhas,
+            'explorar' => [],
+        ]);
+    }
     exit;
 }
 

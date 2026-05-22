@@ -25,7 +25,8 @@ if (!empty($email) && !empty($senha_digitada)) {
         // 5. Verifica se a senha coincide com o hash do banco
         if (password_verify($senha_digitada, $usuario_dados['senha'])) {
             
-            // Login com sucesso: Guarda dados na sessão
+            // Limpa qualquer sessão de organizador anterior e guarda o participante
+            unset($_SESSION['usuario_cnpj']);
             $_SESSION['usuario_cpf'] = $usuario_dados['cpf'];
             $_SESSION['usuario_nome'] = $usuario_dados['nome'];
             

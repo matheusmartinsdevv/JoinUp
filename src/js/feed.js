@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadMyTickets();
   loadCommunities();
   loadMySupportTickets();
+  initChatListeners();
 });
 
 const purchaseState = {
@@ -14,6 +15,8 @@ const purchaseState = {
   ticketTypes: []
 };
 let mySupportTickets = [];
+let allEvents = [];
+let selectedSearchEventId = null;
 
 async function loadUserData() {
   try {
@@ -58,6 +61,12 @@ async function loadUserData() {
   }
 }
 
+function normalizeCommunityName(rawName) {
+  const name = String(rawName || '').trim();
+  if (!name) return 'Desconhecida';
+  return escapeHtml(name.replace(/^Comunidade:\s*/i, '').trim() || 'Desconhecida');
+}
+
 async function loadMyPosts(userName, initials) {
   const container = document.getElementById('minhasPostagensContainer');
   if (!container) return;
@@ -73,15 +82,11 @@ async function loadMyPosts(userName, initials) {
             <div class="post__avatar">${initials}</div>
             <div>
               <div class="post__name">${userName}</div>
-              <span class="post__event-tag">Postagem JoinUp</span>
+              <span class="post__community-tag">Comunidade: ${normalizeCommunityName(post.comunidade_nome)}</span>
             </div>
           </div>
-          <p class="post__body">${post.descricao}</p>
-          ${post.imagem ? `<img src="${post.imagem}" class="post__img" style="width:100%; border-radius:12px; margin: 10px 0;">` : ''}
-          <div class="post__actions">
-            <button class="post-action"><i class="fa-solid fa-heart"></i> ${post.curtidas || 0}</button>
-            <button class="post-action"><i class="fa-solid fa-comments"></i> 0</button>
-          </div>
+          <p class="post__body">${escapeHtml(post.descricao || '')}</p>
+          ${post.imagem ? `<img src="${escapeHtml(post.imagem)}" class="post__img" style="width:100%; border-radius:12px; margin: 10px 0;">` : ''}
         </div>
       `).join('');
     } else {
@@ -191,14 +196,17 @@ async function loadEvents() {
   try {
     const response = await fetch('../php/get_explorar_eventos.php');
     const eventos = await response.json();
+    allEvents = Array.isArray(eventos) ? eventos : [];
 
-    if (!eventos || eventos.length === 0) {
+    if (!allEvents.length) {
       if (grid) grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhum evento encontrado no momento. <i class="fa-solid fa-face-frown"></i></p>';
       renderFeedEvents([]);
+      renderSearchResults(searchInput?.value.trim() || '');
       return;
     }
 
-    renderFeedEvents(eventos);
+    renderFeedEvents(allEvents);
+    renderSearchResults(searchInput?.value.trim() || '');
 
     const cores = {
       'Rock': 'linear-gradient(135deg,#1e1b4b,#4338ca)',
@@ -230,7 +238,7 @@ async function loadEvents() {
         const cleanArtistas = artistasTxt.replace(/'/g, "\\'");
 
         return `
-          <div class="event-card" onclick="showEventModal(${eventId},'${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','fa-music','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', ${imagemParam})">
+          <div class="event-card" data-event-id="${eventId}" onclick="showEventModal(${eventId},'${cleanName}','${evento.data_formatada}','${evento.preco_formatado}','fa-music','${evento.total_participantes || 0}','${cleanDesc}','${cleanLoc}','${cleanArtistas}','${cleanCity}','${cleanUF}', ${imagemParam})">
             <div class="event-card__img" style="${imgStyle}">${iconOrImg}
               <div class="event-card__img-overlay"></div>
               <span class="event-card__tag"><i class="fa-solid fa-thumbtack"></i> ${evento.genero_nome || 'Evento'}</span>
@@ -357,8 +365,73 @@ const searchDropdown = document.getElementById('searchDropdown');
 searchInput.addEventListener('focus', () => searchDropdown.classList.add('open'));
 searchInput.addEventListener('blur', () => setTimeout(() => searchDropdown.classList.remove('open'), 200));
 searchInput.addEventListener('input', function () {
-  searchDropdown.classList.toggle('open', this.value.length > 0 || document.activeElement === this);
+  const query = this.value.trim();
+  searchDropdown.classList.toggle('open', query.length > 0 || document.activeElement === this);
+  renderSearchResults(query);
 });
+
+function renderSearchResults(query) {
+  if (!searchDropdown) return;
+  const normalized = String(query || '').trim().toLowerCase();
+
+  if (!normalized) {
+    searchDropdown.innerHTML = `
+      <div class="search-result">
+        <div class="search-result-info">
+          <div class="search-result-name">Digite para buscar eventos</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const matches = allEvents.filter(evento => {
+    const artists = Array.isArray(evento.artistas) ? evento.artistas.join(' ') : String(evento.artistas || '');
+    const haystack = `${evento.evento_nome || ''} ${evento.genero_nome || ''} ${evento.localizacao || ''} ${evento.cidade || ''} ${evento.estado || ''} ${artists}`.toLowerCase();
+    return haystack.includes(normalized);
+  }).slice(0, 6);
+
+  if (!matches.length) {
+    searchDropdown.innerHTML = `
+      <div class="search-result">
+        <div class="search-result-info">
+          <div class="search-result-name">Nenhum evento encontrado</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  searchDropdown.innerHTML = matches.map(evento => {
+    const subtitle = `${evento.genero_nome ? evento.genero_nome + ' · ' : ''}${evento.cidade || ''}${evento.estado ? ' · ' + evento.estado : ''}`.trim();
+    return `
+      <div class="search-result" onclick="selectSearchResult(${Number(evento.id_evento)})">
+        <div class="search-result-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <div class="search-result-info">
+          <div class="search-result-name">${escapeHtml(evento.evento_nome || 'Evento')}</div>
+          <div class="search-result-sub">${escapeHtml(subtitle || 'Evento encontrado')}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectSearchResult(eventId) {
+  if (!eventId) return;
+  selectedSearchEventId = eventId;
+  searchDropdown.classList.remove('open');
+  searchInput.value = '';
+  goPage('events');
+  setTimeout(() => highlightEventCard(eventId), 250);
+}
+
+function highlightEventCard(eventId) {
+  const card = document.querySelector(`.event-card[data-event-id="${eventId}"]`);
+  if (!card) return;
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  card.classList.add('event-card--highlighted');
+  setTimeout(() => card.classList.remove('event-card--highlighted'), 2600);
+}
 
 /* =========================================
    POST ACTIONS
@@ -1015,6 +1088,14 @@ function showToast(msg, icon = 'fa-circle-check') {
 /* =========================================
    COMMUNITY ACTIONS
    ========================================= */
+/* =========================================
+   COMMUNITY ACTIONS & CHAT POPUP
+   ========================================= */
+let activeChatCommunityId = null;
+let activeChatEventoId = null;
+let chatPollingInterval = null;
+let replyingToMessageId = null;
+
 async function loadCommunities() {
   const container = document.getElementById('groupsGridContainer');
   if (!container) return;
@@ -1032,8 +1113,21 @@ async function loadCommunities() {
       if (minhas.length === 0 && explorar.length === 0) {
         html = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhuma comunidade encontrada. <i class="fa-solid fa-face-frown"></i></p>';
       } else {
-        // Render Minhas Comunidades
+        // Render Minhas Comunidades (Acessíveis porque tem ingresso)
         minhas.forEach(c => {
+          const escapedNome = c.nome.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+          const isMembro = c.is_membro === 1;
+          const buttonHtml = isMembro
+            ? `<button class="btn btn--ghost btn--sm" style="color: var(--text-muted); border-color: rgba(255,255,255,0.08); margin-right: 6px;" onclick="leaveCommunity(${c.id_comunidade}, this)" title="Sair da comunidade">
+                 Sair
+               </button>
+               <button class="btn btn--primary btn--sm" onclick="openCommunityChat(${c.id_comunidade}, ${c.id_evento}, '${escapedNome}')">
+                 <i class="fa-solid fa-comments"></i> Acessar
+               </button>`
+            : `<button class="btn btn--ghost btn--sm" style="color: var(--purple-l); border-color: var(--border-p);" onclick="joinCommunity(${c.id_comunidade}, this)">
+                 <i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar
+               </button>`;
+
           html += `
             <div class="group-card glass">
               <div class="group-card__header">
@@ -1047,34 +1141,30 @@ async function loadCommunities() {
                 <span class="badge" style="font-size:0.75rem; background:rgba(157,78,221,0.2); padding: 4px 8px; border-radius:12px; margin-right:auto; color: var(--purple-l);">
                   <i class="fa-solid fa-users"></i> ${c.total_membros || 0} membros
                 </span>
-                <button class="btn btn--primary btn--sm" onclick="showToast('Abrindo comunidade ${escapeHtml(c.nome)}!', 'fa-heart')">
-                  Acessar
-                </button>
-                <button class="btn btn--ghost btn--sm" style="color:#ef4444; border-color:rgba(239,68,68,0.2); margin-left: 5px;" onclick="toggleComunidade(${c.id_comunidade}, 'sair')">
-                  Sair
-                </button>
+                ${buttonHtml}
               </div>
             </div>
           `;
         });
 
-        // Render Explorar
+        // Render Explorar (Bloqueadas porque NÃO tem ingresso)
         explorar.forEach(c => {
           html += `
-            <div class="group-card glass" style="opacity: 0.9;">
+            <div class="group-card group-card--locked glass">
+              <div class="lock-icon-badge"><i class="fa-solid fa-lock"></i></div>
               <div class="group-card__header">
-                <div class="group-card__icon" style="filter: grayscale(40%);"><i class="fa-solid fa-guitar"></i></div>
+                <div class="group-card__icon" style="filter: grayscale(100%); opacity: 0.5;"><i class="fa-solid fa-guitar"></i></div>
                 <div>
-                  <div class="group-card__name">${escapeHtml(c.nome)}</div>
+                  <div class="group-card__name" style="color: var(--text-muted);">${escapeHtml(c.nome)}</div>
                 </div>
               </div>
-              <p class="group-card__desc">${escapeHtml(c.descricao || 'Explore essa nova comunidade!')}</p>
-              <div class="group-card__footer">
-                <span class="badge" style="font-size:0.75rem; background:rgba(255,255,255,0.1); padding: 4px 8px; border-radius:12px; margin-right:auto; color: var(--text-muted);">
+              <p class="group-card__desc" style="color: var(--text-muted);">${escapeHtml(c.descricao || 'Compre o ingresso para este evento para liberar a comunidade!')}</p>
+              <div class="group-card__footer" style="opacity: 0.5;">
+                <span class="badge" style="font-size:0.75rem; background:rgba(255,255,255,0.05); padding: 4px 8px; border-radius:12px; margin-right:auto; color: var(--text-muted);">
                   <i class="fa-solid fa-users"></i> ${c.total_membros || 0} membros
                 </span>
-                <button class="btn btn--ghost btn--sm" onclick="toggleComunidade(${c.id_comunidade}, 'entrar')">
-                  Entrar
+                <button class="btn btn--ghost btn--sm" disabled style="cursor: not-allowed; border-color: rgba(255,255,255,0.1); color: var(--text-muted);">
+                  <i class="fa-solid fa-lock"></i> Bloqueado
                 </button>
               </div>
             </div>
@@ -1108,22 +1198,265 @@ async function loadCommunities() {
   }
 }
 
-async function toggleComunidade(idComunidade, action) {
+async function joinCommunity(idComunidade, btn) {
+  if (!idComunidade || !btn) return;
+  btn.disabled = true;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Entrando...';
+
   try {
     const response = await fetch('../php/comunidades.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id_comunidade: idComunidade, action: action })
+      body: JSON.stringify({
+        action: 'entrar',
+        id_comunidade: idComunidade
+      })
     });
     const result = await response.json();
     if (result.success) {
-      showToast(result.message || 'Sucesso!');
-      loadCommunities();
+      showToast('Você entrou na comunidade! 🎉');
+      await loadCommunities();
     } else {
-      showToast('Erro: ' + result.error, 'fa-triangle-exclamation');
+      showToast('Erro ao entrar: ' + result.error, 'fa-triangle-exclamation');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
     }
-  } catch (error) {
-    console.error('Erro ao interagir com comunidade:', error);
-    showToast('Erro na rede.', 'fa-triangle-exclamation');
+  } catch (err) {
+    console.error('Erro ao entrar na comunidade:', err);
+    showToast('Erro de rede ao entrar na comunidade.', 'fa-triangle-exclamation');
+    btn.disabled = false;
+    btn.innerHTML = originalText;
   }
 }
+
+async function leaveCommunity(idComunidade, btn) {
+  if (!idComunidade || !btn) return;
+  if (!confirm('Tem certeza de que deseja sair desta comunidade?')) return;
+  btn.disabled = true;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saindo...';
+
+  try {
+    const response = await fetch('../php/comunidades.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'sair',
+        id_comunidade: idComunidade
+      })
+    });
+    const result = await response.json();
+    if (result.success) {
+      showToast('Você saiu da comunidade.');
+      await loadCommunities();
+    } else {
+      showToast('Erro ao sair: ' + result.error, 'fa-triangle-exclamation');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  } catch (err) {
+    console.error('Erro ao sair da comunidade:', err);
+    showToast('Erro de rede ao sair da comunidade.', 'fa-triangle-exclamation');
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+
+// ─── Funções do Chat Popup ──────────────────────────────────────────────────
+function openCommunityChat(idComunidade, idEvento, nomeComunidade) {
+  activeChatCommunityId = idComunidade;
+  activeChatEventoId = idEvento;
+  replyingToMessageId = null;
+
+  document.getElementById('chatModalTitle').innerText = nomeComunidade;
+  document.getElementById('chatModalSub').innerText = 'Comunidade Oficial do Evento';
+  document.getElementById('chatReplyBar').style.display = 'none';
+  document.getElementById('chatInput').value = '';
+  document.getElementById('chatMessages').innerHTML = '<p class="chat-loading" style="text-align:center; color:var(--text-muted); padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i> Carregando mensagens...</p>';
+
+  const modal = document.getElementById('community-chat-modal');
+  modal.style.display = 'flex';
+
+  fetchChatMessages();
+
+  if (chatPollingInterval) clearInterval(chatPollingInterval);
+  chatPollingInterval = setInterval(fetchChatMessages, 4000);
+}
+
+function closeCommunityChat() {
+  const modal = document.getElementById('community-chat-modal');
+  if (modal) modal.style.display = 'none';
+  
+  if (chatPollingInterval) {
+    clearInterval(chatPollingInterval);
+    chatPollingInterval = null;
+  }
+  activeChatCommunityId = null;
+  activeChatEventoId = null;
+  replyingToMessageId = null;
+}
+
+async function fetchChatMessages() {
+  if (!activeChatCommunityId || !activeChatEventoId) return;
+  try {
+    const response = await fetch(`../php/comunidade_feed.php?action=fetch&id_comunidade=${activeChatCommunityId}&id_evento=${activeChatEventoId}`);
+    const result = await response.json();
+    if (result.success) {
+      renderChatMessages(result.mensagens);
+    } else {
+      console.error('Erro ao buscar mensagens:', result.error);
+    }
+  } catch (err) {
+    console.error('Erro de rede ao buscar mensagens:', err);
+  }
+}
+
+function renderChatMessages(mensagens) {
+  const container = document.getElementById('chatMessages');
+  if (!container) return;
+
+  const isAtBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 80;
+
+  if (mensagens.length === 0) {
+    container.innerHTML = '<p class="chat-empty" style="text-align:center; color:var(--text-muted); padding:40px;">Nenhuma mensagem ainda. Seja o primeiro a enviar! 👋</p>';
+    return;
+  }
+
+  let html = '';
+  mensagens.forEach(msg => {
+    const isOrg = msg.autor_tipo === 'organizador';
+    const bubbleClass = isOrg ? 'chat-bubble chat-bubble--organizador' : 'chat-bubble';
+    const badgeHtml = isOrg ? '<span class="chat-bubble__badge"><i class="fa-solid fa-star"></i> Organizador</span>' : '';
+
+    let replyRefHtml = '';
+    if (msg.id_resposta_a) {
+      replyRefHtml = `
+        <div class="chat-bubble__reply-ref">
+          <div class="chat-reply-ref__author">↩ ${escapeHtml(msg.resposta_autor_nome)}:</div>
+          <div class="chat-reply-ref__text">${escapeHtml(msg.resposta_texto)}</div>
+        </div>
+      `;
+    }
+
+    const escapedMsgText = msg.mensagem.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const escapedAuthorName = msg.autor_nome.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+    html += `
+      <div class="${bubbleClass}" data-id="${msg.id_mensagem}">
+        <div class="chat-bubble__header">
+          <span class="chat-bubble__author">${escapeHtml(msg.autor_nome)}</span>
+          ${badgeHtml}
+          <span class="chat-bubble__time">${msg.data_envio}</span>
+        </div>
+        ${replyRefHtml}
+        <div class="chat-bubble__text">${escapeHtml(msg.mensagem)}</div>
+        <div class="chat-bubble__actions">
+          <button class="chat-bubble__reply-btn" onclick="setChatReply(${msg.id_mensagem}, '${escapedAuthorName}', '${escapedMsgText}')">
+            <i class="fa-solid fa-reply"></i> Responder
+          </button>
+        </div>
+      </div>
+    `;
+  });
+
+  const wasLoading = container.innerHTML.includes('chat-loading');
+  container.innerHTML = html;
+
+  if (isAtBottom || wasLoading) {
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+function setChatReply(idMensagem, autorNome, textoMensagem) {
+  replyingToMessageId = idMensagem;
+  const replyBar = document.getElementById('chatReplyBar');
+  const replyText = document.getElementById('chatReplyText');
+
+  const preview = textoMensagem.length > 50 ? textoMensagem.substring(0, 50) + '...' : textoMensagem;
+
+  replyText.innerText = `${autorNome}: "${preview}"`;
+  replyBar.style.display = 'flex';
+
+  const input = document.getElementById('chatInput');
+  if (input) input.focus();
+}
+
+function cancelChatReply() {
+  replyingToMessageId = null;
+  const replyBar = document.getElementById('chatReplyBar');
+  if (replyBar) replyBar.style.display = 'none';
+  const replyText = document.getElementById('chatReplyText');
+  if (replyText) replyText.innerText = '';
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  if (!input) return;
+  const mensagem = input.value.trim();
+
+  if (!mensagem) return;
+  if (!activeChatCommunityId || !activeChatEventoId) return;
+
+  const sendBtn = document.getElementById('chatSendBtn');
+  if (sendBtn) sendBtn.disabled = true;
+
+  try {
+    const response = await fetch('../php/comunidade_feed.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'send',
+        id_comunidade: activeChatCommunityId,
+        id_evento: activeChatEventoId,
+        mensagem: mensagem,
+        id_resposta_a: replyingToMessageId
+      })
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      input.value = '';
+      cancelChatReply();
+      await fetchChatMessages();
+    } else {
+      showToast('Erro ao enviar: ' + result.error, 'fa-triangle-exclamation');
+    }
+  } catch (err) {
+    console.error('Erro ao enviar mensagem:', err);
+    showToast('Erro de rede ao enviar mensagem.', 'fa-triangle-exclamation');
+  } finally {
+    if (sendBtn) sendBtn.disabled = false;
+  }
+}
+
+function initChatListeners() {
+  const closeBtn = document.getElementById('chatCloseBtn');
+  if (closeBtn) closeBtn.addEventListener('click', closeCommunityChat);
+
+  const replyCancel = document.getElementById('chatReplyCancel');
+  if (replyCancel) replyCancel.addEventListener('click', cancelChatReply);
+
+  const sendBtn = document.getElementById('chatSendBtn');
+  if (sendBtn) sendBtn.addEventListener('click', sendChatMessage);
+
+  const input = document.getElementById('chatInput');
+  if (input) {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+      }
+    });
+  }
+
+  const modal = document.getElementById('community-chat-modal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeCommunityChat();
+      }
+    });
+  }
+}
+
