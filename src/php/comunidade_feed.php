@@ -48,8 +48,13 @@ if ($is_participante) {
 }
 
 $action = $_GET['action'] ?? '';
+$raw = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $raw    = json_decode(file_get_contents('php://input'), true);
+    if (!empty($_POST) || !empty($_FILES)) {
+        $raw = $_POST;
+    } else {
+        $raw = json_decode(file_get_contents('php://input'), true) ?: [];
+    }
     $action = $raw['action'] ?? $action;
 }
 
@@ -102,6 +107,7 @@ if ($action === 'fetch' && $_SERVER['REQUEST_METHOD'] === 'GET') {
             m.id_participante,
             m.id_organizador,
             m.mensagem,
+            m.imagem,
             m.id_resposta_a,
             DATE_FORMAT(m.data_envio, '%d/%m %H:%i') AS data_envio,
             CASE
@@ -111,6 +117,7 @@ if ($action === 'fetch' && $_SERVER['REQUEST_METHOD'] === 'GET') {
                      THEN (SELECT nome FROM organizadores WHERE id_organizador = m.id_organizador)
             END AS autor_nome,
             r.mensagem        AS resposta_texto,
+            r.imagem          AS resposta_imagem,
             r.autor_tipo      AS resposta_autor_tipo,
             CASE
                 WHEN r.autor_tipo = 'participante'
@@ -142,12 +149,60 @@ if ($action === 'send' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_evento     = isset($raw['id_evento'])     ? (int)$raw['id_evento']     : 0;
     $mensagem      = isset($raw['mensagem'])      ? trim(strip_tags($raw['mensagem'])) : '';
     $id_resposta_a = isset($raw['id_resposta_a']) && $raw['id_resposta_a'] ? (int)$raw['id_resposta_a'] : null;
+    $imagem        = null;
 
-    if (!$id_comunidade || !$id_evento || $mensagem === '') {
+    if (isset($_FILES['imagem'])) {
+        if ($_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+            $fileTmpPath = $_FILES['imagem']['tmp_name'];
+            $fileName = $_FILES['imagem']['name'];
+            $fileSize = $_FILES['imagem']['size'];
+            $fileNameCmps = explode('.', $fileName);
+            $fileExtension = strtolower(end($fileNameCmps));
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+            if (!in_array($fileExtension, $allowedExtensions, true)) {
+                echo json_encode(['success' => false, 'error' => 'Extensão de arquivo não permitida.']);
+                exit;
+            }
+
+            if ($fileSize > 5 * 1024 * 1024) {
+                echo json_encode(['success' => false, 'error' => 'O arquivo é muito grande (Máx 5MB).']);
+                exit;
+            }
+
+            $newFileName = sha1(uniqid((string)mt_rand(), true)) . '.' . $fileExtension;
+            $uploadFileDir = '../uploads/';
+            if (!is_dir($uploadFileDir)) {
+                mkdir($uploadFileDir, 0755, true);
+            }
+            $dest_path = $uploadFileDir . $newFileName;
+
+            if (!move_uploaded_file($fileTmpPath, $dest_path)) {
+                echo json_encode(['success' => false, 'error' => 'Erro ao mover o arquivo para o diretório de uploads.']);
+                exit;
+            }
+
+            $imagem = $newFileName;
+        } elseif ($_FILES['imagem']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $uploadErrors = [
+                UPLOAD_ERR_INI_SIZE   => 'O arquivo excede upload_max_filesize do servidor.',
+                UPLOAD_ERR_FORM_SIZE  => 'O arquivo excede o limite definido no formulário.',
+                UPLOAD_ERR_PARTIAL    => 'O arquivo foi parcialmente enviado.',
+                UPLOAD_ERR_NO_TMP_DIR => 'Pasta temporária ausente.',
+                UPLOAD_ERR_CANT_WRITE => 'Falha ao gravar o arquivo no disco.',
+                UPLOAD_ERR_EXTENSION  => 'Upload interrompido por extensão PHP.'
+            ];
+            $errorMessage = $uploadErrors[$_FILES['imagem']['error']] ?? 'Erro desconhecido no upload.';
+            echo json_encode(['success' => false, 'error' => $errorMessage]);
+            exit;
+        }
+    }
+
+    if (!$id_comunidade || !$id_evento || ($mensagem === '' && $imagem === null)) {
         echo json_encode(['success' => false, 'error' => 'Dados inválidos.']);
         exit;
     }
-    if (mb_strlen($mensagem) > 1000) {
+    if ($mensagem !== '' && mb_strlen($mensagem) > 1000) {
         echo json_encode(['success' => false, 'error' => 'Mensagem muito longa (máx. 1000 caracteres).']);
         exit;
     }
@@ -157,7 +212,6 @@ if ($action === 'send' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Valida se a mensagem que está sendo respondida pertence à mesma comunidade
     if ($id_resposta_a) {
         $chk = $conn->prepare(
             "SELECT 1 FROM comunidade_mensagens
@@ -166,37 +220,41 @@ if ($action === 'send' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $chk->bind_param('ii', $id_resposta_a, $id_comunidade);
         $chk->execute();
         $chk->store_result();
-        if ($chk->num_rows === 0) $id_resposta_a = null;
+        if ($chk->num_rows === 0) {
+            $id_resposta_a = null;
+        }
         $chk->close();
     }
 
     $id_p = $is_participante ? $id_autor : null;
     $id_o = $is_organizador  ? $id_autor : null;
 
-    // Garante que o autor_tipo reflita o campo de autor que será salvo.
     if ($id_o !== null && $id_p === null) {
         $autor_tipo = 'organizador';
     } elseif ($id_p !== null && $id_o === null) {
         $autor_tipo = 'participante';
     } elseif ($id_o !== null && $id_p !== null) {
-        // Situação inconsistente: prioriza organizador para evitar envio como participante.
         $autor_tipo = 'organizador';
     } else {
         echo json_encode(['success' => false, 'error' => 'Não foi possível identificar o autor da mensagem.']);
         exit;
     }
 
+    if ($mensagem === '') {
+        $mensagem = null;
+    }
+
     $stmt = $conn->prepare(
         "INSERT INTO comunidade_mensagens
-            (id_comunidade, autor_tipo, id_participante, id_organizador, mensagem, id_resposta_a)
-         VALUES (?, ?, ?, ?, ?, ?)"
+            (id_comunidade, autor_tipo, id_participante, id_organizador, mensagem, imagem, id_resposta_a)
+         VALUES (?, ?, ?, ?, ?, ?, ?)"
     );
-    $stmt->bind_param('isiisi', $id_comunidade, $autor_tipo, $id_p, $id_o, $mensagem, $id_resposta_a);
+    $stmt->bind_param('isiissi', $id_comunidade, $autor_tipo, $id_p, $id_o, $mensagem, $imagem, $id_resposta_a);
 
     if ($stmt->execute()) {
         echo json_encode(['success' => true, 'message' => 'Mensagem enviada.']);
     } else {
-        echo json_encode(['success' => false, 'error' => 'Erro ao salvar mensagem.']);
+        echo json_encode(['success' => false, 'error' => 'Erro ao salvar mensagem.', 'debug' => $stmt->error]);
     }
     $stmt->close();
     exit;

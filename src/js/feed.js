@@ -1509,8 +1509,34 @@ function renderChatMessages(mensagens) {
       `;
     }
 
-    const escapedMsgText = msg.mensagem.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const escapedMsgText = (msg.mensagem || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
     const escapedAuthorName = msg.autor_nome.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+    let messageContent = '';
+    if (msg.mensagem) {
+      messageContent += `<div class="chat-bubble__text">${escapeHtml(msg.mensagem)}</div>`;
+    }
+    if (msg.imagem) {
+      messageContent += `
+        <div class="chat-bubble__image">
+          <img src="../uploads/${escapeHtml(msg.imagem)}" alt="Anexo da comunidade" />
+        </div>
+      `;
+    }
+    if (!messageContent) {
+      messageContent = '<div class="chat-bubble__text chat-bubble__text--empty">(imagem)</div>';
+    }
+
+    let replyPreview = '';
+    if (msg.id_resposta_a) {
+      let replyText = msg.resposta_texto ? escapeHtml(msg.resposta_texto) : (msg.resposta_imagem ? 'Imagem' : '');
+      replyPreview = `
+        <div class="chat-bubble__reply-ref">
+          <div class="chat-reply-ref__author">↩ ${escapeHtml(msg.resposta_autor_nome)}:</div>
+          <div class="chat-reply-ref__text">${replyText}</div>
+        </div>
+      `;
+    }
 
     html += `
       <div class="${bubbleClass}" data-id="${msg.id_mensagem}">
@@ -1519,8 +1545,8 @@ function renderChatMessages(mensagens) {
           ${badgeHtml}
           <span class="chat-bubble__time">${msg.data_envio}</span>
         </div>
-        ${replyRefHtml}
-        <div class="chat-bubble__text">${escapeHtml(msg.mensagem)}</div>
+        ${replyPreview}
+        ${messageContent}
         <div class="chat-bubble__actions">
           <button class="chat-bubble__reply-btn" onclick="setChatReply(${msg.id_mensagem}, '${escapedAuthorName}', '${escapedMsgText}')">
             <i class="fa-solid fa-reply"></i> Responder
@@ -1564,32 +1590,48 @@ async function sendChatMessage() {
   const input = document.getElementById('chatInput');
   if (!input) return;
   const mensagem = input.value.trim();
+  const imageInput = document.getElementById('chatImageInput');
+  const file = imageInput?.files?.[0] ?? null;
 
-  if (!mensagem) return;
+  if (!mensagem && !file) {
+    showToast('Envie uma mensagem ou selecione uma imagem.', 'fa-triangle-exclamation');
+    return;
+  }
   if (!activeChatCommunityId || !activeChatEventoId) return;
 
   const sendBtn = document.getElementById('chatSendBtn');
   if (sendBtn) sendBtn.disabled = true;
 
   try {
+    const formData = new FormData();
+    formData.append('action', 'send');
+    formData.append('id_comunidade', activeChatCommunityId);
+    formData.append('id_evento', activeChatEventoId);
+    formData.append('mensagem', mensagem);
+    if (replyingToMessageId) {
+      formData.append('id_resposta_a', replyingToMessageId);
+    }
+    if (file) {
+      formData.append('imagem', file);
+    }
+
     const response = await fetch('../php/comunidade_feed.php', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'send',
-        id_comunidade: activeChatCommunityId,
-        id_evento: activeChatEventoId,
-        mensagem: mensagem,
-        id_resposta_a: replyingToMessageId
-      })
+      body: formData
     });
 
     const result = await response.json();
     if (result.success) {
       input.value = '';
+      if (imageInput) {
+        imageInput.value = '';
+      }
       cancelChatReply();
       await fetchChatMessages();
     } else {
+      if (result.debug) {
+        console.error('Erro de envio de imagem:', result.debug);
+      }
       showToast('Erro ao enviar: ' + result.error, 'fa-triangle-exclamation');
     }
   } catch (err) {

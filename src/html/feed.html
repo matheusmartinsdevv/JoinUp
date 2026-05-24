@@ -181,7 +181,8 @@
         <p class="section-sub">Compre ingressos revendidos por outros participantes com segurança.</p>
 
         <div class="ticket-list" id="resaleTicketsList">
-          <p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Carregando anúncios de revenda...</p>
+          <p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Carregando anúncios
+            de revenda...</p>
         </div>
       </div><!-- /page-resale -->
 
@@ -398,7 +399,8 @@
           <textarea id="sellTicketMessage" placeholder="Conte algo para o comprador..." rows="3"></textarea>
         </div>
         <input type="hidden" id="sellTicketId" value="" />
-        <button class="btn btn--primary" id="publishResaleBtn" onclick="publishResaleListing()">Publicar anúncio</button>
+        <button class="btn btn--primary" id="publishResaleBtn" onclick="publishResaleListing()">Publicar
+          anúncio</button>
       </div>
     </div>
   </div>
@@ -487,6 +489,10 @@
       <!-- Composer -->
       <div class="chat-composer">
         <textarea id="chatInput" placeholder="Escreva uma mensagem..." rows="1"></textarea>
+        <div class="chat-composer__file">
+          <label for="chatImageInput" class="chat-file-label">Imagem</label>
+          <input type="file" id="chatImageInput" accept="image/*" style="display:none" />
+        </div>
         <button id="chatSendBtn"><i class="fa-solid fa-paper-plane"></i></button>
       </div>
     </div>

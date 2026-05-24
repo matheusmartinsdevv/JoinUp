@@ -1181,6 +1181,8 @@ function openCommunityChat(idComunidade, idEvento, nomeComunidade) {
   document.getElementById('chatModalSub').innerText = 'Comunidade Oficial do Evento (Painel do Organizador)';
   document.getElementById('chatReplyBar').style.display = 'none';
   document.getElementById('chatInput').value = '';
+  const imageInput = document.getElementById('chatImageInput');
+  if (imageInput) imageInput.value = '';
   document.getElementById('chatMessages').innerHTML = '<p class="chat-loading" style="text-align:center; color:var(--text-muted); padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i> Carregando mensagens...</p>';
 
   const modal = document.getElementById('community-chat-modal');
@@ -1214,9 +1216,17 @@ async function fetchChatMessages() {
       renderChatMessages(result.mensagens);
     } else {
       console.error('Erro ao buscar mensagens:', result.error);
+      const container = document.getElementById('chatMessages');
+      if (container) {
+        container.innerHTML = `<p class="chat-error" style="text-align:center; color:var(--text-muted); padding:20px;">Erro ao carregar mensagens: ${escapeHtml(result.error)}</p>`;
+      }
     }
   } catch (err) {
     console.error('Erro de rede ao buscar mensagens:', err);
+    const container = document.getElementById('chatMessages');
+    if (container) {
+      container.innerHTML = '<p class="chat-error" style="text-align:center; color:var(--text-muted); padding:20px;">Erro de rede ao carregar mensagens.</p>';
+    }
   }
 }
 
@@ -1226,7 +1236,7 @@ function renderChatMessages(mensagens) {
 
   const isAtBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 80;
 
-  if (mensagens.length === 0) {
+  if (!Array.isArray(mensagens) || mensagens.length === 0) {
     container.innerHTML = '<p class="chat-empty" style="text-align:center; color:var(--text-muted); padding:40px;">Nenhuma mensagem ainda. Envie a primeira instrução para seus participantes! 📢</p>';
     return;
   }
@@ -1247,18 +1257,34 @@ function renderChatMessages(mensagens) {
       `;
     }
 
-    const escapedMsgText = msg.mensagem.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-    const escapedAuthorName = msg.autor_nome.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const messageText = msg.mensagem || '';
+    const escapedMsgText = messageText.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const escapedAuthorName = (msg.autor_nome || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+    let messageContent = '';
+    if (messageText) {
+      messageContent += `<div class="chat-bubble__text">${escapeHtml(messageText)}</div>`;
+    }
+    if (msg.imagem) {
+      messageContent += `
+        <div class="chat-bubble__image">
+          <img src="../uploads/${escapeHtml(msg.imagem)}" alt="Anexo da comunidade" />
+        </div>
+      `;
+    }
+    if (!messageContent) {
+      messageContent = '<div class="chat-bubble__text chat-bubble__text--empty">(imagem)</div>';
+    }
 
     html += `
       <div class="${bubbleClass}" data-id="${msg.id_mensagem}">
         <div class="chat-bubble__header">
-          <span class="chat-bubble__author">${escapeHtml(msg.autor_nome)}</span>
+          <span class="chat-bubble__author">${escapeHtml(msg.autor_nome || '')}</span>
           ${badgeHtml}
-          <span class="chat-bubble__time">${msg.data_envio}</span>
+          <span class="chat-bubble__time">${msg.data_envio || ''}</span>
         </div>
         ${replyRefHtml}
-        <div class="chat-bubble__text">${escapeHtml(msg.mensagem)}</div>
+        ${messageContent}
         <div class="chat-bubble__actions">
           <button class="chat-bubble__reply-btn" onclick="setChatReply(${msg.id_mensagem}, '${escapedAuthorName}', '${escapedMsgText}')">
             <i class="fa-solid fa-reply"></i> Responder
@@ -1302,29 +1328,42 @@ async function sendChatMessage() {
   const input = document.getElementById('chatInput');
   if (!input) return;
   const mensagem = input.value.trim();
+  const imageInput = document.getElementById('chatImageInput');
+  const file = imageInput?.files?.[0] ?? null;
 
-  if (!mensagem) return;
+  if (!mensagem && !file) {
+    showToast('Envie uma mensagem ou selecione uma imagem.', 'fa-triangle-exclamation');
+    return;
+  }
   if (!activeChatCommunityId || !activeChatEventoId) return;
 
   const sendBtn = document.getElementById('chatSendBtn');
   if (sendBtn) sendBtn.disabled = true;
 
   try {
+    const formData = new FormData();
+    formData.append('action', 'send');
+    formData.append('id_comunidade', activeChatCommunityId);
+    formData.append('id_evento', activeChatEventoId);
+    formData.append('mensagem', mensagem);
+    if (replyingToMessageId) {
+      formData.append('id_resposta_a', replyingToMessageId);
+    }
+    if (file) {
+      formData.append('imagem', file);
+    }
+
     const response = await fetch('../php/comunidade_feed.php', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'send',
-        id_comunidade: activeChatCommunityId,
-        id_evento: activeChatEventoId,
-        mensagem: mensagem,
-        id_resposta_a: replyingToMessageId
-      })
+      body: formData
     });
 
     const result = await response.json();
     if (result.success) {
       input.value = '';
+      if (imageInput) {
+        imageInput.value = '';
+      }
       cancelChatReply();
       await fetchChatMessages();
     } else {
