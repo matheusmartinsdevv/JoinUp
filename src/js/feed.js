@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadUserData();
   loadEvents();
   loadMyTickets();
+  loadResaleListings();
   loadCommunities();
   loadMySupportTickets();
   initChatListeners();
@@ -14,6 +15,7 @@ const purchaseState = {
   eventId: null,
   ticketTypes: []
 };
+let currentSellTicket = null;
 let mySupportTickets = [];
 let allEvents = [];
 let selectedSearchEventId = null;
@@ -162,17 +164,21 @@ function renderMyTickets(tickets) {
     const statusLabel = escapeHtml(ticket.status_label || 'Encerrado');
     const eventoNome = escapeHtml(ticket.evento_nome || 'Evento');
     const nomeTipo = escapeHtml(ticket.nome_tipo || 'Ingresso');
+    const valorFormatado = escapeHtml(ticket.valor_formatado || 'R$ 0,00');
     const cidade = escapeHtml(ticket.cidade || '');
     const estado = escapeHtml(ticket.estado || '');
     const data = escapeHtml(ticket.evento_data_formatada || '');
     const local = cidade && estado ? `${cidade}, ${estado}` : 'Local a confirmar';
     const isAtivo = ticket.status === 'ativo' && !ticket.passado;
+    const availableIngressoId = Number(ticket.id_ingresso || 0);
+
+    const sellButton = isAtivo && availableIngressoId
+      ? `<button class="btn btn--ghost btn--sm" onclick="openSellModal(${availableIngressoId}, ${Number(ticket.id_evento || 0)}, ${Number(ticket.id_tipo_ingresso || 0)}, '${escapeJsString(eventoNome)}', '${escapeJsString(nomeTipo)}', '${escapeJsString(valorFormatado)}')">Revenda</button>`
+      : '';
 
     const actions = isAtivo
-      // Ingresso válido para uso.
-      ? `<button class="btn btn--ghost btn--sm" onclick="openSellModal()">Revender</button>
+      ? `${sellButton}
          <button class="btn btn--primary btn--sm" onclick="goPage('groups')">Comunidade</button>`
-      // Ingresso já encerrado/utilizado.
       : `<button class="btn btn--ghost btn--sm" onclick="goPage('groups')">Ver memórias</button>`;
 
     return `
@@ -181,6 +187,7 @@ function renderMyTickets(tickets) {
         <div class="ticket__info">
           <div class="ticket__name">${eventoNome}</div>
           <div class="ticket__meta"><i class="fa-solid fa-calendar-days"></i> ${data} · <i class="fa-solid fa-location-dot"></i> ${local} · ${nomeTipo}${quantidadeLabel}</div>
+          <div class="ticket__meta" style="margin-top:8px; font-size:0.85rem; color:var(--text-muted);">Valor original: ${valorFormatado}</div>
         </div>
         <span class="ticket__status ${statusClass}">${statusLabel}</span>
         <div class="ticket__actions">
@@ -189,6 +196,163 @@ function renderMyTickets(tickets) {
       </div>
     `;
   }).join('');
+}
+
+function openSellModal(idIngresso, idEvento, idTipoIngresso, eventoNome, nomeTipo, valorFormatado) {
+  currentSellTicket = {
+    id_ingresso: Number(idIngresso) || 0,
+    id_evento: Number(idEvento) || 0,
+    id_tipo_ingresso: Number(idTipoIngresso) || 0,
+    evento_nome: String(eventoNome || ''),
+    nome_tipo: String(nomeTipo || ''),
+    valor_formatado: String(valorFormatado || '')
+  };
+
+  document.getElementById('sellEventName').value = currentSellTicket.evento_nome;
+  document.getElementById('sellTicketType').value = currentSellTicket.nome_tipo;
+  document.getElementById('sellTicketPrice').value = '';
+  document.getElementById('sellTicketMessage').value = '';
+  document.getElementById('sellTicketId').value = String(currentSellTicket.id_ingresso);
+  document.getElementById('publishResaleBtn').disabled = false;
+  openModal('sellModal');
+}
+
+async function publishResaleListing() {
+  const priceInput = document.getElementById('sellTicketPrice');
+  const messageInput = document.getElementById('sellTicketMessage');
+  const ticketIdInput = document.getElementById('sellTicketId');
+  const button = document.getElementById('publishResaleBtn');
+  const selectedSellTicketId = Number(ticketIdInput?.value || 0);
+
+  if (!currentSellTicket || !currentSellTicket.id_ingresso) {
+    if (selectedSellTicketId > 0) {
+      currentSellTicket = { id_ingresso: selectedSellTicketId };
+    }
+  }
+
+  if (!currentSellTicket || !currentSellTicket.id_ingresso) {
+    showToast('Selecione um ingresso válido para revender.', 'fa-triangle-exclamation');
+    return;
+  }
+
+  const valorRevenda = Number(priceInput.value || 0);
+  if (valorRevenda <= 0) {
+    showToast('Informe um preço de revenda válido.', 'fa-triangle-exclamation');
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = 'Publicando...';
+
+  try {
+    const response = await fetch('../php/create_revenda_anuncio.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id_ingresso: currentSellTicket.id_ingresso,
+        valor_revenda: valorRevenda,
+        mensagem: messageInput.value.trim()
+      })
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || result.message || 'Falha ao publicar anúncio.');
+    }
+
+    showToast('Anúncio de revenda publicado com sucesso!', 'fa-circle-check');
+    closeModal('sellModal');
+    loadResaleListings();
+    loadMyTickets();
+  } catch (error) {
+    console.error('Erro ao publicar anúncio de revenda:', error);
+    showToast(error.message || 'Erro ao publicar anúncio.', 'fa-triangle-exclamation');
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Publicar anúncio';
+  }
+}
+
+async function loadResaleListings() {
+  const container = document.getElementById('resaleTicketsList');
+  if (!container) return;
+  container.innerHTML = '<p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Carregando anúncios de revenda...</p>';
+
+  try {
+    const response = await fetch('../php/get_revenda_anuncios.php');
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Falha ao carregar anúncios de revenda.');
+    }
+
+    renderResaleListings(Array.isArray(result.data) ? result.data : []);
+  } catch (error) {
+    console.error('Erro ao carregar anúncios de revenda:', error);
+    container.innerHTML = '<p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Não foi possível carregar os anúncios de revenda.</p>';
+  }
+}
+
+function renderResaleListings(listings) {
+  const container = document.getElementById('resaleTicketsList');
+  if (!container) return;
+
+  if (!listings.length) {
+    container.innerHTML = '<p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Nenhum ingresso em revenda no momento.</p>';
+    return;
+  }
+
+  container.innerHTML = listings.map(ad => {
+    const eventoNome = escapeHtml(ad.evento_nome || 'Evento');
+    const nomeTipo = escapeHtml(ad.nome_tipo || 'Ingresso');
+    const valorRevendido = escapeHtml(ad.valor_revenda_formatado || 'R$ 0,00');
+    const data = escapeHtml(ad.evento_data_formatada || '');
+    const local = escapeHtml(ad.cidade || '') + (ad.estado ? `, ${escapeHtml(ad.estado)}` : '');
+    const vendedor = escapeHtml(ad.vendedor_nome || 'Participante');
+
+    return `
+      <div class="ticket glass">
+        <div class="ticket__icon"><i class="fa-solid fa-ticket"></i></div>
+        <div class="ticket__info">
+          <div class="ticket__name">${eventoNome}</div>
+          <div class="ticket__meta"><i class="fa-solid fa-calendar-days"></i> ${data} · <i class="fa-solid fa-location-dot"></i> ${local} · ${nomeTipo}</div>
+          <div class="ticket__meta" style="margin-top:8px; font-size:0.85rem; color:var(--text-muted);">Vendedor: ${vendedor}</div>
+        </div>
+        <span class="ticket__status ticket__status--active">${valorRevendido}</span>
+        <div class="ticket__actions">
+          <button class="btn btn--primary btn--sm" onclick="buyResaleTicket(${Number(ad.id_revenda_anuncios)})">Comprar</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function buyResaleTicket(idRevenda) {
+  if (!idRevenda) {
+    showToast('Anúncio inválido.', 'fa-triangle-exclamation');
+    return;
+  }
+
+  if (!confirm('Deseja comprar este ingresso de revenda?')) return;
+
+  try {
+    const response = await fetch('../php/comprar_ingresso_revenda.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id_revenda_anuncios: idRevenda })
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || result.message || 'Falha ao comprar ingresso de revenda.');
+    }
+
+    showToast('Ingresso comprado com sucesso!', 'fa-circle-check');
+    loadResaleListings();
+    loadMyTickets();
+  } catch (error) {
+    console.error('Erro ao comprar ingresso de revenda:', error);
+    showToast(error.message || 'Erro ao completar a compra.', 'fa-triangle-exclamation');
+  }
 }
 
 async function loadEvents() {
@@ -768,6 +932,14 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+function escapeJsString(value) {
+  return String(value ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r');
+}
+
 function showEventModal(eventId, name, date, price, icon, going, description, location, attractions, city, uf, imagemUrl) {
   purchaseState.eventId = Number(eventId) || null;
   purchaseState.ticketTypes = [];
@@ -1014,8 +1186,6 @@ async function buyTicket() {
     }
   }
 }
-
-function openSellModal() { openModal('sellModal'); }
 
 /* =========================================
    PROFILE ACTIONS

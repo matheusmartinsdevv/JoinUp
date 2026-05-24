@@ -51,12 +51,15 @@ if (!$participante) {
 $id_participante = (int) $participante['id_participante'];
 
 $stmt = $conn->prepare(
-    // Agrupa por evento/tipo/status para exibir quantidade por card.
+    // Agrupa por evento/tipo/status para exibir quantidade por card e rastrear ingressos em revenda.
     "SELECT
+        MIN(CASE WHEN ra.id_revenda_anuncios IS NULL THEN i.id_ingresso ELSE NULL END) AS id_ingresso,
         i.id_evento,
         i.id_tipo_ingresso,
         i.status,
         COUNT(*) AS quantidade,
+        SUM(CASE WHEN ra.id_revenda_anuncios IS NULL THEN 1 ELSE 0 END) AS quantidade_disponivel_revenda,
+        SUM(CASE WHEN ra.id_revenda_anuncios IS NOT NULL THEN 1 ELSE 0 END) AS quantidade_em_revenda,
         MIN(i.data_compra) AS primeira_compra,
         MAX(i.data_compra) AS ultima_compra,
         e.nome AS evento_nome,
@@ -66,6 +69,7 @@ $stmt = $conn->prepare(
         ti.nome_tipo,
         ti.valor
      FROM ingressos i
+     LEFT JOIN revenda_anuncios ra ON ra.id_ingresso = i.id_ingresso AND ra.status = 'disponivel'
      INNER JOIN eventos e ON e.id_evento = i.id_evento
      INNER JOIN tipos_ingressos ti ON ti.id_tipos_ingressos = i.id_tipo_ingresso
      WHERE i.id_participante = ?
@@ -118,6 +122,9 @@ while ($row = $result->fetch_assoc()) {
     $valor = (float) $row['valor'];
 
     $ingressos[] = [
+        'id_ingresso' => (int) $row['id_ingresso'],
+        'quantidade_disponivel_revenda' => (int) $row['quantidade_disponivel_revenda'],
+        'quantidade_em_revenda' => (int) $row['quantidade_em_revenda'],
         'id_evento' => (int) $row['id_evento'],
         'id_tipo_ingresso' => (int) $row['id_tipo_ingresso'],
         'status' => $status,

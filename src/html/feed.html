@@ -46,6 +46,9 @@
           <span class="nav-icon"></span> Meus Ingressos
           <span class="nav-badge">3</span>
         </button>
+        <button class="nav-item" data-page="resale">
+          <span class="nav-icon"></span> Revenda de Ingressos
+        </button>
         <button class="nav-item" data-page="groups">
           <span class="nav-icon"></span> Comunidades
         </button>
@@ -172,6 +175,15 @@
             ingressos...</p>
         </div>
       </div><!-- /page-my-events -->
+
+      <div class="page" id="page-resale">
+        <div class="section-title">Revenda de <span class="text-gradient">Ingressos</span></div>
+        <p class="section-sub">Compre ingressos revendidos por outros participantes com segurança.</p>
+
+        <div class="ticket-list" id="resaleTicketsList">
+          <p style="color:var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;">Carregando anúncios de revenda...</p>
+        </div>
+      </div><!-- /page-resale -->
 
       <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
       <!-- ░░ PAGE: COMUNIDADES        ░░ -->
@@ -371,19 +383,22 @@
       <div class="edit-form">
         <div class="form-group">
           <label>Evento</label>
-          <input type="text" value="Rock in Rio 2025 — Pista" readonly style="opacity:0.7;" />
+          <input id="sellEventName" type="text" readonly style="opacity:0.7;" />
+        </div>
+        <div class="form-group">
+          <label>Tipo de ingresso</label>
+          <input id="sellTicketType" type="text" readonly style="opacity:0.7;" />
         </div>
         <div class="form-group">
           <label>Preço de revenda (R$)</label>
-          <input type="number" placeholder="350" />
+          <input id="sellTicketPrice" type="number" min="1" step="0.50" placeholder="Digite o preço de revenda" />
         </div>
         <div class="form-group">
-          <label>Mensagem para comprador</label>
-          <textarea placeholder="Informe por que está revendendo..."></textarea>
+          <label>Detalhes do anúncio</label>
+          <textarea id="sellTicketMessage" placeholder="Conte algo para o comprador..." rows="3"></textarea>
         </div>
-        <button class="btn btn--primary"
-          onclick="closeModal('sellModal');showToast('Ingresso colocado à venda!','fa-ticket')">Publicar
-          anúncio</button>
+        <input type="hidden" id="sellTicketId" value="" />
+        <button class="btn btn--primary" id="publishResaleBtn" onclick="publishResaleListing()">Publicar anúncio</button>
       </div>
     </div>
   </div>
