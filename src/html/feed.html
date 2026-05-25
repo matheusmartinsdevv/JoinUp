@@ -391,14 +391,19 @@
           <input id="sellTicketType" type="text" readonly style="opacity:0.7;" />
         </div>
         <div class="form-group">
-          <label>Preço de revenda (R$)</label>
-          <input id="sellTicketPrice" type="number" min="1" step="0.50" placeholder="Digite o preço de revenda" />
+          <label>Quantidade a revender</label>
+          <input id="sellTicketQuantity" type="number" min="1" step="1" value="1" />
+          <small id="sellTicketQuantityHint" style="color:var(--text-muted); display:block; margin-top:6px;"></small>
+        </div>
+        <div class="form-group">
+          <label>Preço total da revenda (R$)</label>
+          <input id="sellTicketPrice" type="number" min="0.01" step="0.50" placeholder="Valor total de todos os ingressos" />
+          <small id="sellTicketPriceHint" style="color:var(--text-muted); display:block; margin-top:6px;"></small>
         </div>
         <div class="form-group">
           <label>Detalhes do anúncio</label>
           <textarea id="sellTicketMessage" placeholder="Conte algo para o comprador..." rows="3"></textarea>
         </div>
-        <input type="hidden" id="sellTicketId" value="" />
         <button class="btn btn--primary" id="publishResaleBtn" onclick="publishResaleListing()">Publicar
           anúncio</button>
       </div>

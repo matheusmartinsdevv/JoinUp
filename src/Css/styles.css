@@ -1511,12 +1511,12 @@ img { display: block; max-width: 100%; }
   margin-bottom: 18px;
 }
 
-.results-page .results-field-wrap {
+.results-field-wrap {
   display: grid;
   gap: 6px;
 }
 
-.results-page .results-field-label {
+.results-field-label {
   font-size: 0.72rem;
   color: var(--white-60);
   letter-spacing: 0.06em;
@@ -1525,7 +1525,7 @@ img { display: block; max-width: 100%; }
   padding-inline: 2px;
 }
 
-.results-page .results-field {
+.results-field {
   appearance: none;
   width: 100%;
   min-height: 52px;
@@ -1540,18 +1540,18 @@ img { display: block; max-width: 100%; }
   transition: var(--transition);
 }
 
-.results-page .results-field::-webkit-search-decoration,
-.results-page .results-field::-webkit-search-cancel-button,
-.results-page .results-field::-webkit-search-results-button,
-.results-page .results-field::-webkit-search-results-decoration {
+.results-field::-webkit-search-decoration,
+.results-field::-webkit-search-cancel-button,
+.results-field::-webkit-search-results-button,
+.results-field::-webkit-search-results-decoration {
   -webkit-appearance: none;
 }
 
-.results-page .results-field::placeholder {
+.results-field::placeholder {
   color: rgba(255,255,255,0.46);
 }
 
-.results-page .results-field:focus {
+.results-field:focus {
   border-color: rgba(192,132,252,0.82);
   box-shadow: 0 0 0 3px rgba(168,85,247,0.22), 0 8px 24px rgba(18,0,26,0.35);
   background: rgba(15,5,24,0.95);

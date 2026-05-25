@@ -115,6 +115,17 @@ function setMyTicketsBadge(totalTickets) {
   badge.style.display = 'none';
 }
 
+async function parseJsonResponse(response) {
+  const contentType = response.headers.get('content-type') || '';
+
+  if (contentType.includes('application/json')) {
+    return response.json();
+  }
+
+  const text = await response.text();
+  throw new Error(`Resposta inválida do servidor: ${text}`);
+}
+
 async function loadMyTickets() {
   // Carrega os ingressos comprados para a tela "Meus Ingressos".
   const container = document.getElementById('myTicketsList');
@@ -170,10 +181,14 @@ function renderMyTickets(tickets) {
     const data = escapeHtml(ticket.evento_data_formatada || '');
     const local = cidade && estado ? `${cidade}, ${estado}` : 'Local a confirmar';
     const isAtivo = ticket.status === 'ativo' && !ticket.passado;
-    const availableIngressoId = Number(ticket.id_ingresso || 0);
+    const quantidadeDisponivelRevenda = Math.max(0, Number(ticket.quantidade_disponivel_revenda) || 0);
+    const quantidadeEmRevenda = Math.max(0, Number(ticket.quantidade_em_revenda) || 0);
+    const revendaStatusLabel = quantidadeEmRevenda > 0
+      ? ` · ${quantidadeEmRevenda} em revenda`
+      : '';
 
-    const sellButton = isAtivo && availableIngressoId
-      ? `<button class="btn btn--ghost btn--sm" onclick="openSellModal(${availableIngressoId}, ${Number(ticket.id_evento || 0)}, ${Number(ticket.id_tipo_ingresso || 0)}, '${escapeJsString(eventoNome)}', '${escapeJsString(nomeTipo)}', '${escapeJsString(valorFormatado)}')">Revenda</button>`
+    const sellButton = isAtivo && quantidadeDisponivelRevenda > 0
+      ? `<button class="btn btn--ghost btn--sm" onclick="openSellModal(${Number(ticket.id_evento || 0)}, ${Number(ticket.id_tipo_ingresso || 0)}, '${escapeJsString(eventoNome)}', '${escapeJsString(nomeTipo)}', '${escapeJsString(valorFormatado)}', ${quantidadeDisponivelRevenda})">Revenda</button>`
       : '';
 
     const actions = isAtivo
@@ -187,7 +202,7 @@ function renderMyTickets(tickets) {
         <div class="ticket__info">
           <div class="ticket__name">${eventoNome}</div>
           <div class="ticket__meta"><i class="fa-solid fa-calendar-days"></i> ${data} · <i class="fa-solid fa-location-dot"></i> ${local} · ${nomeTipo}${quantidadeLabel}</div>
-          <div class="ticket__meta" style="margin-top:8px; font-size:0.85rem; color:var(--text-muted);">Valor original: ${valorFormatado}</div>
+          <div class="ticket__meta" style="margin-top:8px; font-size:0.85rem; color:var(--text-muted);">Valor original: ${valorFormatado}${revendaStatusLabel}</div>
         </div>
         <span class="ticket__status ${statusClass}">${statusLabel}</span>
         <div class="ticket__actions">
@@ -198,21 +213,85 @@ function renderMyTickets(tickets) {
   }).join('');
 }
 
-function openSellModal(idIngresso, idEvento, idTipoIngresso, eventoNome, nomeTipo, valorFormatado) {
+function formatBrl(value) {
+  const amount = Number(value) || 0;
+  return `R$ ${amount.toFixed(2).replace('.', ',')}`;
+}
+
+function updateSellModalHints() {
+  const quantityInput = document.getElementById('sellTicketQuantity');
+  const priceInput = document.getElementById('sellTicketPrice');
+  const quantityHint = document.getElementById('sellTicketQuantityHint');
+  const priceHint = document.getElementById('sellTicketPriceHint');
+  const maxQuantidade = Math.max(1, Number(currentSellTicket?.quantidade_disponivel) || 1);
+  const quantidade = Math.min(
+    maxQuantidade,
+    Math.max(1, Number(quantityInput?.value || 1))
+  );
+  const valorTotal = Number(priceInput?.value || 0);
+
+  if (quantityHint) {
+    quantityHint.textContent = maxQuantidade > 1
+      ? `${maxQuantidade} ingressos disponíveis para revenda`
+      : '1 ingresso disponível para revenda';
+  }
+
+  if (priceHint) {
+    if (valorTotal > 0 && quantidade > 1) {
+      priceHint.textContent = `${formatBrl(valorTotal / quantidade)} por ingresso (${quantidade} un.)`;
+    } else if (valorTotal > 0) {
+      priceHint.textContent = `${formatBrl(valorTotal)} por ingresso`;
+    } else {
+      priceHint.textContent = quantidade > 1
+        ? 'O valor informado será dividido igualmente entre os ingressos.'
+        : '';
+    }
+  }
+}
+
+function bindSellModalInputs() {
+  const quantityInput = document.getElementById('sellTicketQuantity');
+  const priceInput = document.getElementById('sellTicketPrice');
+
+  if (quantityInput && !quantityInput.dataset.bound) {
+    quantityInput.addEventListener('input', updateSellModalHints);
+    quantityInput.dataset.bound = '1';
+  }
+  if (priceInput && !priceInput.dataset.bound) {
+    priceInput.addEventListener('input', updateSellModalHints);
+    priceInput.dataset.bound = '1';
+  }
+}
+
+function openSellModal(idEvento, idTipoIngresso, eventoNome, nomeTipo, valorFormatado, quantidadeDisponivel) {
+  const maxQuantidade = Math.max(1, Number(quantidadeDisponivel) || 1);
+
   currentSellTicket = {
-    id_ingresso: Number(idIngresso) || 0,
     id_evento: Number(idEvento) || 0,
     id_tipo_ingresso: Number(idTipoIngresso) || 0,
+    quantidade_disponivel: maxQuantidade,
     evento_nome: String(eventoNome || ''),
     nome_tipo: String(nomeTipo || ''),
     valor_formatado: String(valorFormatado || '')
   };
 
+  const quantityInput = document.getElementById('sellTicketQuantity');
+  const priceInput = document.getElementById('sellTicketPrice');
+
   document.getElementById('sellEventName').value = currentSellTicket.evento_nome;
   document.getElementById('sellTicketType').value = currentSellTicket.nome_tipo;
   document.getElementById('sellTicketPrice').value = '';
   document.getElementById('sellTicketMessage').value = '';
-  document.getElementById('sellTicketId').value = String(currentSellTicket.id_ingresso);
+
+  if (quantityInput) {
+    quantityInput.min = '1';
+    quantityInput.max = String(maxQuantidade);
+    quantityInput.value = '1';
+  }
+
+  bindSellModalInputs();
+  updateSellModalHints();
+
   document.getElementById('publishResaleBtn').disabled = false;
   openModal('sellModal');
 }
@@ -220,24 +299,23 @@ function openSellModal(idIngresso, idEvento, idTipoIngresso, eventoNome, nomeTip
 async function publishResaleListing() {
   const priceInput = document.getElementById('sellTicketPrice');
   const messageInput = document.getElementById('sellTicketMessage');
-  const ticketIdInput = document.getElementById('sellTicketId');
+  const quantityInput = document.getElementById('sellTicketQuantity');
   const button = document.getElementById('publishResaleBtn');
-  const selectedSellTicketId = Number(ticketIdInput?.value || 0);
 
-  if (!currentSellTicket || !currentSellTicket.id_ingresso) {
-    if (selectedSellTicketId > 0) {
-      currentSellTicket = { id_ingresso: selectedSellTicketId };
-    }
-  }
-
-  if (!currentSellTicket || !currentSellTicket.id_ingresso) {
+  if (!currentSellTicket || !currentSellTicket.id_evento || !currentSellTicket.id_tipo_ingresso) {
     showToast('Selecione um ingresso válido para revender.', 'fa-triangle-exclamation');
     return;
   }
 
-  const valorRevenda = Number(priceInput.value || 0);
-  if (valorRevenda <= 0) {
-    showToast('Informe um preço de revenda válido.', 'fa-triangle-exclamation');
+  const maxQuantidade = Math.max(1, Number(currentSellTicket.quantidade_disponivel) || 1);
+  const quantidade = Math.min(
+    maxQuantidade,
+    Math.max(1, Number(quantityInput?.value || 1))
+  );
+
+  const valorRevendaTotal = Number(priceInput.value || 0);
+  if (valorRevendaTotal <= 0) {
+    showToast('Informe o preço total da revenda.', 'fa-triangle-exclamation');
     return;
   }
 
@@ -249,18 +327,20 @@ async function publishResaleListing() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id_ingresso: currentSellTicket.id_ingresso,
-        valor_revenda: valorRevenda,
+        id_evento: currentSellTicket.id_evento,
+        id_tipo_ingresso: currentSellTicket.id_tipo_ingresso,
+        quantidade,
+        valor_revenda_total: valorRevendaTotal,
         mensagem: messageInput.value.trim()
       })
     });
 
-    const result = await response.json();
+    const result = await parseJsonResponse(response);
     if (!response.ok || !result.success) {
       throw new Error(result.error || result.message || 'Falha ao publicar anúncio.');
     }
 
-    showToast('Anúncio de revenda publicado com sucesso!', 'fa-circle-check');
+    showToast(result.message || 'Anúncio de revenda publicado com sucesso!', 'fa-circle-check');
     closeModal('sellModal');
     loadResaleListings();
     loadMyTickets();
@@ -292,6 +372,37 @@ async function loadResaleListings() {
   }
 }
 
+function groupResaleListings(listings) {
+  const groups = new Map();
+
+  listings.forEach(ad => {
+    const key = [
+      ad.id_evento,
+      ad.nome_tipo,
+      ad.vendedor_nome,
+      Number(ad.valor_revenda).toFixed(2),
+      ad.evento_data_formatada,
+      ad.cidade,
+      ad.estado
+    ].join('|');
+
+    if (!groups.has(key)) {
+      groups.set(key, {
+        ...ad,
+        quantidade: 1,
+        ids: [Number(ad.id_revenda_anuncios)]
+      });
+      return;
+    }
+
+    const group = groups.get(key);
+    group.quantidade += 1;
+    group.ids.push(Number(ad.id_revenda_anuncios));
+  });
+
+  return Array.from(groups.values());
+}
+
 function renderResaleListings(listings) {
   const container = document.getElementById('resaleTicketsList');
   if (!container) return;
@@ -301,25 +412,34 @@ function renderResaleListings(listings) {
     return;
   }
 
-  container.innerHTML = listings.map(ad => {
+  const grouped = groupResaleListings(listings);
+
+  container.innerHTML = grouped.map(ad => {
     const eventoNome = escapeHtml(ad.evento_nome || 'Evento');
     const nomeTipo = escapeHtml(ad.nome_tipo || 'Ingresso');
-    const valorRevendido = escapeHtml(ad.valor_revenda_formatado || 'R$ 0,00');
+    const valorUnitario = formatBrl(ad.valor_revenda);
+    const quantidade = Math.max(1, Number(ad.quantidade) || 1);
+    const quantidadeLabel = quantidade > 1 ? `${quantidade}x ` : '';
+    const precoLabel = quantidade > 1
+      ? `${quantidadeLabel}${escapeHtml(valorUnitario)} <span style="font-size:0.75rem;opacity:0.85;">cada</span>`
+      : escapeHtml(valorUnitario);
     const data = escapeHtml(ad.evento_data_formatada || '');
     const local = escapeHtml(ad.cidade || '') + (ad.estado ? `, ${escapeHtml(ad.estado)}` : '');
     const vendedor = escapeHtml(ad.vendedor_nome || 'Participante');
+    const disponibilidade = quantidade > 1 ? ` · ${quantidade} disponíveis` : '';
+    const firstListingId = Number(ad.ids[0] || ad.id_revenda_anuncios);
 
     return `
       <div class="ticket glass">
         <div class="ticket__icon"><i class="fa-solid fa-ticket"></i></div>
         <div class="ticket__info">
           <div class="ticket__name">${eventoNome}</div>
-          <div class="ticket__meta"><i class="fa-solid fa-calendar-days"></i> ${data} · <i class="fa-solid fa-location-dot"></i> ${local} · ${nomeTipo}</div>
+          <div class="ticket__meta"><i class="fa-solid fa-calendar-days"></i> ${data} · <i class="fa-solid fa-location-dot"></i> ${local} · ${nomeTipo}${disponibilidade}</div>
           <div class="ticket__meta" style="margin-top:8px; font-size:0.85rem; color:var(--text-muted);">Vendedor: ${vendedor}</div>
         </div>
-        <span class="ticket__status ticket__status--active">${valorRevendido}</span>
+        <span class="ticket__status ticket__status--active">${precoLabel}</span>
         <div class="ticket__actions">
-          <button class="btn btn--primary btn--sm" onclick="buyResaleTicket(${Number(ad.id_revenda_anuncios)})">Comprar</button>
+          <button class="btn btn--primary btn--sm" onclick="buyResaleTicket(${firstListingId})">Comprar</button>
         </div>
       </div>
     `;
@@ -1070,13 +1190,13 @@ function renderPurchaseArea() {
   }).join('');
 
   area.innerHTML = `
-    <div style="display:grid; gap:10px;">
-      <label style="display:grid; gap:6px;">
-        <span>Tipo de ingresso</span>
+    <div class="results-field-wrap" style="gap:10px;">
+      <label class="results-field-wrap">
+        <span class="results-field-label">Tipo de ingresso</span>
         <select id="ticketTypeSelect" class="results-field">${options}</select>
       </label>
-      <label style="display:grid; gap:6px;">
-        <span>Quantidade</span>
+      <label class="results-field-wrap">
+        <span class="results-field-label">Quantidade</span>
         <input id="ticketQuantityInput" class="results-field" type="number" min="1" step="1" value="1">
       </label>
       <small id="ticketStockHint" style="color:var(--text-muted);"></small>
