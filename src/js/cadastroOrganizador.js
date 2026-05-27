@@ -90,6 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return true;
         }
 
+        function clearFieldErrors() {
+            fields.forEach((field) => setFieldError(field, ''));
+        }
+
         function validateField(field) {
             const message = getFieldError(field);
             return setFieldError(field, message);
@@ -119,11 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         form.noValidate = true;
 
-        return { validateForm };
+        return { validateForm, clearFieldErrors, setFieldError };
     }
 
     if (ctaForm) {
-        const { validateForm } = setupFormValidation(ctaForm);
+        const { validateForm, clearFieldErrors, setFieldError } = setupFormValidation(ctaForm);
 
         ctaForm.addEventListener('submit', async (e) => {
             e.preventDefault(); // Impede o envio padrão do HTML
@@ -131,6 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!validateForm()) {
                 return;
             }
+
+            clearFieldErrors();
 
             // pega os dados do forms
             const formData = new FormData(ctaForm);
@@ -142,20 +148,42 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: formData
                 });
 
-                const result = await response.text();
+                const text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch {
+                    result = { success: false, message: text };
+                }
 
-                // verifica a resposta do PHP
-                if (result.trim() === "sucesso") {
-                    alert("Cadastro realizado com sucesso! Redirecionando...");
+                if (result.success) {
                     window.location.href = 'loginOrganizador.html';
-                } else {
-                    alert("Erro no cadastro: " + result);
+                    return;
+                }
+
+                const errorMessage = result.message || 'Erro no cadastro. Tente novamente.';
+                if (result.field) {
+                    const field = ctaForm.querySelector(`[name="${result.field}"]`);
+                    if (field) {
+                        setFieldError(field, errorMessage);
+                        field.focus();
+                        return;
+                    }
+                }
+
+                const firstField = ctaForm.querySelector('input');
+                if (firstField) {
+                    setFieldError(firstField, errorMessage);
+                    firstField.focus();
                 }
             } catch (error) {
-                console.error("Erro na requisição:", error);
-                alert("Erro ao conectar com o servidor. Verifique se o XAMPP está ligado.");
+                console.error('Erro na requisição:', error);
+                const firstField = ctaForm.querySelector('input');
+                if (firstField) {
+                    setFieldError(firstField, 'Erro ao conectar com o servidor. Verifique se o XAMPP está ligado.');
+                    firstField.focus();
+                }
             }
-        
         });
     }
 
