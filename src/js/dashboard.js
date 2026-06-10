@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('info-nome').textContent = data.nome;
         document.getElementById('info-email').textContent = data.email;
         document.getElementById('info-cpf').textContent = data.cpf;
+       // document.getElementById('variavel_prova').textContent = data.telefone; Eric prova
 
     } catch (error) {
         console.error("Erro ao carregar dados:", error);

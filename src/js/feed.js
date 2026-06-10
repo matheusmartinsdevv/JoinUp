@@ -34,6 +34,7 @@ async function loadUserData() {
     }
 
     // --- Atualizar Sidebar ---
+   // const telefone = user.telefone || 'Telefone não informado'; ERIC PROVA
     const nome = user.nome || 'Usuário';
     const email = user.email || 'participante@joinup.com';
     const initials = nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
@@ -52,12 +53,12 @@ async function loadUserData() {
     // Preencher campos de edição
     if (document.getElementById('editNome')) document.getElementById('editNome').value = nome;
     if (document.getElementById('editEmail')) document.getElementById('editEmail').value = email;
+    // if (document.getElementById('variavel_prova')) document.getElementById('variavel_prova').textContent = telefone;
 
     // Carregar postagens do usuário
     loadMyPosts(nome, initials);
 
     console.log('Interface atualizada com sucesso!');
-
   } catch (error) {
     console.error('Falha crítica ao carregar dados:', error);
   }

@@ -12,7 +12,7 @@ if (!isset($_SESSION['usuario_cpf'])) {
 $cpf = $_SESSION['usuario_cpf'];
 
 try {
-    $sql = "SELECT id_participante, nome, email, cpf FROM participantes WHERE cpf = ?";
+    $sql = "SELECT id_participante, nome, email, cpf /*, telefone */ FROM participantes WHERE cpf = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $cpf);
     $stmt->execute();

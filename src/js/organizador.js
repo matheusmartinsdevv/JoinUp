@@ -165,7 +165,7 @@ async function loadPerfil() {
     const data = await res.json();
 
     if (data.error || !data.nome) {
-      console.warn('Usando valores padrÃƒÂ£o para o perfil.');
+      console.warn('Usando valores padrão para o perfil.');
       atualizarSidebar('Organizador', '');
       return;
     }

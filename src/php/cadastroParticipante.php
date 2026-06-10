@@ -9,8 +9,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = trim($_POST['email'] ?? '');
     $data_nasc = trim($_POST['data_nascimento'] ?? '');
     $senha = $_POST['senha'] ?? '';
+   // $variavel_prova = trim($_POST['prova'] ?? ''); eric prova
 
-    if ($cpf === '' || $nome === '' || $email === '' || $data_nasc === '' || $senha === '') {
+    if ($cpf === '' || $nome === '' || $email === ''|| /* $variavel_prova === eric prova '' || */ $data_nasc === '' || $senha === '') {
         echo json_encode(['success' => false, 'message' => 'Todos os campos são obrigatórios.']);
         exit;
     }
@@ -37,9 +38,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $check->close();
 
     $hashSenha = password_hash($senha, PASSWORD_DEFAULT);
-    $stmt = $conn->prepare("INSERT INTO participantes (cpf, nome, email, data_nascimento, senha) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $cpf, $nome, $email, $data_nasc, $hashSenha);
-
+    $stmt = $conn->prepare("INSERT INTO participantes (cpf, nome, email, data_nascimento, senha, /*telefone eric prova*/) VALUES (?, ?, ?, ?, ?, /*? eric prova*/)");
+    $stmt->bind_param("sssss", $cpf, $nome, $email, $data_nasc, $hashSenha,/* $variavel_prova eric prova */);
+//colocar s no bind_param para telefone eric prova
     if ($stmt->execute()) {
         echo json_encode(['success' => true]);
     } else {
