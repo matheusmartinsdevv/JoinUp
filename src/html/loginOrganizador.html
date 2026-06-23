@@ -2,43 +2,46 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../Css/login.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
-        rel="stylesheet" />
-    <title>Login | JoinUp</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../Css/login.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <title>Login organizador | JoinUp</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 
 <body>
-    <div class="login-page">
-        <div class="cta__orbs">
-            <div class="orb orb--4"></div>
-            <div class="orb orb--5"></div>
-        </div>
-        <div class="container">
-            <div class="cta__inner fade-in">
-                <h2 class="cta__title">Bem-vindo de <br /><span class="text-gradient">volta!</span></h2>
-                <p class="cta__subtitle">Entre para conferir os próximos rolês.</p>
-
-                <form class="cta__form glass" id="loginForm">
-                    <input type="email" name="email" placeholder="Seu e-mail" class="cta__input" required />
-                    <input type="password" name="senha" placeholder="Sua senha" class="cta__input" required />
-
-                    <button type="submit" class="btn btn--primary btn--glow btn--lg cta__submit">
-                        Entrar no rolê →
-                    </button>
-                </form>
-
-                <p class="cta__terms">Ainda não tem conta? <a href="cadastro.html"
-                        style="color: var(--primary-purple); text-decoration: none; font-weight: 600;">Cadastre-se
-                        aqui.</a></p>
-            </div>
-        </div>
+  <div class="login-page">
+    <div class="cta__orbs">
+      <div class="orb orb--4"></div>
+      <div class="orb orb--5"></div>
     </div>
+    <div class="container">
+      <div class="cta__inner fade-in">
+        <span class="badge"><i class="fa-solid fa-calendar-check"></i> Acesso organizador</span>
+        <h1 class="cta__title">Gerencie seus<br /><span class="text-gradient">eventos</span></h1>
+        <p class="cta__subtitle">Acompanhe vendas, comunidades, tickets e dados do público.</p>
 
-    <script src="../js/loginOrganizador.js"></script>
+        <form class="cta__form glass" id="loginForm">
+          <input type="email" name="email" placeholder="E-mail do organizador" autocomplete="email" class="cta__input" required />
+          <input type="password" name="senha" placeholder="Sua senha" autocomplete="current-password" class="cta__input" required />
+          <div class="auth-feedback" id="authFeedback" aria-live="polite"></div>
+
+          <button type="submit" class="btn btn--primary btn--glow btn--lg cta__submit">
+            Entrar como organizador
+          </button>
+        </form>
+
+        <div class="auth-links">
+          <a href="cadastroOrganizador.html">Criar conta organizador</a>
+          <span>ou</span>
+          <a href="login.html">trocar perfil</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/loginOrganizador.js"></script>
 </body>
 
 </html>

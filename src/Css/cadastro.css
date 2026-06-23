@@ -1,13 +1,25 @@
-/* =========================================
-   ESTILO UNIFICADO: CADASTRO & LOGIN
-   ========================================= */
+* {
+    box-sizing: border-box;
+}
 
-/* Reset e Base para garantir centralização */
+:root {
+    --bg: #090714;
+    --panel: rgba(255, 255, 255, 0.04);
+    --panel-strong: rgba(255, 255, 255, 0.08);
+    --stroke: rgba(255, 255, 255, 0.12);
+    --text: #ffffff;
+    --muted: #a19ba8;
+    --primary-purple: #9d4edd;
+    --primary-purple-dark: #5a189a;
+    --success: #22c55e;
+    --danger: #ff6b6b;
+}
+
 body {
     margin: 0;
     padding: 0;
-    background-color: #090714; /* Cor escura padrão JoinUp */
-    color: #fff;
+    background-color: var(--bg);
+    color: var(--text);
     font-family: 'Poppins', sans-serif;
     min-height: 100vh;
     display: flex;
@@ -16,19 +28,24 @@ body {
     overflow-x: hidden;
 }
 
-.cta {
-    margin: 5vh 0vh;
+a {
+    color: inherit;
 }
 
-/* Orbs de fundo (As esferas de luz neon) */
-.cta__orbs {
-    position: fixed; /* Fica fixo atrás de tudo */
-    top: 0;
-    left: 0;
+.cta {
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 0;
+}
+
+.cta__orbs {
+    position: fixed;
+    inset: 0;
     z-index: -1;
-    filter: blur(100px); /* Borrão forte para o efeito de aura */
+    filter: blur(100px);
 }
 
 .orb {
@@ -41,7 +58,7 @@ body {
 .orb--4 {
     width: 400px;
     height: 400px;
-    background: #9d4edd; /* Roxo principal */
+    background: var(--primary-purple);
     top: -10%;
     right: -5%;
 }
@@ -49,7 +66,7 @@ body {
 .orb--5 {
     width: 350px;
     height: 350px;
-    background: #5a189a; /* Roxo escuro */
+    background: var(--primary-purple-dark);
     bottom: -10%;
     left: -5%;
 }
@@ -59,139 +76,293 @@ body {
     to { transform: translate(50px, 80px); }
 }
 
-/* Container de conteúdo */
 .container {
-    width: 90%;
-    max-width: 500px; /* Largura ideal para formulários */
+    width: min(92%, 500px);
     position: relative;
     z-index: 10;
+}
+
+.container--wide {
+    width: min(94%, 980px);
 }
 
 .cta__inner {
     text-align: center;
 }
 
-/* Tipografia */
 .cta__title {
     font-size: 2.8rem;
     font-weight: 900;
     line-height: 1.1;
-    margin-bottom: 10px;
+    margin: 0 0 12px;
 }
 
 .text-gradient {
     background: linear-gradient(90deg, #fff, #e0aaff);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .cta__subtitle {
-    color: #a19ba8;
-    margin-bottom: 30px;
+    color: var(--muted);
+    margin: 0 auto 30px;
+    max-width: 620px;
 }
 
 .badge {
-    display: inline-block;
-    padding: 5px 15px;
-    border: 1px solid #9d4edd;
-    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 15px;
+    border: 1px solid rgba(157, 78, 221, 0.65);
+    border-radius: 999px;
     font-size: 0.8rem;
     color: #e0aaff;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
     background: rgba(157, 78, 221, 0.1);
 }
 
-/* EFEITO GLASSMORPHISM (O segredo do visual pica) */
-.glass {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(15px); /* Borra o que está atrás */
+.glass,
+.choice-card {
+    background: var(--panel);
+    backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    padding: 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--stroke);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
 }
 
-/* Formulário e Inputs */
+.glass {
+    border-radius: 24px;
+    padding: 34px;
+}
+
 .cta__form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
+    gap: 14px;
+    align-items: stretch;
 }
 
 .cta__input {
+    width: 100%;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(157, 78, 221, 0.3);
-    padding: 16px 20px;
+    padding: 16px 18px;
     border-radius: 12px;
-    color: #fff;
+    color: var(--text);
     font-size: 1rem;
     outline: none;
-    transition: all 0.3s ease;
-    text-align: left;
-    width: 100%;
-    max-width: 400px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .cta__input:focus {
-    border-color: #9d4edd;
+    border-color: var(--primary-purple);
     background: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 10px rgba(157, 78, 221, 0.3);
+    box-shadow: 0 0 0 3px rgba(157, 78, 221, 0.2);
 }
 
-/* Estilo para Select */
-select.cta__input {
+.cta__input::placeholder {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
     cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e0aaff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 20px;
-    padding-right: 40px;
 }
 
-select.cta__input option {
-    background-color: #0a0e27;
-    color: #fff;
-}
-
-/* Botão com efeito GLOW */
+.btn,
 .btn--primary {
-    background: #9d4edd;
-    color: #fff;
-    border: none;
-    padding: 16px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 1.1rem;
+    border: 0;
     cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
+    font-family: inherit;
 }
 
+.btn--primary,
+.cta__submit {
+    width: 100%;
+    min-height: 54px;
+    background: var(--primary-purple);
+    color: #fff;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+}
+
+.btn--primary:hover,
 .btn--glow:hover {
-    background: #5a189a;
-    box-shadow: 0 0 20px rgba(157, 78, 221, 0.6);
+    background: var(--primary-purple-dark);
+    box-shadow: 0 0 20px rgba(157, 78, 221, 0.55);
     transform: translateY(-2px);
 }
 
-/* Rodapé do form */
-.cta__terms {
-    margin-top: 25px;
-    font-size: 0.8rem;
-    color: #666;
+.btn--primary:disabled,
+.cta__submit:disabled {
+    cursor: wait;
+    opacity: 0.72;
+    transform: none;
+}
+
+.choice-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin: 32px 0 26px;
+}
+
+.choice-card {
+    min-height: 255px;
+    border-radius: 18px;
+    padding: 24px;
+    text-align: left;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.choice-card:hover,
+.choice-card:focus-visible {
+    transform: translateY(-4px);
+    border-color: rgba(157, 78, 221, 0.8);
+    background: var(--panel-strong);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+    outline: none;
+}
+
+.choice-card__icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #e0aaff;
+    background: rgba(157, 78, 221, 0.18);
+    border: 1px solid rgba(157, 78, 221, 0.35);
+}
+
+.choice-card strong {
+    font-size: 1.15rem;
+}
+
+.choice-card small {
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.choice-card__action {
+    margin-top: auto;
+    color: #e0aaff;
+    font-weight: 800;
+    font-size: 0.88rem;
+}
+
+.auth-feedback {
+    display: none;
+    width: 100%;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-align: left;
     line-height: 1.4;
 }
 
-/* Ajuste específico para o Input de Data/Hora */
-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-    filter: invert(1); /* Deixa o ícone do calendário branco */
-    cursor: pointer;
+.auth-feedback.is-visible {
+    display: block;
 }
 
-/* Responsividade para celulares */
+.auth-feedback--success {
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.auth-feedback--error {
+    color: #fecaca;
+    background: rgba(255, 107, 107, 0.12);
+    border: 1px solid rgba(255, 107, 107, 0.45);
+}
+
+.js-field-error {
+    color: #fecaca;
+    font-size: 0.78rem;
+    line-height: 1.3;
+    text-align: left;
+    margin-top: -6px;
+}
+
+.auth-links,
+.cta__terms {
+    margin-top: 24px;
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.auth-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+}
+
+.auth-links a,
+.cta__terms a {
+    color: #e0aaff;
+    text-decoration: none;
+    font-weight: 800;
+}
+
+.auth-links a:hover,
+.cta__terms a:hover {
+    text-decoration: underline;
+}
+
+.success-message {
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid var(--success);
+    color: #86efac;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+}
+
+@media (max-width: 760px) {
+    .cta {
+        padding: 32px 0;
+    }
+
+    .choice-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .choice-card {
+        min-height: 0;
+    }
+}
+
 @media (max-width: 480px) {
-    .cta__title { font-size: 2rem; }
-    .glass { padding: 25px; }
+    .cta__title {
+        font-size: 2rem;
+    }
+
+    .glass {
+        padding: 24px;
+        border-radius: 20px;
+    }
 }

@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (data.success) {
           showMsg('<i class="fa-solid fa-circle-check"></i> Evento criado com sucesso! Redirecionando...', 'success');
           setTimeout(() => {
-            window.location.href = 'dashboardOrganizador.html';
+            window.location.href = 'organizador.html';
           }, 2000);
         } else {
           showMsg('<i class="fa-solid fa-circle-xmark"></i> ' + (data.error || 'Erro desconhecido ao criar evento.'), 'error');

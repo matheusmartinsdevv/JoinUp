@@ -77,6 +77,14 @@
     <div class="main">
       <header class="topbar">
         <button class="burger-btn" id="burgerBtn"><i class="fa-solid fa-bars"></i></button>
+        <div class="topbar__actions">
+          <button class="btn btn--ghost btn--sm" type="button" onclick="loadSupportTickets()">
+            <i class="fa-solid fa-rotate"></i> Atualizar
+          </button>
+          <button class="btn btn--primary btn--sm" type="button" onclick="goPage('tickets')">
+            <i class="fa-solid fa-ticket"></i> Tickets
+          </button>
+        </div>
       </header>
 
       <div class="page active" id="page-dashboard">
@@ -145,6 +153,10 @@
             <button class="filter-tab" onclick="filterTickets('fechado')">Fechados</button>
           </div>
           <div class="filter-actions">
+            <label class="support-search" for="searchInput">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="searchInput" placeholder="Buscar ticket, usuário ou e-mail" autocomplete="off" />
+            </label>
             <select class="filter-select" id="supportUserTypeFilter" onchange="renderSupportTickets()">
               <option value="all">Todos os usuários</option>
               <option value="Participante">Participantes</option>

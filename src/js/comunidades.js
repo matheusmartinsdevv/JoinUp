@@ -34,6 +34,15 @@
             .replace(/"/g, '&quot;');
     }
 
+    function normalizeImageUrl(value) {
+        const image = String(value || '').trim();
+        if (!image) return '';
+        if (/^(https?:)?\/\//i.test(image) || image.startsWith('data:') || image.startsWith('../')) {
+            return image;
+        }
+        return `../uploads/${image}`;
+    }
+
     function criarCard(c, ehMinha) {
         const card = document.createElement('div');
         card.className = 'comunidade-card';
@@ -44,7 +53,7 @@
             : '';
 
         const imgHtml = c.imagem
-            ? `<img class="comunidade-card__img" src="../uploads/${escapeHtml(c.imagem)}" alt="${escapeHtml(c.nome)}">`
+            ? `<img class="comunidade-card__img" src="${escapeHtml(normalizeImageUrl(c.imagem))}" alt="${escapeHtml(c.nome)}">`
             : `<div class="comunidade-card__img-placeholder"><i class="fa-solid fa-music"></i></div>`;
 
         const btnClass  = ehMinha ? 'comunidade-card__btn--sair'   : 'comunidade-card__btn--entrar';

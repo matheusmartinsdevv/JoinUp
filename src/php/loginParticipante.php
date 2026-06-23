@@ -1,12 +1,18 @@
 <?php
 // 1. Inicia a sessão para manter o usuário logado
 session_start();
+header('Content-Type: text/plain; charset=utf-8');
 
 // 2. Configurações de conexão (iguais ao seu cadastro.php)
 include 'conexao.php';
 
+if (!$conn || $conn->connect_error) {
+    echo "Erro de conexão com o banco de dados.";
+    exit;
+}
+
 // 3. Recebe os dados do formulário (via Fetch JS)
-$email = $_POST['email'] ?? '';
+$email = trim($_POST['email'] ?? '');
 $senha_digitada = $_POST['senha'] ?? '';
 
 if (!empty($email) && !empty($senha_digitada)) {
@@ -15,6 +21,12 @@ if (!empty($email) && !empty($senha_digitada)) {
     // Usamos Prepared Statements para evitar SQL Injection
     $sql = "SELECT cpf, nome, senha FROM participantes WHERE email = ?";
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        echo "Erro ao preparar login. Tente novamente mais tarde.";
+        $conn->close();
+        exit;
+    }
+
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();

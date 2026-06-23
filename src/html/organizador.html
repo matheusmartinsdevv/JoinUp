@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JoinUp — Painel do Organizador</title>
+  <title>JoinUp - Painel do Organizador</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
@@ -38,36 +38,36 @@
       <nav class="sidebar__nav">
         <span class="nav-section">Painel</span>
         <button class="nav-item active" data-page="dashboard">
-          <span class="nav-icon"></span> Dashboard
+          <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span> Dashboard
         </button>
         <button class="nav-item" data-page="events">
-          <span class="nav-icon"></span> Meus Eventos
+          <span class="nav-icon"><i class="fa-solid fa-calendar-days"></i></span> Meus Eventos
         </button>
         <button class="nav-item" data-page="analytics">
-          <span class="nav-icon"></span> Analytics
+          <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Analytics
         </button>
 
         <span class="nav-section">Gerenciar</span>
         <button class="nav-item" data-page="create">
-          <span class="nav-icon"></span> Criar Evento
+          <span class="nav-icon"><i class="fa-solid fa-plus"></i></span> Criar Evento
         </button>
         <button class="nav-item" data-page="sales">
-          <span class="nav-icon"></span> Vendas
+          <span class="nav-icon"><i class="fa-solid fa-sack-dollar"></i></span> Vendas
         </button>
         <button class="nav-item" data-page="communities">
-          <span class="nav-icon"></span> Comunidades
+          <span class="nav-icon"><i class="fa-solid fa-users"></i></span> Comunidades
         </button>
 
 
         <span class="nav-section">Conta</span>
         <button class="nav-item" data-page="profile">
-          <span class="nav-icon"></span> Meu Perfil
+          <span class="nav-icon"><i class="fa-solid fa-user"></i></span> Meu Perfil
         </button>
         <button class="nav-item" data-page="ticketHelp">
-          <span class="nav-icon"></span> Central de Ajuda
+          <span class="nav-icon"><i class="fa-solid fa-headset"></i></span> Central de Ajuda
         </button>
         <button class="nav-item" id="logoutBtn">
-          <span class="nav-icon"></span> Sair
+          <span class="nav-icon"><i class="fa-solid fa-right-from-bracket"></i></span> Sair
         </button>
       </nav>
 
@@ -88,15 +88,20 @@
         <button class="burger-btn" id="burgerBtn"><i class="fa-solid fa-bars"></i></button>
 
         <div class="topbar__actions">
-          <!-- Ícones removidos -->
+          <button class="btn btn--ghost btn--sm" onclick="goPage('ticketHelp')">
+            <i class="fa-solid fa-headset"></i> Ajuda
+          </button>
+          <button class="btn btn--primary btn--sm" onclick="goPage('create')">
+            <i class="fa-solid fa-plus"></i> Criar evento
+          </button>
         </div>
       </header>
 
       <!--PAGE: DASHBOARD-->
 
       <div class="page active" id="page-dashboard">
-        <div class="section-title">Dashboard <span class="text-gradient">do Organizador</span></div>
-        <p class="section-sub">Gerencie seus eventos e acompanhe o desempenho.</p>
+        <div class="section-title">Central <span class="text-gradient">Social do Evento</span></div>
+        <p class="section-sub">Acompanhe vendas, comunidade, engajamento e próximos movimentos do público.</p>
 
         <!-- Stats Cards -->
         <div class="stats-grid">
@@ -128,7 +133,7 @@
             <div class="stat-card__icon"><i class="fa-solid fa-users"></i></div>
             <div class="stat-card__content">
               <div class="stat-card__value" id="dash-total-participantes">--</div>
-              <div class="stat-card__label">Participantes</div>
+              <div class="stat-card__label">Rede de Participantes</div>
             </div>
           </div>
         </div>
@@ -136,13 +141,13 @@
         <!-- Quick Actions -->
         <div class="quick-actions">
           <button class="btn btn--primary btn--large" onclick="goPage('create')">
-            <span></span> Criar Novo Evento
+            <i class="fa-solid fa-plus"></i> Criar Novo Evento
           </button>
           <button class="btn btn--ghost btn--large" onclick="goPage('events')">
-            <span></span> Gerenciar Eventos
+            <i class="fa-solid fa-calendar-days"></i> Gerenciar Eventos
           </button>
           <button class="btn btn--ghost btn--large" onclick="goPage('analytics')">
-            <span></span> Ver Analytics
+            <i class="fa-solid fa-chart-line"></i> Ver Analytics
           </button>
         </div>
 
@@ -198,7 +203,7 @@
         <div class="events-management" id="eventsContainer">
           <!-- cards carregados dinamicamente pelo JS -->
           <div id="eventsLoading" style="padding:32px;text-align:center;">
-            <span style="font-size:2rem;">⏳</span>
+            <span style="font-size:2rem;"><i class="fa-solid fa-spinner fa-spin"></i></span>
             <p style="color:var(--text-muted);margin-top:8px;">Carregando seus eventos...</p>
           </div>
         </div>
@@ -229,7 +234,7 @@
 
             <div class="performance-card glass">
               <div class="performance-card__header">
-                <span class="performance-card__icon">⭐</span>
+                <span class="performance-card__icon"><i class="fa-solid fa-star"></i></span>
                 <span class="performance-card__title">Avaliação Média</span>
               </div>
               <div class="performance-card__value">--</div>
@@ -257,6 +262,29 @@
 
         <!-- FORM envolve todo o conteúdo -->
         <form id="formEvento">
+          <div class="create-flow">
+            <div class="create-flow__step glass">
+              <span>1</span>
+              <strong>Dados</strong>
+              <small>Nome, gênero e data</small>
+            </div>
+            <div class="create-flow__step glass">
+              <span>2</span>
+              <strong>Local</strong>
+              <small>Endereço e cidade</small>
+            </div>
+            <div class="create-flow__step glass">
+              <span>3</span>
+              <strong>Ingressos</strong>
+              <small>Preço e quantidade</small>
+            </div>
+            <div class="create-flow__step glass">
+              <span>4</span>
+              <strong>Divulgação</strong>
+              <small>Descrição, line-up e imagem</small>
+            </div>
+          </div>
+
           <div class="create-form glass">
             <div class="form-section">
               <h3 class="form-section__title">Informações Básicas</h3>
@@ -292,7 +320,7 @@
                 <div class="form-group">
                   <label>Estado *</label>
                   <select id="estado" required>
-                    <option value=""></option>
+                    <option value="">Selecione</option>
                     <option value="AC">AC</option>
                     <option value="AL">AL</option>
                     <option value="AP">AP</option>
@@ -363,6 +391,7 @@
                   <span class="upload-sub">PNG, JPG até 5MB</span>
                 </div>
                 <input type="file" id="eventImage" accept="image/*" style="display: none;" />
+                <div class="upload-preview" id="eventImagePreview" style="display:none;"></div>
               </div>
             </div>
 
@@ -383,31 +412,31 @@
       <!-- ░░ PAGE: ANALYTICS          ░░ -->
       <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
       <div class="page" id="page-analytics">
-        <div class="section-title">Analytics <span class="text-gradient">Detalhado</span></div>
-        <p class="section-sub">Acompanhe o desempenho dos seus eventos.</p>
+        <div class="section-title">Analytics <span class="text-gradient">Social</span></div>
+        <p class="section-sub">Entenda quais eventos geram venda, conversa e retorno da comunidade.</p>
 
         <div class="analytics-content">
           <div class="analytics-card glass">
             <h3>Vendas por Evento</h3>
-            <div class="chart-placeholder">
-              <span><i class="fa-solid fa-chart-column"></i> Gráfico de vendas</span>
-              <p>Analytics detalhado em breve</p>
+            <div class="chart-placeholder" id="analyticsSalesChart">
+              <span><i class="fa-solid fa-chart-column"></i></span>
+              <p>Carregando dados...</p>
             </div>
           </div>
 
           <div class="analytics-card glass">
             <h3>Receita Mensal</h3>
-            <div class="chart-placeholder">
-              <span><i class="fa-solid fa-sack-dollar"></i> Gráfico financeiro</span>
-              <p>Relatórios financeiros em breve</p>
+            <div class="chart-placeholder" id="analyticsRevenueChart">
+              <span><i class="fa-solid fa-sack-dollar"></i></span>
+              <p>Carregando dados...</p>
             </div>
           </div>
 
           <div class="analytics-card glass">
-            <h3>Engajamento</h3>
-            <div class="chart-placeholder">
-              <span><i class="fa-solid fa-chart-line"></i> Métricas de engajamento</span>
-              <p>Dados de comunidade em breve</p>
+            <h3>Engajamento da Comunidade</h3>
+            <div class="chart-placeholder" id="analyticsEngagementChart">
+              <span><i class="fa-solid fa-chart-line"></i></span>
+              <p>Carregando dados...</p>
             </div>
           </div>
         </div>
@@ -423,23 +452,24 @@
         <div class="sales-content">
           <div class="sales-summary glass">
             <div class="sales-stat">
-              <span class="sales-stat__value">R$ --</span>
+              <span class="sales-stat__value" id="salesSaldoDisponivel">R$ --</span>
               <span class="sales-stat__label">Saldo Disponível</span>
             </div>
             <div class="sales-stat">
-              <span class="sales-stat__value">R$ --</span>
+              <span class="sales-stat__value" id="salesAReceber">R$ --</span>
               <span class="sales-stat__label">A Receber</span>
             </div>
             <div class="sales-stat">
-              <span class="sales-stat__value">R$ --</span>
+              <span class="sales-stat__value" id="salesTaxas">R$ --</span>
               <span class="sales-stat__label">Taxas Plataforma</span>
             </div>
+            <div class="sales-breakdown" id="salesBreakdown"></div>
           </div>
 
           <div class="sales-actions">
-            <button class="btn btn--primary" onclick="showToast('Solicitar saque','fa-sack-dollar')">Solicitar
+            <button class="btn btn--primary" onclick="requestPayout()">Solicitar
               Saque</button>
-            <button class="btn btn--ghost" onclick="showToast('Ver extrato','fa-file-lines')">Ver Extrato</button>
+            <button class="btn btn--ghost" onclick="goPage('analytics')">Ver Extrato</button>
           </div>
         </div>
       </div><!-- /page-sales -->
@@ -599,15 +629,15 @@
           <div class="chat-modal__title" id="chatModalTitle">Comunidade</div>
           <div class="chat-modal__sub" id="chatModalSub"></div>
         </div>
-        <button class="chat-modal__close" id="chatCloseBtn">✕</button>
+        <button class="chat-modal__close" id="chatCloseBtn" aria-label="Fechar conversa"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <div class="chat-modal__messages" id="chatMessages"></div>
 
       <!-- Reply indicator -->
       <div class="chat-reply-bar" id="chatReplyBar" style="display:none">
-        <span class="chat-reply-bar__text">↩ Respondendo: <span id="chatReplyText"></span></span>
-        <button id="chatReplyCancel">✕</button>
+        <span class="chat-reply-bar__text"><i class="fa-solid fa-reply"></i> Respondendo: <span id="chatReplyText"></span></span>
+        <button id="chatReplyCancel" aria-label="Cancelar resposta"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <!-- Composer -->

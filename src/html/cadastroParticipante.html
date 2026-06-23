@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../Css/cadastro.css"/>
-  <title>Crie sua conta</title>
+  <link rel="stylesheet" href="../Css/cadastro.css" />
+  <title>Cadastro participante | JoinUp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 
@@ -17,34 +18,28 @@
     </div>
     <div class="container">
       <div class="cta__inner fade-in">
-        <span class="badge"><i class="fa-solid fa-sparkles"></i> É de graça pra começar</span>
-        <h2 class="cta__title">Pronto pra entrar<br /><span class="text-gradient">no rolê?</span></h2>
-        <p class="cta__subtitle">Crie sua conta agora e encontre sua galera no próximo evento.</p>
+        <span class="badge"><i class="fa-solid fa-ticket"></i> Cadastro participante</span>
+        <h1 class="cta__title">Sua entrada no<br /><span class="text-gradient">rolê</span></h1>
+        <p class="cta__subtitle">Depois do cadastro você acessa feed, ingressos e comunidades.</p>
 
-  
         <form class="cta__form glass" id="ctaForm">
-
-          <input type="text" name="cpf" maxlength="11" placeholder="CPF (Apenas números)" class="cta__input" required />
-
-          <input type="text" name="nome" maxlength="60" placeholder="Seu nome" class="cta__input" required />
-
-          <input type="email" name="email" maxlength="45" placeholder="Seu melhor e-mail" class="cta__input" required />
-
-          <input type="date" name="data_nascimento" class="cta__input" required />
-
-          <input type="password" name="senha" maxlength="45" placeholder="Crie sua senha" class="cta__input" required />
-          <!--input  type="text"  name="telefone" id="prova" maxlength="20" placeholder="Telefone" class="cta__input"  required/-->
+          <input type="text" name="cpf" maxlength="11" inputmode="numeric" autocomplete="off" placeholder="CPF, apenas números" class="cta__input" required />
+          <input type="text" name="nome" maxlength="60" autocomplete="name" placeholder="Seu nome" class="cta__input" required />
+          <input type="email" name="email" maxlength="45" autocomplete="email" placeholder="Seu melhor e-mail" class="cta__input" required />
+          <input type="date" name="data_nascimento" aria-label="Data de nascimento" autocomplete="bday" class="cta__input" required />
+          <input type="password" name="senha" maxlength="45" autocomplete="new-password" placeholder="Crie uma senha" class="cta__input" required />
+          <div class="auth-feedback" id="authFeedback" aria-live="polite"></div>
 
           <button type="submit" class="btn btn--primary btn--glow btn--lg cta__submit">
-            Criar conta grátis →
+            Criar conta participante
           </button>
         </form>
 
-        <a href="login.html">
-          <button type="submit" class="btn--primary">Fazer login</button>
-        </a>
-
-
+        <div class="auth-links">
+          <a href="loginParticipante.html">Já tenho conta</a>
+          <span>ou</span>
+          <a href="cadastro.html">trocar perfil</a>
+        </div>
       </div>
     </div>
   </section>

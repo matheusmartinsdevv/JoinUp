@@ -1,13 +1,19 @@
 <?php
 // 1. Inicia a sessão para manter o usuário logado
 session_start();
+header('Content-Type: text/plain; charset=utf-8');
 
 // 2. Configurações de conexão
 include 'conexao.php';
 
 // 3. Recebe os dados do formulário (via Fetch JS)
-$email = $_POST['email'] ?? '';
+$email = trim($_POST['email'] ?? '');
 $senha_digitada = $_POST['senha'] ?? '';
+
+if (!$conn instanceof mysqli) {
+    echo "Erro de conexao com o banco de dados.";
+    exit;
+}
 
 if (!empty($email) && !empty($senha_digitada)) {
     

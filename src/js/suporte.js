@@ -67,8 +67,14 @@ function closeSidebar() {
   sidebarOverlay.classList.remove('active');
 }
 
+function iconMarkup(icon = '') {
+  if (!icon) return '';
+  if (String(icon).includes('<i')) return icon;
+  return `<i class="fa-solid ${icon}"></i>`;
+}
+
 function showToast(message, icon = '', duration = 3000) {
-  document.getElementById('toastIcon').textContent = icon;
+  document.getElementById('toastIcon').innerHTML = iconMarkup(icon);
   document.getElementById('toastMsg').textContent = message;
   toast.classList.add('show');
 
@@ -692,6 +698,7 @@ logoutBtn.addEventListener('click', () => {
 if (ticketResponseForm) ticketResponseForm.addEventListener('submit', submitTicketResponse);
 if (closeTicketBtn) closeTicketBtn.addEventListener('click', closeCurrentTicket);
 if (chatReplyForm) chatReplyForm.addEventListener('submit', submitChatReply);
+if (searchInput) searchInput.addEventListener('input', renderSupportTickets);
 
 document.addEventListener('DOMContentLoaded', () => {
   goPage('dashboard');

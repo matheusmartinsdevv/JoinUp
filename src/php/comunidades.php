@@ -58,6 +58,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_comunidade = (int)$input['id_comunidade'];
 
     if ($action === 'entrar') {
+        $access = $conn->prepare(
+            "SELECT 1
+             FROM comunidades c
+             INNER JOIN ingressos i ON i.id_evento = c.id_evento
+             WHERE c.id_comunidade = ?
+               AND i.id_participante = ?
+               AND i.status IN ('ativo', 'utilizado')
+             LIMIT 1"
+        );
+        if (!$access) {
+            echo json_encode(['success' => false, 'error' => 'Não foi possível validar acesso à comunidade.']);
+            exit;
+        }
+        $access->bind_param('ii', $id_comunidade, $id_participante);
+        $access->execute();
+        $access->store_result();
+        if ($access->num_rows === 0) {
+            $access->close();
+            echo json_encode(['success' => false, 'error' => 'Compre um ingresso para entrar nesta comunidade.']);
+            exit;
+        }
+        $access->close();
+
         $check = $conn->prepare(
             "SELECT 1 FROM participante_comunidades
              WHERE id_participante = ? AND id_comunidade = ?"

@@ -2,43 +2,46 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../Css/login.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
-        rel="stylesheet" />
-    <title>Login Suporte | JoinUp</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../Css/login.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <title>Login suporte | JoinUp</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 
 <body>
-    <div class="login-page">
-        <div class="cta__orbs">
-            <div class="orb orb--4"></div>
-            <div class="orb orb--5"></div>
-        </div>
-        <div class="container">
-            <div class="cta__inner fade-in">
-                <h2 class="cta__title">Acesso ao <br /><span class="text-gradient">Suporte</span></h2>
-                <p class="cta__subtitle">Entre com suas credenciais de suporte.</p>
-
-                <form class="cta__form glass" id="loginForm">
-                    <input type="email" name="email" placeholder="E-mail de suporte" class="cta__input" required />
-                    <input type="password" name="senha" placeholder="Senha de suporte" class="cta__input" required />
-
-                    <button type="submit" class="btn btn--primary btn--glow btn--lg cta__submit">
-                        Acessar Painel →
-                    </button>
-                </form>
-
-                <p class="cta__terms" style="text-align: center; margin-top: 2rem;">
-                    <a href="index.html" style="color: var(--primary-purple); text-decoration: none; font-weight: 600;">Voltar para o início</a>
-                </p>
-            </div>
-        </div>
+  <div class="login-page">
+    <div class="cta__orbs">
+      <div class="orb orb--4"></div>
+      <div class="orb orb--5"></div>
     </div>
+    <div class="container">
+      <div class="cta__inner fade-in">
+        <span class="badge"><i class="fa-solid fa-headset"></i> Acesso suporte</span>
+        <h1 class="cta__title">Central de<br /><span class="text-gradient">atendimento</span></h1>
+        <p class="cta__subtitle">Resolva chamados de participantes e organizadores com contexto.</p>
 
-    <script src="../js/loginSuporte.js"></script>
+        <form class="cta__form glass" id="loginForm">
+          <input type="email" name="email" placeholder="E-mail de suporte" autocomplete="email" class="cta__input" required />
+          <input type="password" name="senha" placeholder="Senha de suporte" autocomplete="current-password" class="cta__input" required />
+          <div class="auth-feedback" id="authFeedback" aria-live="polite"></div>
+
+          <button type="submit" class="btn btn--primary btn--glow btn--lg cta__submit">
+            Acessar painel
+          </button>
+        </form>
+
+        <div class="auth-links">
+          <a href="cadastroSuporte.html">Criar conta suporte</a>
+          <span>ou</span>
+          <a href="login.html">trocar perfil</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/loginSuporte.js"></script>
 </body>
 
 </html>

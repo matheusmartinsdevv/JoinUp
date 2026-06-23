@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../Css/cadastro.css"/>
-  <title>Crie sua conta</title>
+  <link rel="stylesheet" href="../Css/cadastro.css" />
+  <title>Cadastro organizador | JoinUp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 
@@ -17,30 +18,27 @@
     </div>
     <div class="container">
       <div class="cta__inner fade-in">
-        <span class="badge"><i class="fa-solid fa-sparkles"></i> É de graça pra começar</span>
-        <h2 class="cta__title">Pronto pra entrar<br /><span class="text-gradient">no rolê?</span></h2>
-        <p class="cta__subtitle">Crie sua conta agora e divulgue seus eventos.</p>
-
+        <span class="badge"><i class="fa-solid fa-calendar-check"></i> Cadastro organizador</span>
+        <h1 class="cta__title">Publique seus<br /><span class="text-gradient">eventos</span></h1>
+        <p class="cta__subtitle">Crie sua conta para vender ingressos e cuidar das comunidades.</p>
 
         <form class="cta__form glass" id="ctaForm">
-
-          <input type="text" name="cnpj" maxlength="18" placeholder="CNPJ (Apenas números)" class="cta__input" required />
-
-          <input type="text" name="nome"  maxlength="80" placeholder="Seu nome" class="cta__input" required />
-
-          <input type="email" name="email" maxlength="40" placeholder="Seu melhor e-mail" class="cta__input" required />
-
-          <input type="password" name="senha" maxlength="20"  placeholder="Crie sua senha" class="cta__input" required />
+          <input type="text" name="cnpj" maxlength="18" inputmode="numeric" autocomplete="off" placeholder="CNPJ, apenas números" class="cta__input" required />
+          <input type="text" name="nome" maxlength="80" autocomplete="name" placeholder="Nome do responsável" class="cta__input" required />
+          <input type="email" name="email" maxlength="40" autocomplete="email" placeholder="E-mail do organizador" class="cta__input" required />
+          <input type="password" name="senha" maxlength="20" autocomplete="new-password" placeholder="Crie uma senha" class="cta__input" required />
+          <div class="auth-feedback" id="authFeedback" aria-live="polite"></div>
 
           <button type="submit" class="btn btn--primary btn--glow btn--lg cta__submit">
-            Criar conta grátis →
+            Criar conta organizador
           </button>
         </form>
 
-        <a href="login.html">
-          <button type="submit" class="btn--primary">Fazer login</button>
-        </a>
-
+        <div class="auth-links">
+          <a href="loginOrganizador.html">Já tenho conta</a>
+          <span>ou</span>
+          <a href="cadastro.html">trocar perfil</a>
+        </div>
       </div>
     </div>
   </section>

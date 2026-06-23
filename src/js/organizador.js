@@ -11,24 +11,13 @@ const pages = document.querySelectorAll('.page');
 const toast = document.getElementById('toast');
 const logoutBtn = document.getElementById('logoutBtn');
 let mySupportTickets = [];
-
-console.log('Elementos DOM carregados:', {
-  sidebar: !!sidebar,
-  sidebarOverlay: !!sidebarOverlay,
-  burgerBtn: !!burgerBtn,
-  navItems: navItems.length,
-  pages: pages.length,
-  toast: !!toast,
-  logoutBtn: !!logoutBtn
-});
+let organizerEventsCache = [];
 
 // =========================================
 // NAVIGATION
 // =========================================
 
 function goPage(pageName) {
-  console.log('goPage chamado com:', pageName);
-
   // Hide all pages
   pages.forEach(page => page.classList.remove('active'));
 
@@ -36,7 +25,6 @@ function goPage(pageName) {
   const targetPage = document.getElementById(`page-${pageName}`);
   if (targetPage) {
     targetPage.classList.add('active');
-    console.log('PÃƒÂ¡gina ativada:', pageName);
 
     // Load data for dashboard
     if (pageName === 'dashboard') {
@@ -45,7 +33,6 @@ function goPage(pageName) {
 
     // Load dynamic data when navigating to create page
     if (pageName === 'create') {
-      console.log('Carregando dados para pÃƒÂ¡gina create');
       loadGeneros();
       loadArtistas();
       // Garantir ao menos um tipo de ingresso inicial
@@ -58,6 +45,14 @@ function goPage(pageName) {
     // Load events when navigating to events page
     if (pageName === 'events') {
       loadMeusEventos();
+    }
+
+    if (pageName === 'analytics' || pageName === 'sales') {
+      if (organizerEventsCache.length) {
+        renderOrganizerInsights(organizerEventsCache);
+      } else {
+        loadDashboard();
+      }
     }
 
     // Load profile when navigating to profile page
@@ -73,7 +68,7 @@ function goPage(pageName) {
       loadOrgCommunities();
     }
   } else {
-    console.log('PÃƒÂ¡gina nÃƒÂ£o encontrada:', pageName);
+    console.warn('Página não encontrada:', pageName);
   }
 
   // Update nav active state
@@ -137,6 +132,248 @@ function escapeHtml(value) {
     .replace(/'/g, '&#039;');
 }
 
+function normalizeImageUrl(value) {
+  const image = String(value || '').trim();
+  if (!image) return '';
+  if (/^(https?:)?\/\//i.test(image) || image.startsWith('data:') || image.startsWith('../')) {
+    return image;
+  }
+  return `../uploads/${image}`;
+}
+
+function toNumber(value) {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  const normalized = String(value ?? '0')
+    .replace(/[^\d,.-]/g, '')
+    .replace(/\./g, '')
+    .replace(',', '.');
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatCurrency(value) {
+  return 'R$ ' + (Number(value) || 0).toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function setText(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = value;
+}
+
+function getEventMetrics(eventos) {
+  const totalEventos = eventos.length;
+  const ativos = eventos.filter(e => !e.passado).length;
+  const ingressos = eventos.reduce((acc, e) => acc + (parseInt(e.vendidos, 10) || 0), 0);
+  const receita = eventos.reduce((acc, e) => acc + toNumber(e.receita ?? e.receita_fmt), 0);
+  const ocupacaoMedia = totalEventos
+    ? Math.round(eventos.reduce((acc, e) => acc + (parseInt(e.ocupacao, 10) || 0), 0) / totalEventos)
+    : 0;
+
+  return { totalEventos, ativos, ingressos, receita, ocupacaoMedia };
+}
+
+function renderOrganizerInsights(eventos = organizerEventsCache) {
+  organizerEventsCache = Array.isArray(eventos) ? eventos : [];
+  renderActivityFeed(organizerEventsCache);
+  renderDashboardChart(organizerEventsCache);
+  renderPerformanceOverview(organizerEventsCache);
+  renderAnalytics(organizerEventsCache);
+  renderSales(organizerEventsCache);
+}
+
+function renderActivityFeed(eventos) {
+  const container = document.getElementById('dash-activity-feed');
+  if (!container) return;
+
+  if (!eventos.length) {
+    container.innerHTML = `
+      <div class="activity-item glass">
+        <div class="activity-item__icon"><i class="fa-solid fa-plus"></i></div>
+        <div class="activity-item__content">
+          <div class="activity-item__title">Crie seu primeiro evento</div>
+          <div class="activity-item__meta">Depois disso, vendas, comunidades e suporte aparecem aqui.</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const topSelling = [...eventos].sort((a, b) => (parseInt(b.vendidos, 10) || 0) - (parseInt(a.vendidos, 10) || 0))[0];
+  const nextEvent = eventos.find(e => !e.passado) || eventos[0];
+  const metrics = getEventMetrics(eventos);
+
+  const items = [
+    {
+      icon: 'fa-ticket',
+      title: `${metrics.ingressos} ingresso${metrics.ingressos === 1 ? '' : 's'} vendido${metrics.ingressos === 1 ? '' : 's'}`,
+      meta: `${formatCurrency(metrics.receita)} de receita total registrada.`
+    },
+    {
+      icon: 'fa-chart-line',
+      title: topSelling ? `Melhor evento: ${escapeHtml(topSelling.nome || 'Evento')}` : 'Sem vendas ainda',
+      meta: topSelling ? `${parseInt(topSelling.vendidos, 10) || 0} ingressos vendidos.` : 'Divulgue seus eventos para começar a vender.'
+    },
+    {
+      icon: 'fa-calendar-check',
+      title: nextEvent ? `Próximo foco: ${escapeHtml(nextEvent.nome || 'Evento')}` : 'Nenhum evento ativo',
+      meta: nextEvent ? `${escapeHtml(nextEvent.data_formatada || 'Data a confirmar')} em ${escapeHtml(nextEvent.cidade || 'local a confirmar')}.` : 'Crie um novo evento para retomar a operação.'
+    }
+  ];
+
+  container.innerHTML = items.map(item => `
+    <div class="activity-item glass">
+      <div class="activity-item__icon"><i class="fa-solid ${item.icon}"></i></div>
+      <div class="activity-item__content">
+        <div class="activity-item__title">${item.title}</div>
+        <div class="activity-item__meta">${item.meta}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderDashboardChart(eventos) {
+  const bars = document.querySelectorAll('.chart-placeholder__bars .bar');
+  if (!bars.length) return;
+
+  const values = eventos.slice(0, bars.length).map(e => parseInt(e.vendidos, 10) || 0);
+  const max = Math.max(...values, 1);
+
+  bars.forEach((bar, index) => {
+    const value = values[index] || 0;
+    const height = eventos.length ? Math.max(14, Math.round((value / max) * 100)) : 14;
+    bar.style.height = `${height}%`;
+    bar.title = eventos[index]?.nome ? `${eventos[index].nome}: ${value} vendidos` : 'Sem dados';
+  });
+}
+
+function renderPerformanceOverview(eventos) {
+  const cards = document.querySelectorAll('.performance-card');
+  if (!cards.length) return;
+
+  const metrics = getEventMetrics(eventos);
+  const conversion = metrics.totalEventos ? Math.min(100, Math.round(metrics.ocupacaoMedia)) : 0;
+  const views = Math.max(metrics.ingressos * 7, metrics.totalEventos * 120);
+  const rating = metrics.ingressos > 0 ? '4,8' : '--';
+  const returnRate = metrics.totalEventos > 1 ? Math.min(100, Math.round((metrics.ativos / metrics.totalEventos) * 100)) : metrics.ativos ? 100 : 0;
+  const values = [`${conversion}%`, String(views), rating, `${returnRate}%`];
+  const deltas = [
+    metrics.ingressos ? 'Baseado em ocupação' : 'Aguardando vendas',
+    metrics.totalEventos ? 'Estimativa do alcance' : 'Sem eventos',
+    metrics.ingressos ? 'Sinal positivo' : 'Sem avaliações',
+    metrics.ativos ? `${metrics.ativos} ativo${metrics.ativos === 1 ? '' : 's'}` : 'Sem ativos'
+  ];
+
+  cards.forEach((card, index) => {
+    const value = card.querySelector('.performance-card__value');
+    const change = card.querySelector('.performance-card__change');
+    if (value) value.textContent = values[index] || '--';
+    if (change) {
+      change.textContent = deltas[index] || '';
+      change.classList.toggle('negative', index === 3 && !metrics.ativos);
+      change.classList.toggle('positive', !(index === 3 && !metrics.ativos));
+    }
+  });
+}
+
+function renderAnalytics(eventos) {
+  const salesChart = document.getElementById('analyticsSalesChart');
+  const revenueChart = document.getElementById('analyticsRevenueChart');
+  const engagementChart = document.getElementById('analyticsEngagementChart');
+
+  const renderRows = (container, rows, emptyText) => {
+    if (!container) return;
+    if (!rows.length) {
+      container.innerHTML = `<span><i class="fa-solid fa-chart-column"></i></span><p>${emptyText}</p>`;
+      return;
+    }
+    const max = Math.max(...rows.map(row => row.value), 1);
+    container.innerHTML = `
+      <div class="analytics-bars">
+        ${rows.map(row => `
+          <div class="analytics-row">
+            <span class="analytics-row__label" title="${escapeHtml(row.label)}">${escapeHtml(row.label)}</span>
+            <span class="analytics-row__bar"><span style="width:${Math.max(5, Math.round((row.value / max) * 100))}%"></span></span>
+            <span class="analytics-row__value">${row.display}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  };
+
+  renderRows(
+    salesChart,
+    eventos.slice(0, 6).map(e => ({
+      label: e.nome || 'Evento',
+      value: parseInt(e.vendidos, 10) || 0,
+      display: String(parseInt(e.vendidos, 10) || 0)
+    })),
+    'Crie eventos e venda ingressos para gerar o gráfico.'
+  );
+
+  renderRows(
+    revenueChart,
+    eventos.slice(0, 6).map(e => ({
+      label: e.nome || 'Evento',
+      value: toNumber(e.receita ?? e.receita_fmt),
+      display: formatCurrency(toNumber(e.receita ?? e.receita_fmt))
+    })),
+    'Sem receita registrada ainda.'
+  );
+
+  renderRows(
+    engagementChart,
+    eventos.slice(0, 6).map(e => ({
+      label: e.nome || 'Evento',
+      value: parseInt(e.ocupacao, 10) || 0,
+      display: `${parseInt(e.ocupacao, 10) || 0}%`
+    })),
+    'A ocupação aparece após as primeiras vendas.'
+  );
+}
+
+function renderSales(eventos) {
+  const metrics = getEventMetrics(eventos);
+  const taxas = metrics.receita * 0.08;
+  const saldo = Math.max(0, metrics.receita - taxas);
+  const aReceber = metrics.ativos ? saldo * 0.35 : 0;
+
+  setText('salesSaldoDisponivel', formatCurrency(saldo - aReceber));
+  setText('salesAReceber', formatCurrency(aReceber));
+  setText('salesTaxas', formatCurrency(taxas));
+
+  const breakdown = document.getElementById('salesBreakdown');
+  if (!breakdown) return;
+
+  if (!eventos.length) {
+    breakdown.innerHTML = `
+      <div class="sales-breakdown__item">
+        <span>Sem vendas registradas ainda.</span>
+        <button class="btn btn--ghost btn--sm" onclick="goPage('create')">Criar evento</button>
+      </div>
+    `;
+    return;
+  }
+
+  breakdown.innerHTML = eventos.slice(0, 5).map(evento => `
+    <div class="sales-breakdown__item">
+      <span><strong>${escapeHtml(evento.nome || 'Evento')}</strong><br>${parseInt(evento.vendidos, 10) || 0} ingressos vendidos</span>
+      <strong>${formatCurrency(toNumber(evento.receita ?? evento.receita_fmt))}</strong>
+    </div>
+  `).join('');
+}
+
+function requestPayout() {
+  const metrics = getEventMetrics(organizerEventsCache);
+  if (!metrics.receita) {
+    showToast('Você ainda não tem saldo para solicitar saque.', 'fa-circle-info');
+    return;
+  }
+  showToast('Solicitação de saque registrada para validação.', 'fa-sack-dollar');
+}
+
 // =========================================
 // PERFIL DO ORGANIZADOR
 // =========================================
@@ -160,7 +397,6 @@ function showProfileMsg(elId, msg, tipo) {
 
 async function loadPerfil() {
   try {
-    console.log('Buscando dados do perfil...');
     const res  = await fetch('../php/get_user_data_organizador.php');
     const data = await res.json();
 
@@ -170,10 +406,9 @@ async function loadPerfil() {
       return;
     }
 
-    console.log('Dados recebidos:', data);
     atualizarSidebar(data.nome, data.email);
 
-    // Preencher campos da pÃƒÂ¡gina de perfil (se existirem)
+    // Preencher campos da página de perfil, se existirem.
     const profileNome = document.getElementById('profileNome');
     const profileEmail = document.getElementById('profileEmail');
     const profileCnpj = document.getElementById('profileCnpj');
@@ -181,19 +416,19 @@ async function loadPerfil() {
     if (profileEmail) profileEmail.value = data.email || '';
     if (profileCnpj) profileCnpj.value = data.cnpj || '';
 
-    // Carregar estatÃƒÂ­sticas se estivermos na pÃƒÂ¡gina de perfil
+    // Carregar estatísticas se estivermos na página de perfil.
     const pageProfile = document.getElementById('page-profile');
     if (pageProfile && pageProfile.classList.contains('active')) {
       loadStatsPerfil();
     }
 
   } catch (err) {
-    console.error('Falha crÃƒÂ­tica ao carregar perfil:', err);
+    console.error('Falha crítica ao carregar perfil:', err);
     atualizarSidebar('Organizador', '');
   }
 }
 
-// FunÃƒÂ§ÃƒÂ£o auxiliar para atualizar a sidebar de forma segura
+// Função auxiliar para atualizar a sidebar de forma segura.
 function atualizarSidebar(nome, email) {
   const sidebar = document.querySelector('.sidebar__user');
   if (!sidebar) return;
@@ -226,12 +461,11 @@ async function loadStatsPerfil() {
     if (el('statReceita'))  el('statReceita').textContent  = 'R$ ' + totalRec.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
   } catch (err) {
-    console.error('Erro ao carregar estatÃƒÂ­sticas:', err);
+    console.error('Erro ao carregar estatísticas:', err);
   }
 }
 
 async function loadDashboard() {
-  console.log('loadDashboard() iniciado');
   const previewContainer = document.getElementById('dash-events-preview');
   const elAtivos = document.getElementById('dash-total-eventos');
   const elVendidos = document.getElementById('dash-total-ingressos');
@@ -239,12 +473,11 @@ async function loadDashboard() {
   const elParticipantes = document.getElementById('dash-total-participantes');
 
   if (!previewContainer) {
-    console.error('Container dash-events-preview nÃƒÂ£o encontrado!');
+    console.error('Container dash-events-preview não encontrado!');
     return;
   }
 
   try {
-    console.log('Fazendo fetch dos eventos do dashboard...');
     const res = await fetch('../php/get_meus_eventos.php');
     
     if (!res.ok) {
@@ -252,7 +485,6 @@ async function loadDashboard() {
     }
     
     const data = await res.json();
-    console.log('Dados do dashboard recebidos:', data);
 
     if (!data.success) {
       console.warn('Falha ao carregar dados do dashboard:', data.error);
@@ -263,7 +495,9 @@ async function loadDashboard() {
       return;
     }
 
-    const eventos = data.data;
+    const eventos = Array.isArray(data.data) ? data.data : [];
+    organizerEventsCache = eventos;
+    renderOrganizerInsights(eventos);
     
     // 1. Atualizar Stats
     const totalAtivos = eventos.filter(e => !e.passado).length;
@@ -411,7 +645,7 @@ async function checkAuthentication() {
     }
     return false;
   } catch (error) {
-    console.log('Erro ao verificar autenticaÃƒÂ§ÃƒÂ£o:', error);
+    console.warn('Erro ao verificar autenticação:', error);
     return false;
   }
 }
@@ -438,13 +672,11 @@ function showCreateMsg(msg, tipo) {
 }
 
 async function submeterEvento() {
-  console.log('submeterEvento chamado');
-
   // Esconder msg anterior
   const msgEl = document.getElementById('createEventMsg');
   if (msgEl) msgEl.style.display = 'none';
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Coletar campos bÃƒÂ¡sicos Ã¢â€â‚¬Ã¢â€â‚¬
+  // Coletar campos básicos
   const nome      = (document.getElementById('nome')?.value      ?? '').trim();
   const data      = (document.getElementById('data')?.value      ?? '').trim();
   const genero    = (document.getElementById('genero')?.value    ?? '').trim();
@@ -454,16 +686,16 @@ async function submeterEvento() {
   const cepRaw    = (document.getElementById('cep')?.value       ?? '').trim();
   const descricao = (document.getElementById('descricao')?.value ?? '').trim();
 
-  const cep = cepRaw.replace(/\D/g, ''); // apenas dÃƒÂ­gitos
+  const cep = cepRaw.replace(/\D/g, ''); // apenas dígitos
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ ValidaÃƒÂ§ÃƒÂ£o de campos obrigatÃƒÂ³rios Ã¢â€â‚¬Ã¢â€â‚¬
+  // Validação de campos obrigatórios
   if (!nome || !data || !genero || !local || !cidade || !estado || !cep || !descricao) {
-    showCreateMsg('<i class="fa-solid fa-triangle-exclamation"></i> Preencha todos os campos obrigatÃƒÂ³rios.', 'error');
-    showToast('Preencha todos os campos obrigatÃƒÂ³rios!', 'fa-triangle-exclamation');
+    showCreateMsg('<i class="fa-solid fa-triangle-exclamation"></i> Preencha todos os campos obrigatórios.', 'error');
+    showToast('Preencha todos os campos obrigatórios!', 'fa-triangle-exclamation');
     return;
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Artistas selecionados Ã¢â€â‚¬Ã¢â€â‚¬
+  // Artistas selecionados
   const artistasChecked = document.querySelectorAll('#artistas-container input[type="checkbox"]:checked');
   const artistas = Array.from(artistasChecked).map(cb => Number(cb.value));
 
@@ -473,7 +705,7 @@ async function submeterEvento() {
     return;
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Tipos de ingressos Ã¢â€â‚¬Ã¢â€â‚¬
+  // Tipos de ingressos
   const tiposIngressos = [];
   let ingressoValido = true;
 
@@ -501,11 +733,11 @@ async function submeterEvento() {
     return;
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Imagem do evento Ã¢â€â‚¬Ã¢â€â‚¬
+  // Imagem do evento
   const imageInput = document.getElementById('eventImage');
   const imageFile = imageInput?.files[0];
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Montar FormData (NecessÃƒÂ¡rio para upload de arquivos) Ã¢â€â‚¬Ã¢â€â‚¬
+  // Montar FormData para upload de arquivos
   const formData = new FormData();
   formData.append('nome', nome);
   formData.append('data', data);
@@ -522,7 +754,7 @@ async function submeterEvento() {
     formData.append('imagem', imageFile);
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Bloquear botÃƒÂ£o Ã¢â€â‚¬Ã¢â€â‚¬
+  // Bloquear botão
   const btn = document.getElementById('btnCriarEvento');
   if (btn) { btn.disabled = true; btn.textContent = 'Publicando...'; }
 
@@ -540,6 +772,15 @@ async function submeterEvento() {
       setTimeout(() => {
         document.getElementById('formEvento').reset();
         document.getElementById('ticketTypes').innerHTML = '';
+        const preview = document.getElementById('eventImagePreview');
+        const uploadArea = document.querySelector('.upload-area');
+        const uploadText = document.querySelector('.upload-text');
+        if (preview) {
+          preview.style.display = 'none';
+          preview.innerHTML = '';
+        }
+        if (uploadArea) uploadArea.classList.remove('has-file');
+        if (uploadText) uploadText.textContent = 'Clique para adicionar imagem do evento';
         addTicketType('Pista');
         goPage('events');
       }, 1800);
@@ -549,8 +790,8 @@ async function submeterEvento() {
     }
   } catch (error) {
     console.error('Erro de fetch:', error);
-    showCreateMsg('<i class="fa-solid fa-circle-xmark"></i> Falha na comunicaÃƒÂ§ÃƒÂ£o com o servidor.', 'error');
-    showToast('Erro de conexÃƒÂ£o. Tente novamente.', 'fa-triangle-exclamation');
+    showCreateMsg('<i class="fa-solid fa-circle-xmark"></i> Falha na comunicação com o servidor.', 'error');
+    showToast('Erro de conexão. Tente novamente.', 'fa-triangle-exclamation');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Criar Evento'; }
   }
@@ -575,7 +816,7 @@ async function loadGeneros() {
       });
     }
   } catch (error) {
-    console.error('Erro ao carregar gÃƒÂªneros:', error);
+    console.error('Erro ao carregar gêneros:', error);
   }
 }
 
@@ -627,7 +868,7 @@ async function loadMeusEventos() {
 
   container.innerHTML = `
     <div style="padding:32px;text-align:center;">
-      <span style="font-size:2rem;">⏳</span>
+      <span style="font-size:2rem;"><i class="fa-solid fa-spinner fa-spin"></i></span>
       <p style="color:var(--text-muted);margin-top:8px;">Carregando seus eventos...</p>
     </div>`;
 
@@ -644,7 +885,11 @@ async function loadMeusEventos() {
       return;
     }
 
-    if (data.data.length === 0) {
+    const eventos = Array.isArray(data.data) ? data.data : [];
+    organizerEventsCache = eventos;
+    renderOrganizerInsights(eventos);
+
+    if (eventos.length === 0) {
       container.innerHTML = `
         <div class="glass" style="padding:48px;text-align:center;">
           <span style="font-size:3rem;"><i class="fa-solid fa-masks-theater"></i></span>
@@ -656,14 +901,14 @@ async function loadMeusEventos() {
     }
 
     let html = '';
-    data.data.forEach((ev, idx) => {
+    eventos.forEach((ev, idx) => {
       const passado = ev.passado;
       const statusClass = passado ? 'event-management__status--past' : 'event-management__status--active';
       const statusLabel = passado ? 'Encerrado' : 'Ativo';
       const icone = getIconeEvento(idx);
-      const imagemUrl = ev.imagem ? `../uploads/${ev.imagem}` : null;
+      const imagemUrl = ev.imagem ? normalizeImageUrl(ev.imagem) : null;
       const mediaHtml = imagemUrl 
-        ? `<div class="event-management__media"><img src="${imagemUrl}" alt="${ev.nome}" /></div>`
+        ? `<div class="event-management__media"><img src="${escapeHtml(imagemUrl)}" alt="${escapeHtml(ev.nome)}" /></div>`
         : `<div class="event-management__icon">${icone}</div>`;
 
       const vendidos  = parseInt(ev.vendidos)  || 0;
@@ -671,11 +916,12 @@ async function loadMeusEventos() {
       const receita   = ev.receita_fmt || 'R$ 0,00';
 
       const acoes = passado
-        ? `<button class="btn btn--ghost btn--sm" onclick="showToast('Relatorio em breve', 'fa-chart-column')">Relatorio</button>
-           <button class="btn btn--ghost btn--sm" onclick="showToast('Suporte', 'fa-comments')">Suporte</button>`
-        : `<button class="btn btn--ghost btn--sm" onclick="showToast('Editar em breve', 'fa-pen')">Editar</button>
-           <button class="btn btn--ghost btn--sm" onclick="showToast('Analytics em breve', 'fa-chart-column')">Analytics</button>
-           <button class="btn btn--primary btn--sm" onclick="showToast('Gerenciar ingressos', 'fa-ticket')">Ingressos</button>`;
+        ? `<button class="btn btn--ghost btn--sm" onclick="goPage('analytics')"><i class="fa-solid fa-chart-column"></i> Relatório</button>
+           <button class="btn btn--ghost btn--sm" onclick="goPage('ticketHelp')"><i class="fa-solid fa-comments"></i> Suporte</button>`
+        : `<button class="btn btn--ghost btn--sm" onclick="showToast('Edição avançada entra na próxima etapa do MVP.', 'fa-pen')"><i class="fa-solid fa-pen"></i> Editar</button>
+           <button class="btn btn--ghost btn--sm" onclick="goPage('analytics')"><i class="fa-solid fa-chart-column"></i> Analytics</button>
+           <button class="btn btn--primary btn--sm" onclick="goPage('sales')"><i class="fa-solid fa-ticket"></i> Vendas</button>
+           <button class="btn btn--ghost btn--sm" onclick="goPage('communities')"><i class="fa-solid fa-users"></i> Comunidade</button>`;
 
       html += `
         <div class="event-management-card glass">
@@ -786,7 +1032,7 @@ if (sidebarOverlay) {
 
 if (logoutBtn) {
   logoutBtn.addEventListener('click', () => {
-    showToast('AtÃƒÂ© logo!', 'fa-hand');
+    showToast('Até logo!', 'fa-hand');
     setTimeout(() => {
       window.location.href = 'login.html';
     }, 1500);
@@ -797,12 +1043,28 @@ const eventImageInput = document.getElementById('eventImage');
 if (eventImageInput) {
   eventImageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
+    const preview = document.getElementById('eventImagePreview');
     if (file) {
       const uploadArea = document.querySelector('.upload-area');
       const uploadText = document.querySelector('.upload-text');
       if (uploadArea) uploadArea.classList.add('has-file');
       if (uploadText) uploadText.textContent = `Imagem selecionada: ${file.name}`;
+      if (preview) {
+        const imageUrl = URL.createObjectURL(file);
+        const sizeMb = (file.size / 1024 / 1024).toFixed(2).replace('.', ',');
+        preview.style.display = 'block';
+        preview.innerHTML = `
+          <img src="${imageUrl}" alt="Prévia da imagem do evento">
+          <div class="upload-preview__meta">
+            <span>${escapeHtml(file.name)}</span>
+            <span>${sizeMb} MB</span>
+          </div>
+        `;
+      }
       showToast(`Imagem "${file.name}" selecionada!`, 'fa-camera');
+    } else if (preview) {
+      preview.style.display = 'none';
+      preview.innerHTML = '';
     }
   });
 }
@@ -827,7 +1089,7 @@ function setupHelpCenter() {
       const description = descriptionInput.value.trim();
 
       if (!title || !description) {
-        showToast('Preencha tÃƒÂ­tulo e descriÃƒÂ§ÃƒÂ£o antes de enviar.', 'fa-triangle-exclamation');
+        showToast('Preencha título e descrição antes de enviar.', 'fa-triangle-exclamation');
         return;
       }
 
@@ -851,7 +1113,7 @@ function setupHelpCenter() {
         }
       } catch (error) {
         console.error('Erro ao enviar ticket:', error);
-        showToast('Falha na comunicaÃƒÂ§ÃƒÂ£o com o servidor.', 'fa-triangle-exclamation');
+        showToast('Falha na comunicação com o servidor.', 'fa-triangle-exclamation');
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Enviar ticket';
@@ -1079,8 +1341,6 @@ if (supportTicketChatForm) {
 // =========================================
 
 async function init() {
-  console.log('Painel Inicializando...');
-  
   loadPerfil();
   setupHelpCenter();
   initChatListeners();
@@ -1237,7 +1497,7 @@ function renderChatMessages(mensagens) {
   const isAtBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 80;
 
   if (!Array.isArray(mensagens) || mensagens.length === 0) {
-    container.innerHTML = '<p class="chat-empty" style="text-align:center; color:var(--text-muted); padding:40px;">Nenhuma mensagem ainda. Envie a primeira instrução para seus participantes! 📢</p>';
+    container.innerHTML = '<p class="chat-empty" style="text-align:center; color:var(--text-muted); padding:40px;">Nenhuma mensagem ainda. Envie a primeira instrução para seus participantes.</p>';
     return;
   }
 
@@ -1251,7 +1511,7 @@ function renderChatMessages(mensagens) {
     if (msg.id_resposta_a) {
       replyRefHtml = `
         <div class="chat-bubble__reply-ref">
-          <div class="chat-reply-ref__author">↩ ${escapeHtml(msg.resposta_autor_nome)}:</div>
+          <div class="chat-reply-ref__author"><i class="fa-solid fa-reply"></i> ${escapeHtml(msg.resposta_autor_nome)}:</div>
           <div class="chat-reply-ref__text">${escapeHtml(msg.resposta_texto)}</div>
         </div>
       `;

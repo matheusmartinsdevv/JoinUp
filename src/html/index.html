@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JoinUp - Eventos com a sua galera</title>
+  <title>JoinUp - A rede social dos eventos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap"
@@ -13,281 +13,366 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 
-<body>
+<body class="social-landing">
   <header class="header" id="header">
     <div class="container header__inner">
-      <a href="#" class="logo">
+      <a href="index.html" class="logo">
         <span class="logo__icon">◈</span>
         <span class="logo__text">Join<span class="logo__accent">Up</span></span>
       </a>
 
       <form class="header-search" role="search" action="../php/eventos.php" method="get">
-        <input type="search"
-            name="q"
-            class="header-search__input"
-            placeholder="Pesquisar eventos..."
-            aria-label="Pesquisar eventos na landing" />
-        <button type="submit"
-            class="header-search__btn" 
-            aria-label="Buscar eventos">Buscar
-        </button>
+        <input type="search" name="q" class="header-search__input" placeholder="Buscar rolês, artistas, cidades..."
+          aria-label="Pesquisar eventos na rede JoinUp" />
+        <button type="submit" class="header-search__btn" aria-label="Buscar eventos">Buscar</button>
       </form>
+
       <nav class="nav" id="nav">
-        <a href="#eventos" class="nav__link">Eventos</a>
-        <a href="#como-funciona" class="nav__link">Como funciona</a>
-        <a href="#seguranca" class="nav__link">Segurança</a>
-        <a href="login.html" class="btn btn--primary btn--glow">Login</a>
+        <a href="#feed" class="nav__link">Feed</a>
+        <a href="#comunidades" class="nav__link">Comunidades</a>
+        <a href="#revenda" class="nav__link">Revenda</a>
+        <a href="#organizadores" class="nav__link">Organizadores</a>
+        <a href="login.html" class="btn btn--ghost">Entrar</a>
       </nav>
 
-      <a href="cadastro.html" class="btn btn--primary btn--glow">Cadastrar</a>
+      <a href="cadastro.html" class="btn btn--primary btn--glow">Criar conta</a>
 
-      <button class="burger" id="burger" aria-label="Menu">
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
-  <section class="hero" id="hero">
-    <div class="hero__bg-orbs">
-      <div class="orb orb--1"></div>
-      <div class="orb orb--2"></div>
-      <div class="orb orb--3"></div>
-    </div>
+  <main>
+    <section class="social-hero" id="hero" aria-label="JoinUp">
+      <picture class="social-hero__media">
+        <source srcset="../assets/images/landing/crowd-dancing.jpg" media="(max-width: 760px)" />
+        <img src="../assets/images/landing/festival-neon.jpg" alt="Público em festival noturno com luzes roxas"
+          width="1200" height="675" decoding="async" />
+      </picture>
+      <div class="social-hero__shade"></div>
 
-    <div class="container hero__inner">
-      <div class="hero__content fade-in">
-        <span class="badge">Plataforma de Eventos</span>
-        <h1 class="hero__title">
-          Seu ingresso já vem com <span class="text-gradient">companhia.</span>
-        </h1>
-        <p class="hero__subtitle">
-          Descubra eventos, entre em grupos e compre com segurança em um só lugar.
-        </p>
-
-        <div class="hero__ctas">
-          <a href="cadastro.html" class="btn btn--primary btn--glow btn--lg">Começar agora</a>
-          <a href="#eventos" class="btn btn--ghost btn--lg">Ver eventos</a>
-        </div>
-
-        <div class="hero__stats">
-          <div class="stat">
-            <span class="stat__num">4.800+</span>
-            <span class="stat__label">eventos listados</span>
-          </div>
-          <div class="stat__divider"></div>
-          <div class="stat">
-            <span class="stat__num">120K+</span>
-            <span class="stat__label">usuários ativos</span>
-          </div>
-          <div class="stat__divider"></div>
-          <div class="stat">
-            <span class="stat__num">100%</span>
-            <span class="stat__label">transações seguras</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="search-bar glass fade-in fade-in--delay-1">
-        <form class="search-bar__inner" role="search" action="../php/eventos.php" method="get">
-          <div class="search-field">
-            <svg class="search-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-            <input type="search" name="q" placeholder="Buscar eventos, artistas ou cidades..." class="search-field__input" />
-          </div>
-          <button type="submit" class="btn btn--primary search-bar__btn">Buscar</button>
-        </form>
-      </div>
-    </div>
-  </section>
-
-  <section class="events" id="eventos">
-    <div class="container">
-      <div class="section-header fade-in">
-        <span class="badge">Em destaque</span>
-        <h2 class="section-title">Eventos para seu próximo <span class="text-gradient">rolê</span></h2>
-      </div>
-
-      <div class="events__grid">
-        <div class="event-card fade-in">
-          <a class="event-card__img event-card__img--1"
-            href="https://unsplash.com/photos/crowd-enjoying-a-concert-with-purple-stage-lights-0AhdUvf4tVA"
-            target="_blank" rel="noopener noreferrer" aria-label="Abrir imagem do evento no Unsplash">
-            <img src="../assets/images/landing/festival-neon.jpg" alt="Festival noturno com palco iluminado em roxo"
-              width="1200" height="675" loading="lazy" decoding="async" />
-          </a>
-          <div class="event-card__overlay">
-            <span class="event-card__tag">Festival</span>
-            <div class="event-card__info">
-              <h3 class="event-card__title">Festival Neon SP</h3>
-              <p class="event-card__meta">12 Jul · São Paulo</p>
-              <div class="event-card__footer">
-                <span class="event-card__price">A partir de <strong>R$ 120</strong></span>
-                <a href="#" class="btn btn--primary btn--sm">Ver grupo</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="event-card fade-in fade-in--delay-1">
-          <a class="event-card__img event-card__img--2"
-            href="https://unsplash.com/photos/crowd-watching-a-band-perform-on-a-stage-at-night-nH_Wek324Mc"
-            target="_blank" rel="noopener noreferrer" aria-label="Abrir imagem do evento no Unsplash">
-            <img src="../assets/images/landing/rock-stage.jpg" alt="Show de rock em palco noturno com público"
-              width="675" height="1200" loading="lazy" decoding="async" />
-          </a>
-          <div class="event-card__overlay">
-            <span class="event-card__tag event-card__tag--hot">Em alta</span>
-            <div class="event-card__info">
-              <h3 class="event-card__title">Rock in Rio</h3>
-              <p class="event-card__meta">19-27 Jul · Rio de Janeiro</p>
-              <div class="event-card__footer">
-                <span class="event-card__price">A partir de <strong>R$ 350</strong></span>
-                <a href="#" class="btn btn--primary btn--sm">Ver grupo</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="event-card fade-in fade-in--delay-2">
-          <a class="event-card__img event-card__img--3"
-            href="https://unsplash.com/photos/crowd-at-an-outdoor-music-festival-with-stage-gjhfCqxhnvo"
-            target="_blank" rel="noopener noreferrer" aria-label="Abrir imagem do evento no Unsplash">
-            <img src="../assets/images/landing/ultra-festival.jpg"
-              alt="Festival eletrônico ao ar livre com grande público" width="800" height="1200" loading="lazy"
-              decoding="async" />
-          </a>
-          <div class="event-card__overlay">
-            <span class="event-card__tag">Eletrônico</span>
-            <div class="event-card__info">
-              <h3 class="event-card__title">Ultra Music Festival</h3>
-              <p class="event-card__meta">02 Ago · São Paulo</p>
-              <div class="event-card__footer">
-                <span class="event-card__price">A partir de <strong>R$ 280</strong></span>
-                <a href="#" class="btn btn--primary btn--sm">Ver grupo</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="how" id="como-funciona">
-    <div class="container">
-      <div class="section-header fade-in">
-        <span class="badge">Como funciona</span>
-        <h2 class="section-title">Três passos para curtir <span class="text-gradient">junto</span></h2>
-      </div>
-
-      <div class="how__panel">
-        <div class="steps">
-          <div class="step glass fade-in">
-            <div class="step__num">01</div>
-            <div class="step__icon">Busca</div>
-            <h3 class="step__title">Escolha o evento</h3>
-            <p class="step__desc">Filtre por cidade, gênero ou artista.</p>
-          </div>
-          <div class="steps__arrow">→</div>
-          <div class="step glass fade-in fade-in--delay-1">
-            <div class="step__num">02</div>
-            <div class="step__icon">Grupo</div>
-            <h3 class="step__title">Entre na comunidade</h3>
-            <p class="step__desc">Converse com quem também vai ao evento.</p>
-          </div>
-          <div class="steps__arrow">→</div>
-          <div class="step glass fade-in fade-in--delay-2">
-            <div class="step__num">03</div>
-            <div class="step__icon">Rolê</div>
-            <h3 class="step__title">Viva e compartilhe</h3>
-            <p class="step__desc">Compre com segurança e mantenha os contatos.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="trust" id="seguranca">
-    <div class="container">
-      <div class="trust__inner glass fade-in">
-        <div class="trust__content">
-          <span class="badge">Compra protegida</span>
-          <h2 class="trust__title">Revenda segura.<br /><span class="text-gradient">Sem dor de cabeça.</span></h2>
-          <p class="trust__desc">
-            No JoinUp, cada transação passa por verificação para você comprar e vender ingresso com confiança.
+      <div class="container social-hero__inner">
+        <div class="social-hero__content fade-in">
+          <span class="badge"><i class="fa-solid fa-fire"></i> Rede social de eventos</span>
+          <h1 class="social-hero__title">O feed do rolê começa antes do ingresso.</h1>
+          <p class="social-hero__subtitle">
+            Descubra eventos, veja quem está indo, entre em comunidades, compre com segurança e continue a conversa
+            depois que as luzes apagam.
           </p>
-          <ul class="trust__features">
-            <li class="trust__feature">
-              <span class="trust__check"><i class="fa-solid fa-check"></i></span>
-              QR Code único por ingresso
-            </li>
-            <li class="trust__feature">
-              <span class="trust__check"><i class="fa-solid fa-check"></i></span>
-              Pagamento liberado após confirmação
-            </li>
-            <li class="trust__feature">
-              <span class="trust__check"><i class="fa-solid fa-check"></i></span>
-              Suporte em tempo real
-            </li>
-          </ul>
-          <a href="cadastro.html" class="btn btn--primary btn--glow btn--lg">Criar conta</a>
+
+          <div class="hero__ctas">
+            <a href="cadastroParticipante.html" class="btn btn--primary btn--glow btn--lg">
+              <i class="fa-solid fa-user-plus"></i> Entrar na rede
+            </a>
+            <a href="#feed" class="btn btn--ghost btn--lg">
+              <i class="fa-solid fa-compass"></i> Explorar o feed
+            </a>
+          </div>
         </div>
-        <div class="trust__visual">
-          <div class="trust__phone glass">
-            <div class="trust__phone-header">
-              <span class="trust__phone-dot"></span>
-              <span class="trust__phone-dot"></span>
-              <span class="trust__phone-dot"></span>
+
+        <div class="social-hero__pulse" id="liveNotif">
+          <span class="social-hero__pulse-dot"></span>
+          <span class="live-notif__text"><strong>Bruna M.</strong> acabou de postar no <span
+              class="text-accent">Festival Neon SP</span></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="social-feed-showcase" id="feed">
+      <div class="container">
+        <div class="social-section-head fade-in">
+          <span class="badge"><i class="fa-solid fa-bolt"></i> Feed vivo</span>
+          <h2 class="section-title">Eventos viram conversa, conversa vira comunidade.</h2>
+          <p class="section-subtitle">
+            A experiência principal do JoinUp é social: posts, recomendações, grupos, ingressos e revenda aparecem no
+            mesmo fluxo.
+          </p>
+        </div>
+
+        <div class="social-app-grid">
+          <aside class="social-sidebar glass fade-in">
+            <div class="mini-profile">
+              <div class="mini-profile__avatar">JU</div>
+              <div>
+                <strong>Seu perfil JoinUp</strong>
+                <span>@seurole</span>
+              </div>
             </div>
-            <div class="trust__ticket">
-              <div class="trust__ticket-top">
-                <span class="trust__verified">Ingresso verificado</span>
-                <div class="trust__qr"></div>
-                <strong>Festival Neon SP</strong>
-                <p>Pista VIP · 12 Jul 2026</p>
+            <a href="cadastroParticipante.html" class="social-menu-item active"><i class="fa-solid fa-house"></i>
+              Feed</a>
+            <a href="cadastroParticipante.html" class="social-menu-item"><i class="fa-solid fa-ticket"></i>
+              Ingressos</a>
+            <a href="cadastroParticipante.html" class="social-menu-item"><i class="fa-solid fa-users"></i>
+              Comunidades</a>
+            <a href="cadastroParticipante.html" class="social-menu-item"><i class="fa-solid fa-rotate"></i>
+              Revenda</a>
+            <a href="cadastroParticipante.html" class="social-menu-item"><i class="fa-solid fa-bell"></i>
+              Notificações</a>
+          </aside>
+
+          <div class="social-feed-column">
+            <div class="stories-row glass fade-in fade-in--delay-1">
+              <a href="cadastroParticipante.html" class="story-chip">
+                <span><img src="../assets/images/landing/festival-neon.jpg" alt="" loading="lazy" /></span>
+                Festival Neon
+              </a>
+              <a href="cadastroParticipante.html" class="story-chip">
+                <span><img src="../assets/images/landing/rock-stage.jpg" alt="" loading="lazy" /></span>
+                Rock Rio
+              </a>
+              <a href="cadastroParticipante.html" class="story-chip">
+                <span><img src="../assets/images/landing/ultra-festival.jpg" alt="" loading="lazy" /></span>
+                Ultra
+              </a>
+              <a href="cadastroParticipante.html" class="story-chip">
+                <span><img src="../assets/images/landing/lolla-crowd.jpg" alt="" loading="lazy" /></span>
+                Lolla
+              </a>
+            </div>
+
+            <article class="social-post glass fade-in">
+              <div class="social-post__header">
+                <div class="social-avatar">BM</div>
+                <div>
+                  <strong>Bruna M.</strong>
+                  <span>Comunidade Festival Neon SP · agora</span>
+                </div>
+                <button class="feed-action" type="button"><i class="fa-solid fa-ellipsis"></i></button>
               </div>
-              <div class="trust__ticket-divider">
-                <div class="trust__ticket-hole"></div>
-                <div class="trust__ticket-line"></div>
-                <div class="trust__ticket-hole trust__ticket-hole--right"></div>
+              <p class="social-post__text">
+                Primeira vez indo sozinha e já achei uma galera para chegar junto. Quem fecha after perto da Paulista?
+              </p>
+              <img class="social-post__photo" src="../assets/images/landing/festival-neon.jpg"
+                alt="Festival com palco iluminado" loading="lazy" />
+              <div class="social-post__actions">
+                <button class="feed-action" type="button"><i class="fa-solid fa-heart"></i> 248</button>
+                <button class="feed-action" type="button"><i class="fa-solid fa-comment"></i> 41</button>
+                <button class="feed-action" type="button"><i class="fa-solid fa-share-nodes"></i> Compartilhar</button>
+                <a href="cadastroParticipante.html" class="feed-action feed-action--cta">Entrar na comunidade</a>
               </div>
-              <div class="trust__ticket-bottom">
-                <span>Titular: Joao Silva</span>
-                <span class="trust__badge-secure">Protegido</span>
+            </article>
+
+            <article class="social-post glass fade-in fade-in--delay-1">
+              <div class="social-post__header">
+                <div class="social-avatar social-avatar--brand">JU</div>
+                <div>
+                  <strong>JoinUp Oficial</strong>
+                  <span>Rock in Rio · em alta</span>
+                </div>
+                <span class="trend-pill">+1.2K interações</span>
+              </div>
+              <p class="social-post__text">
+                A comunidade do Rock in Rio abriu novas salas por dia de evento. Combine transporte, encontre turma e
+                acompanhe ingressos verificados.
+              </p>
+              <div class="event-social-card">
+                <img src="../assets/images/landing/rock-stage.jpg" alt="Show de rock em palco noturno"
+                  loading="lazy" />
+                <div>
+                  <span>19-27 Jul · Rio de Janeiro</span>
+                  <strong>Rock in Rio</strong>
+                  <small>A partir de R$ 350 · 18 comunidades ativas</small>
+                </div>
+                <a href="cadastroParticipante.html" class="btn btn--primary btn--sm">Ver evento</a>
+              </div>
+            </article>
+          </div>
+
+          <aside class="discovery-panel glass fade-in fade-in--delay-2">
+            <div class="panel-block">
+              <h3>Em alta agora</h3>
+              <a href="cadastroParticipante.html" class="trend-item">
+                <span>#FestivalNeonSP</span>
+                <small>2.8K posts hoje</small>
+              </a>
+              <a href="cadastroParticipante.html" class="trend-item">
+                <span>#CaravanaLolla</span>
+                <small>914 pessoas combinando rota</small>
+              </a>
+              <a href="cadastroParticipante.html" class="trend-item">
+                <span>#RevendaSegura</span>
+                <small>Ingressos verificados em destaque</small>
+              </a>
+            </div>
+
+            <div class="panel-block">
+              <h3>Talvez você curta</h3>
+              <a href="cadastroParticipante.html" class="suggested-event">
+                <img src="../assets/images/landing/ultra-festival.jpg" alt="" loading="lazy" />
+                <span>
+                  <strong>Ultra Music Festival</strong>
+                  <small>Eletrônico · São Paulo</small>
+                </span>
+              </a>
+              <a href="cadastroParticipante.html" class="suggested-event">
+                <img src="../assets/images/landing/lolla-crowd.jpg" alt="" loading="lazy" />
+                <span>
+                  <strong>Lollapalooza</strong>
+                  <small>Pop, indie e eletrônico</small>
+                </span>
+              </a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="community-network" id="comunidades">
+      <div class="container">
+        <div class="social-section-head fade-in">
+          <span class="badge"><i class="fa-solid fa-users"></i> Comunidades</span>
+          <h2 class="section-title">Cada ingresso desbloqueia um grupo real.</h2>
+          <p class="section-subtitle">
+            Comunidades conectam quem já comprou, quem está planejando e quem quer continuar perto depois do evento.
+          </p>
+        </div>
+
+        <div class="community-grid">
+          <article class="community-card glass fade-in">
+            <img src="../assets/images/landing/crowd-dancing.jpg" alt="Pessoas dançando em festival" loading="lazy" />
+            <div>
+              <span class="community-card__label">Comunidade liberada</span>
+              <h3>Festival Neon SP</h3>
+              <p>Transporte, after, meetups e posts de quem vai no mesmo dia.</p>
+              <div class="community-card__meta">
+                <span><i class="fa-solid fa-users"></i> 4.2K membros</span>
+                <span><i class="fa-solid fa-message"></i> 318 posts hoje</span>
               </div>
             </div>
+          </article>
+
+          <article class="community-card glass fade-in fade-in--delay-1">
+            <img src="../assets/images/landing/lolla-crowd.jpg" alt="Público em festival ao ar livre" loading="lazy" />
+            <div>
+              <span class="community-card__label">Grupo por interesse</span>
+              <h3>Caravanas e rotas</h3>
+              <p>Combine ida, volta e companhia com gente do mesmo evento.</p>
+              <div class="community-card__meta">
+                <span><i class="fa-solid fa-location-dot"></i> 27 cidades</span>
+                <span><i class="fa-solid fa-bolt"></i> em alta</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="community-card glass fade-in fade-in--delay-2">
+            <img src="../assets/images/landing/vip-smartphone.jpg" alt="Celular exibindo ingresso VIP" loading="lazy" />
+            <div>
+              <span class="community-card__label">Memórias</span>
+              <h3>Depois do show</h3>
+              <p>Fotos, comentários e conexões continuam no feed do evento.</p>
+              <div class="community-card__meta">
+                <span><i class="fa-solid fa-camera"></i> posts</span>
+                <span><i class="fa-solid fa-heart"></i> conexões</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="resale-social" id="revenda">
+      <div class="container resale-social__inner">
+        <div class="resale-social__copy fade-in">
+          <span class="badge"><i class="fa-solid fa-shield-halved"></i> Revenda social segura</span>
+          <h2 class="section-title">Ingresso parado vira oportunidade dentro da rede.</h2>
+          <p>
+            Quem precisa vender anuncia para a comunidade certa. Quem compra vê contexto, vendedor, evento e proteção
+            JoinUp no mesmo fluxo.
+          </p>
+          <a href="cadastroParticipante.html" class="btn btn--primary btn--glow btn--lg">Ver revendas</a>
+        </div>
+
+        <div class="resale-card glass fade-in fade-in--delay-1">
+          <div class="resale-card__header">
+            <div class="social-avatar">IC</div>
+            <div>
+              <strong>Isabela C.</strong>
+              <span>anunciou na comunidade Lolla</span>
+            </div>
+          </div>
+          <div class="resale-ticket">
+            <span>Ingresso verificado</span>
+            <strong>Lollapalooza · Sábado</strong>
+            <small>Pista · R$ 280 · transferência protegida</small>
+          </div>
+          <div class="social-post__actions">
+            <button class="feed-action" type="button"><i class="fa-solid fa-lock"></i> Protegido</button>
+            <a href="cadastroParticipante.html" class="feed-action feed-action--cta">Comprar</a>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <section class="creator-loop" id="organizadores">
+      <div class="container">
+        <div class="social-section-head fade-in">
+          <span class="badge"><i class="fa-solid fa-bullhorn"></i> Para organizadores</span>
+          <h2 class="section-title">Seu evento ganha um perfil social próprio.</h2>
+          <p class="section-subtitle">
+            Publique atualizações, alimente comunidades, acompanhe engajamento e transforme compradores em público
+            recorrente.
+          </p>
+        </div>
+
+        <div class="creator-grid">
+          <article class="creator-card glass fade-in">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <h3>Posts oficiais</h3>
+            <p>Line-up, horários, avisos e bastidores entram direto no feed dos participantes.</p>
+          </article>
+          <article class="creator-card glass fade-in fade-in--delay-1">
+            <i class="fa-solid fa-chart-line"></i>
+            <h3>Retenção por comunidade</h3>
+            <p>Depois da venda, o relacionamento continua com mensagens, comentários e chamados.</p>
+          </article>
+          <article class="creator-card glass fade-in fade-in--delay-2">
+            <i class="fa-solid fa-ticket"></i>
+            <h3>Venda com contexto</h3>
+            <p>O ingresso aparece junto de prova social, conversa e tendências do evento.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="social-cta">
+      <div class="container social-cta__inner fade-in">
+        <span class="badge"><i class="fa-solid fa-circle-nodes"></i> JoinUp</span>
+        <h2>Entre pelo evento. Fique pela comunidade.</h2>
+        <p>Crie seu perfil e acompanhe o próximo rolê como uma rede social, não como uma lista de ingressos.</p>
+        <div class="hero__ctas">
+          <a href="cadastro.html" class="btn btn--primary btn--glow btn--lg">Criar conta</a>
+          <a href="login.html" class="btn btn--ghost btn--lg">Entrar</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer class="footer">
     <div class="container footer__inner">
       <div class="footer__brand">
-        <a href="#" class="logo">
+        <a href="index.html" class="logo">
           <span class="logo__icon">◈</span>
           <span class="logo__text">Join<span class="logo__accent">Up</span></span>
         </a>
-        <p class="footer__tagline">Conectando pessoas por meio de eventos.</p>
+        <p class="footer__tagline">A rede social para descobrir, viver e continuar eventos.</p>
       </div>
 
       <div class="footer__links">
         <div class="footer__col">
-          <h4 class="footer__col-title">Plataforma</h4>
-          <a href="#eventos" class="footer__link">Buscar eventos</a>
-          <a href="criar-evento.html" class="footer__link">Criar evento</a>
+          <h4 class="footer__col-title">Rede</h4>
+          <a href="#feed" class="footer__link">Feed</a>
+          <a href="#comunidades" class="footer__link">Comunidades</a>
         </div>
         <div class="footer__col">
-          <h4 class="footer__col-title">Empresa</h4>
-          <a href="#" class="footer__link">Sobre nós</a>
-          <a href="#" class="footer__link">Contato</a>
+          <h4 class="footer__col-title">Eventos</h4>
+          <a href="#revenda" class="footer__link">Revenda segura</a>
+          <a href="cadastroOrganizador.html" class="footer__link">Criar evento</a>
         </div>
         <div class="footer__col">
-          <h4 class="footer__col-title">Legal</h4>
-          <a href="#" class="footer__link">Termos de uso</a>
-          <a href="#" class="footer__link">Privacidade</a>
+          <h4 class="footer__col-title">Conta</h4>
+          <a href="login.html" class="footer__link">Entrar</a>
+          <a href="cadastro.html" class="footer__link">Cadastrar</a>
         </div>
       </div>
     </div>
@@ -299,8 +384,6 @@
   </footer>
 
   <script src="../js/script.js"></script>
-  <script src="../js/cadastroParticipante.js"></script>
-  <script src="../js/pesquisarEvento.js"></script>
 </body>
 
 </html>

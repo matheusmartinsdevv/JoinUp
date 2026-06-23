@@ -156,10 +156,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const result = await res.text();
         if (result.trim() === "sucesso") {
-            alert("Perfil atualizado com sucesso!");
-            window.location.href = 'dashboard.html';
+            showLegacyToast("Perfil atualizado com sucesso!");
+            window.location.href = 'feed.html';
         } else {
-            alert("Erro ao atualizar: " + result);
+            showLegacyToast("Erro ao atualizar: " + result, 'error');
         }
     });
 });
+
+function showLegacyToast(message, type = 'success') {
+    let toast = document.getElementById('legacyToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'legacyToast';
+        toast.style.position = 'fixed';
+        toast.style.right = '24px';
+        toast.style.bottom = '24px';
+        toast.style.zIndex = '9999';
+        toast.style.padding = '14px 18px';
+        toast.style.borderRadius = '14px';
+        toast.style.fontFamily = 'Poppins, sans-serif';
+        toast.style.fontWeight = '700';
+        toast.style.boxShadow = '0 16px 40px rgba(0,0,0,0.35)';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.background = type === 'error' ? 'rgba(127,29,29,0.94)' : 'rgba(26,14,46,0.96)';
+    toast.style.border = type === 'error' ? '1px solid rgba(248,113,113,0.45)' : '1px solid rgba(157,78,221,0.45)';
+    toast.style.color = '#fff';
+    toast.style.display = 'block';
+    window.setTimeout(() => {
+        toast.style.display = 'none';
+    }, 2200);
+}

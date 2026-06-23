@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../Css/cadastro.css" />
-  <title>Crie sua conta</title>
+  <title>Criar conta | JoinUp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 
@@ -15,31 +16,43 @@
       <div class="orb orb--4"></div>
       <div class="orb orb--5"></div>
     </div>
-    <div class="container">
+    <div class="container container--wide">
       <div class="cta__inner fade-in">
-        <span class="badge"><i class="fa-solid fa-sparkles"></i> É de graça pra começar</span>
-        <h2 class="cta__title">Pronto pra entrar<br /><span class="text-gradient">no rolê?</span></h2>
-        <p class="cta__subtitle">Crie sua conta agora e encontre sua galera no próximo evento.</p>
+        <span class="badge"><i class="fa-solid fa-sparkles"></i> Comece pelo seu perfil</span>
+        <h1 class="cta__title">Crie sua conta<br /><span class="text-gradient">JoinUp</span></h1>
+        <p class="cta__subtitle">Cada perfil tem uma experiência pensada para o que você precisa fazer.</p>
 
-        <a href="cadastroOrganizador.html">
-          <button type="submit" class="btn--primary">Sou organizador</button>
+        <div class="choice-grid" aria-label="Escolha o tipo de cadastro">
+          <a class="choice-card" href="cadastroParticipante.html">
+            <span class="choice-card__icon"><i class="fa-solid fa-user-group"></i></span>
+            <strong>Participante</strong>
+            <small>Descubra eventos, compre ingressos e participe das comunidades.</small>
+            <span class="choice-card__action">Cadastrar participante</span>
+          </a>
 
-        <a href="cadastroParticipante.html">
-          <button type="submit" class="btn--primary">Sou participante</button>
-        </a>
+          <a class="choice-card" href="cadastroOrganizador.html">
+            <span class="choice-card__icon"><i class="fa-solid fa-bullhorn"></i></span>
+            <strong>Organizador</strong>
+            <small>Publique eventos, acompanhe vendas e converse com o público.</small>
+            <span class="choice-card__action">Cadastrar organizador</span>
+          </a>
 
-        <a href="cadastroSuporte.html">
-          <button type="submit" class="btn--primary">Sou Suporte</button>
-        </a>
- 
+          <a class="choice-card" href="cadastroSuporte.html">
+            <span class="choice-card__icon"><i class="fa-solid fa-life-ring"></i></span>
+            <strong>Suporte</strong>
+            <small>Atenda chamados, acompanhe prioridades e ajude usuários.</small>
+            <span class="choice-card__action">Cadastrar suporte</span>
+          </a>
+        </div>
 
-  
-
-        <p class="cta__terms">Sem spam. Cancelamento a qualquer hora. Ingresso de presente pra quem entrar agora. <i class="fa-solid fa-ticket"></i></p>
+        <div class="auth-links">
+          <a href="login.html">Já tenho conta</a>
+          <span>ou</span>
+          <a href="index.html">voltar ao início</a>
+        </div>
       </div>
     </div>
   </section>
-  <script src="../js/cadastroParticipante.js"></script>
 </body>
 
 </html>
